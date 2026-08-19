@@ -1,0 +1,3042 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>総合診療カンファレンス ― 研修医から医長へ</title>
+<style>
+:root{
+  --bg-deep:#E9EFEA;
+  --panel:#FFFFFF;
+  --panel2:#F1F5F2;
+  --paper:#FBF7EC;
+  --paper-line:#E3D9BE;
+  --ink:#2B3A32;
+  --ink-soft:#5F7268;
+  --ecg:#1E9E6B;
+  --alert:#D14A42;
+  --gold:#B8860B;
+  --line:#D7DFDA;
+  --line-soft:#E6ECE8;
+  --blue:#3D7FBF;
+  --text-dark:#263029;
+  --text-mid:#526258;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:radial-gradient(ellipse at top, #FFFFFF 0%, var(--bg-deep) 75%);
+  color:var(--text-dark);
+  font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
+#root{width:100%;max-width:920px;padding:0 0 40px;}
+::selection{background:var(--ecg);color:#fff;}
+
+/* ---------- ECG header ---------- */
+.ecg-header{position:relative;background:linear-gradient(180deg,#F3FAF6,#E6F3EB);border-bottom:1px solid var(--line);padding:6px 16px 4px;overflow:hidden;}
+.ecg-header svg{display:block;width:100%;height:28px;}
+.ecg-header path{fill:none;stroke:var(--ecg);stroke-width:2.2;stroke-dasharray:1000;stroke-dashoffset:1000;animation:ecgdraw 3.2s linear infinite;filter:drop-shadow(0 0 3px rgba(30,158,107,.4));}
+@keyframes ecgdraw{0%{stroke-dashoffset:1000;}100%{stroke-dashoffset:0;}}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 4px;flex-wrap:wrap;gap:8px;}
+.brand{font-family:"Hiragino Mincho ProN","Shippori Mincho","Yu Mincho",serif;font-size:19px;letter-spacing:.06em;color:var(--text-dark);}
+.brand small{display:block;font-size:9.5px;color:var(--ecg);letter-spacing:.2em;font-family:inherit;margin-top:2px;}
+.hud{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-mid);flex-wrap:wrap;}
+.hud .badge{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:5px 12px;display:flex;align-items:center;gap:6px;}
+.hud .badge b{color:var(--gold);font-weight:700;}
+.hud .badge.rep-up b{color:var(--ecg);}
+.hud .badge.rep-down b{color:var(--alert);}
+.iconbtn{background:#fff;border:1px solid var(--line);color:var(--text-mid);border-radius:20px;padding:7px 13px;font-size:13px;cursor:pointer;transition:.15s;}
+.iconbtn:hover{border-color:var(--ecg);color:var(--ecg);}
+
+/* ---------- reputation bar ---------- */
+.progresswrap{padding:0 18px 12px;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-mid);margin-bottom:4px;}
+.progressbar{height:7px;border-radius:4px;background:#E1E8E3;overflow:hidden;border:1px solid var(--line);position:relative;}
+.progressbar>div{height:100%;background:linear-gradient(90deg,var(--ecg),var(--gold));transition:width .5s;}
+.progressbar.danger>div{background:linear-gradient(90deg,var(--alert),#8a2f2a);}
+
+/* ---------- main content ---------- */
+main{padding:10px 16px 16px;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(38,50,42,.05);}
+.card h2{font-family:"Hiragino Mincho ProN","Shippori Mincho",serif;font-size:18px;margin:0 0 10px;color:var(--text-dark);border-left:3px solid var(--ecg);padding-left:10px;}
+.muted{color:var(--text-mid);font-size:14px;line-height:1.75;}
+.btn{background:var(--ecg);color:#fff;border:none;border-radius:6px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;letter-spacing:.03em;}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn.secondary{background:#fff;border:1px solid var(--line);color:var(--text-dark);font-weight:500;}
+.btn.secondary:hover{border-color:var(--ecg);color:var(--ecg);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+/* ---------- title screen ---------- */
+.title-screen{text-align:center;padding:26px 20px 8px;}
+.title-screen h1{font-family:"Hiragino Mincho ProN","Shippori Mincho",serif;font-size:27px;margin:10px 0 6px;letter-spacing:.05em;color:var(--text-dark);}
+.title-screen .sub{color:var(--ecg);letter-spacing:.28em;font-size:11.5px;margin-bottom:16px;font-weight:700;}
+.title-screen p{color:var(--text-mid);font-size:13.5px;line-height:1.85;max-width:540px;margin:0 auto 16px;}
+.hero-hospital{margin:0 auto 12px;width:160px;}
+.hero-hospital svg{width:100%;height:auto;}
+
+/* ---------- game disclaimer ---------- */
+.disclaimer-box{background:#FBF1DC;border:1px solid var(--gold);border-radius:8px;padding:10px 14px;margin:14px 0;font-size:12px;line-height:1.7;color:#7a5a1e;text-align:left;}
+
+/* ---------- mentor speech bubble ---------- */
+.mentor-bubble-wrap{display:flex;gap:12px;align-items:flex-start;margin:14px 0;text-align:left;}
+.mentor-avatar{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:#F3E6F0;border:2px solid #C98BC9;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.mentor-bubble{position:relative;flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:12px;border-top-left-radius:2px;padding:12px 15px;font-size:13.5px;line-height:1.85;color:var(--text-dark);}
+.mentor-name{font-size:11px;color:#9c5fa0;font-weight:700;margin-bottom:4px;}
+.nurse-bubble{display:inline-flex;align-items:center;gap:4px;background:#FDECEA;border:1px solid var(--alert);border-radius:12px;padding:3px 10px;font-size:11px;color:#A6362F;margin-left:6px;white-space:nowrap;}
+
+/* ---------- batch dots / badges ---------- */
+.weekdots{display:flex;gap:8px;justify-content:center;margin:14px 0 6px;}
+.weekdot{width:28px;height:28px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-mid);}
+.weekdot.filled{background:var(--ecg);color:#fff;border-color:var(--ecg);font-weight:700;}
+.badgerow{display:flex;gap:10px;justify-content:center;margin:6px 0 14px;}
+.badge-item{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;border:1px solid var(--line);background:var(--panel2);}
+.badge-item.on{border-color:var(--gold);background:#FBF1DC;box-shadow:0 0 8px rgba(184,134,11,.25);}
+.badge-item.off{opacity:.35;filter:grayscale(1);}
+
+/* ---------- patient chart doc ---------- */
+.arrival-banner{font-size:12.5px;font-weight:700;padding:8px 12px;border-radius:8px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.arrival-banner.ambulance{background:#FDECEA;color:#A6362F;border:1px solid var(--alert);animation:amb-flash 1.1s infinite;}
+.arrival-banner.inhospital{background:#FBF1DC;color:#8a6b1f;border:1px solid var(--gold);}
+@keyframes amb-flash{0%,100%{opacity:1;}50%{opacity:.65;}}
+.urgent-tag{display:inline-block;font-size:11.5px;background:#FBE4E2;color:var(--alert);border-radius:10px;padding:2px 9px;margin-left:6px;font-weight:700;vertical-align:middle;}
+
+.chart-head{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px;}
+.avatar-box{flex:0 0 auto;width:74px;height:74px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;border:2px solid var(--panel2);box-shadow:0 0 0 1px var(--line);}
+.avatar-box svg{width:56px;height:56px;}
+.chart-idbox{flex:1;min-width:180px;}
+.chart-idbox .pname{font-size:16px;font-weight:700;color:var(--text-dark);}
+.chart-idbox .pmeta{font-size:13.5px;color:var(--text-mid);margin-top:2px;}
+.vitals{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.vital{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:12.5px;color:var(--text-dark);}
+.vital.abnormal{background:#FDECEA;border-color:var(--alert);}
+.vital.abnormal b{color:var(--alert);}
+.vital b{color:var(--ecg);}
+
+.bodybox{flex:0 0 auto;width:96px;text-align:center;}
+.bodysvg{width:80px;height:auto;}
+.bodymark-ring{fill:none;stroke:var(--alert);stroke-width:2;animation:ringpulse 1.4s infinite;}
+@keyframes ringpulse{0%{r:3;opacity:1;}100%{r:10;opacity:0;}}
+.bodybox .bodylabel{font-size:11px;color:var(--text-mid);margin-top:2px;}
+
+.intakeform{background:var(--paper);color:var(--ink);border:1px solid var(--paper-line);border-radius:8px;padding:14px 16px;margin-top:6px;}
+.intakeform .iform-title{font-size:12px;letter-spacing:.12em;color:var(--ink-soft);border-bottom:1px dashed var(--paper-line);padding-bottom:6px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:space-between;}
+.iform-sec{margin:10px 0;font-size:14.5px;line-height:1.85;}
+.iform-sec .seclabel{display:inline-block;font-size:10.5px;font-weight:700;color:#fff;background:var(--ink-soft);border-radius:8px;padding:1px 9px;margin-right:6px;vertical-align:middle;}
+.iform-sec.chief .seclabel{background:var(--alert);}
+.iform-sec.hpi .seclabel{background:#3f7a5c;}
+.iform-sec.pmh .seclabel{background:#3d6a94;}
+.iform-sec.social .seclabel{background:#8a6b1f;}
+.iform-sec.family .seclabel{background:#7a4f94;}
+
+.resultsdoc{margin-top:10px;}
+.resultsdoc h3{font-size:12px;letter-spacing:.1em;color:var(--text-mid);border-bottom:1px dashed var(--line-soft);padding-bottom:6px;margin:14px 0 8px;}
+.resultentry{background:var(--paper);border:1px solid var(--paper-line);color:var(--ink);border-radius:8px;padding:12px 15px;margin-bottom:9px;font-size:14.5px;line-height:1.8;}
+.resultentry .rname{font-weight:700;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:4px 8px;}
+.resultentry .rname>span:first-child{flex:1;min-width:0;}
+.resultentry .rcost{font-size:11.5px;color:var(--ink-soft);font-weight:400;}
+.empty-note{color:var(--text-mid);font-size:13.5px;font-style:italic;margin:6px 0;}
+
+.term{color:var(--ecg);font-weight:700;}
+.term-note{display:inline;color:var(--text-mid);font-size:.95em;font-weight:400;font-style:normal;}
+.explain .term-note,.intakeform .term-note{color:#6a4f10;}
+.resultentry .term-note{color:#6a4f10;}
+
+/* ---------- urgency meter ---------- */
+.urgencymeter{margin:10px 0;border-radius:8px;padding:8px 11px;border:1px solid var(--line);background:var(--panel2);}
+.urgencymeter.warn{border-color:#B08A2E;background:#FBF1DC;}
+.urgencymeter.crit{border-color:var(--alert);background:#FDECEA;animation:pulse-crit 1s infinite;}
+@keyframes pulse-crit{0%,100%{box-shadow:0 0 0 rgba(209,74,66,0);}50%{box-shadow:0 0 12px rgba(209,74,66,.35);}}
+.um-row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--text-dark);margin-bottom:5px;}
+.um-msg{color:#A6552A;font-weight:600;}
+.urgencymeter.crit .um-msg{color:var(--alert);}
+.um-track{height:7px;border-radius:4px;background:#E1E8E3;overflow:hidden;border:1px solid var(--line);}
+.um-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--alert));transition:width .3s;}
+
+/* ---------- 指導医のアドバイス（候補病名の説明・静的表示） ---------- */
+.diffboard{margin:10px 0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;}
+.diffboard-label{font-size:13px;color:var(--text-dark);margin-bottom:9px;display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;font-weight:600;}
+.diffboard-label .mentor-icon{font-size:18px;flex:0 0 auto;}
+.advice-list{display:flex;flex-direction:column;gap:8px;}
+.advice-item{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 12px;}
+.advice-item b{font-size:13.5px;color:var(--text-dark);}
+.advice-item p{margin:4px 0 0;font-size:12.5px;color:var(--text-mid);line-height:1.6;}
+
+/* ---------- test menu ---------- */
+.testcatlabel{font-size:12.5px;color:var(--text-mid);letter-spacing:.08em;margin:14px 0 7px;font-weight:700;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:6px;}
+.optcard{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:13px 15px;cursor:pointer;transition:.15s;font-size:14.5px;}
+.optcard:hover:not(.done){border-color:var(--ecg);transform:translateY(-1px);box-shadow:0 2px 6px rgba(30,158,107,.12);}
+.optcard .otitle{font-weight:700;color:var(--text-dark);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:6px 8px;}
+.optcard .otitle>span:first-child{flex:1;min-width:0;}
+.optcard .cost{font-size:12.5px;color:#8a6b1f;background:#FBF1DC;border-radius:10px;padding:3px 10px;white-space:nowrap;}
+.optcard.done{cursor:default;background:#EAF6EF;border-color:#9FD9BB;}
+.optcard .result-inline{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-size:14px;line-height:1.75;color:var(--text-dark);}
+.optcard .result-inline .labbar .track{background:#E4E9E5;}
+
+/* lab bar */
+.labbar{margin:6px 0;}
+.labbar .lrow{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;}
+.labbar .track{position:relative;height:8px;background:#E4DCC4;border-radius:4px;overflow:visible;}
+.labbar .range{position:absolute;height:100%;background:#B9D8C7;border-radius:4px;}
+.labbar .marker{position:absolute;top:-3px;width:3px;height:14px;background:var(--alert);border-radius:2px;}
+.labbar .marker.normal{background:#2C7A4F;}
+
+/* ---------- diagnosis screen ---------- */
+.diaggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.diagcard{background:var(--panel2);border:2px solid var(--line);border-radius:8px;padding:13px 15px;cursor:pointer;font-size:14.5px;line-height:1.5;transition:.15s;color:var(--text-dark);}
+.diagcard:hover{border-color:var(--ecg);}
+.diagcard.sel{border-color:var(--ecg);background:#E2F5EA;font-weight:700;}
+.diaghint{font-size:10.5px;margin-left:4px;font-weight:400;color:var(--text-mid);}
+.dispgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.dispcard{background:var(--panel2);border:2px solid var(--line);border-radius:8px;padding:14px;cursor:pointer;transition:.15s;}
+.dispcard:hover{border-color:var(--ecg);}
+.dispcard.sel{border-color:var(--ecg);background:#E2F5EA;}
+.dispcard .dtitle{font-weight:700;font-size:15px;margin-bottom:4px;color:var(--text-dark);}
+.dispcard .ddesc{font-size:13px;color:var(--text-mid);line-height:1.7;}
+
+/* ---------- handover / submitted screen ---------- */
+.handover-screen{text-align:center;padding:30px 20px;}
+.handover-screen .letter{width:130px;margin:0 auto 16px;font-size:52px;}
+.handover-screen .letter svg{width:100%;height:auto;}
+.stamp{display:inline-block;font-size:14px;letter-spacing:.13em;color:var(--gold);border:2px solid var(--gold);border-radius:6px;padding:8px 19px;transform:rotate(-3deg);margin-bottom:16px;background:#FBF1DC;}
+
+/* ---------- evaluation review ---------- */
+.conf-heading{text-align:center;padding:8px 0 4px;}
+.conf-heading .day{color:var(--gold);font-size:12.5px;letter-spacing:.16em;font-weight:700;}
+.conf-heading h2{font-family:"Hiragino Mincho ProN","Shippori Mincho",serif;font-size:22px;margin:6px 0 0;border:none;padding:0;color:var(--text-dark);}
+.confroom-badge{font-size:32px;text-align:center;margin-bottom:4px;}
+.weeksummarybar{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border:1px solid var(--gold);border-radius:10px;padding:13px 16px;margin-bottom:14px;flex-wrap:wrap;gap:6px;color:var(--text-dark);}
+.weeksummarybar .wtotal{font-size:24px;font-weight:700;font-family:"Hiragino Mincho ProN",serif;}
+.weeksummarybar .wtotal.pos{color:var(--ecg);}
+.weeksummarybar .wtotal.neg{color:var(--alert);}
+.weekcard{background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.weekcard summary{padding:13px 16px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;font-size:14.5px;flex-wrap:wrap;gap:6px;color:var(--text-dark);}
+.weekcard summary::-webkit-details-marker{display:none;}
+.weekcard summary .wname{font-weight:700;color:var(--text-dark);}
+.weekcard summary .wverdicts{display:flex;gap:5px;flex-wrap:wrap;}
+.weekcard .wbody{padding:0 15px 14px;}
+.crashcard summary{background:#FDECEA;}
+.resultrow{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;}
+.resultbox{flex:1;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;}
+.resultbox h4{margin:0 0 7px;font-size:12.5px;color:var(--text-mid);letter-spacing:.06em;}
+.resultbox .yourans{font-size:14.5px;margin-bottom:6px;color:var(--text-dark);}
+.correctans{font-size:14.5px;color:#0F7A4F;font-weight:700;}
+.verdict{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:5px;}
+.verdict.ok{background:#DFF3E7;color:#0F7A4F;}
+.verdict.ng{background:#FBE0DE;color:#B23A34;}
+.explain{background:var(--paper);border:1px solid var(--paper-line);color:var(--ink);border-radius:8px;padding:15px 17px;font-size:14.5px;line-height:1.9;margin-top:10px;}
+.scorebreak{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0;}
+.scorepill{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:7px 13px;font-size:13px;color:var(--text-dark);}
+.scorepill.pos b{color:#0F7A4F;}
+.scorepill.neg b{color:#B23A34;}
+
+/* ---------- crisis / game over ---------- */
+.crisis-card{text-align:center;padding:30px 20px;border-color:var(--alert)!important;background:linear-gradient(180deg,#FDECEA,#FFFFFF);}
+.crisis-flash{font-size:52px;animation:crisis-shake 0.5s infinite;}
+@keyframes crisis-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+.crisis-title{color:var(--alert);font-family:"Hiragino Mincho ProN",serif;font-size:22px;margin:10px 0;}
+.crisis-body{color:#6b3530;font-size:13.5px;line-height:1.85;max-width:480px;margin:0 auto 8px;}
+
+.gameover-screen{text-align:center;padding:50px 20px;}
+.gameover-icon{font-size:56px;opacity:.75;}
+.gameover-title{font-family:"Hiragino Mincho ProN",serif;font-size:28px;color:#5f6b73;margin:16px 0 8px;letter-spacing:.1em;}
+.gameover-body{color:#5f6b73;font-size:14px;line-height:2;max-width:480px;margin:0 auto 20px;}
+.gameover-stats{color:var(--text-mid);font-size:13px;margin-bottom:20px;}
+
+/* ---------- evaluation modal / glossary modal ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(30,40,35,.5);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.modal{background:linear-gradient(180deg,#FFFFFF,#F4F7F5);border:1px solid var(--gold);border-radius:14px;padding:30px 26px;max-width:440px;text-align:center;box-shadow:0 10px 40px rgba(38,50,42,.18);}
+.modal .rank-emoji{font-size:50px;}
+.modal h2{font-family:"Hiragino Mincho ProN",serif;color:var(--gold);font-size:22px;margin:10px 0 4px;}
+.modal p{color:var(--text-dark);font-size:14px;line-height:1.85;}
+.eval-stats{display:flex;flex-direction:column;gap:8px;margin:16px 0;text-align:left;}
+.eval-stat{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text-mid);}
+.eval-stat b{font-size:15px;color:var(--gold);}
+.eval-stat b.pos{color:#0F7A4F;}
+.eval-stat b.neg{color:#B23A34;}
+.glossary-list{max-height:60vh;overflow-y:auto;margin-top:10px;}
+.gitem{padding:9px 0;border-bottom:1px solid var(--line-soft);text-align:left;}
+.gitem b{color:var(--ecg);font-size:14px;}
+.gitem p{margin:4px 0 0;font-size:13px;color:var(--text-mid);line-height:1.7;}
+
+footer.gamefooter{text-align:center;color:var(--text-mid);font-size:12.5px;padding:18px 0 0;line-height:1.6;}
+
+@media(max-width:520px){
+  .title-screen h1{font-size:22px;}
+  .card{padding:13px;}
+  .chart-head{flex-direction:column;align-items:center;text-align:center;}
+  .chart-idbox{text-align:left;width:100%;}
+  .bodybox{align-self:center;}
+  .grid{grid-template-columns:1fr;}
+  .diaggrid{grid-template-columns:1fr;}
+  .dispgrid{grid-template-columns:1fr;}
+  .hud{gap:7px;}
+  .hud .badge{padding:5px 10px;font-size:12px;}
+  .btn{width:100%;text-align:center;}
+  .btn.secondary{width:100%;text-align:center;}
+  .weeksummarybar{flex-direction:column;align-items:flex-start;}
+  .resultrow{flex-direction:column;}
+}
+@media(min-width:521px) and (max-width:900px){
+  /* タブレット幅：カード内の余白を少し広めに保ちつつ2列を維持 */
+  .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+/* ============================================================
+   総合診療カンファレンス ― データ定義
+   ============================================================ */
+
+const DEPARTMENTS = {
+  cardio:{name:'循環器内科', emoji:'❤️'},
+  pulmo:{name:'呼吸器内科', emoji:'🫁'},
+  gi:{name:'消化器内科', emoji:'🍽️'},
+  neuro:{name:'脳神経内科', emoji:'🧠'},
+  endo:{name:'内分泌・代謝内科', emoji:'🦋'},
+  nephro:{name:'腎臓内科', emoji:'🫘'},
+  hema:{name:'血液・腫瘍内科', emoji:'🩸'},
+  rheum:{name:'膠原病・リウマチ内科', emoji:'🖐️'},
+  id:{name:'感染症内科', emoji:'🦠'},
+  psych:{name:'精神神経科', emoji:'💭'},
+  ortho:{name:'整形外科', emoji:'🦴'},
+  derma:{name:'皮膚科', emoji:'🩹'},
+  ent:{name:'耳鼻咽喉科・頭頸部外科', emoji:'👂'},
+  uro:{name:'泌尿器科', emoji:'🚻'},
+  surgery:{name:'消化器外科', emoji:'🔪'},
+  cardiosurg:{name:'心臓血管外科', emoji:'🫀'},
+  neurosurg:{name:'脳神経外科', emoji:'🪢'},
+  obgyn:{name:'産科婦人科', emoji:'🤰'},
+  ophth:{name:'眼科', emoji:'👁️'},
+  er:{name:'救急科（高度救命救急センター）', emoji:'🚑'},
+  palliative:{name:'緩和ケア科', emoji:'🕊️'},
+  radiology:{name:'放射線科', emoji:'📡'},
+};
+
+const GLOSSARY_FULL = {
+  '主訴':'患者が最も困っている、受診のきっかけとなった症状のこと。',
+  '既往歴':'これまでにかかったことのある病気や手術歴。',
+  '家族歴':'血縁者がかかったことのある病気。遺伝や体質を推測する手がかりになる。',
+  'CRP':'体内の炎症の強さを反映する血液検査項目。感染症や炎症性疾患で上昇する。',
+  '白血球':'血液中で感染や炎症と戦う細胞。細菌感染などで数が増える。',
+  'トロポニン':'心筋（心臓の筋肉）が壊れたときに血液中に漏れ出るタンパク質。心筋梗塞の診断に重要。',
+  'BNP':'心臓に負担がかかると分泌が増えるホルモン。心不全の指標として使われる。',
+  '心電図':'心臓の電気的な活動を波形として記録する検査。不整脈や心筋梗塞の診断に用いる。',
+  'ST上昇':'心電図の波形の一部（ST部分）が基線より上に上がること。急性心筋梗塞を示す代表的な所見。',
+  '胸部X線':'胸部にレントゲンを照射し、肺や心臓の大きさ・影を確認する検査。',
+  'X線':'X線（レントゲン）を体に照射し、骨や臓器の状態を画像として確認する検査。',
+  'CT':'X線を使い、体の断面を画像化する検査。臓器の形や病変を詳しく調べられる。',
+  'MRI':'磁気を利用して体内を撮影する検査。脳や神経、軟部組織の観察に優れる。',
+  '超音波検査':'超音波を使い、体内の臓器の形や動きをリアルタイムに観察する検査（エコー検査とも呼ぶ）。被曝がない。',
+  '内視鏡':'細いカメラを体内に挿入し、消化管などの粘膜を直接観察する検査。',
+  '生検':'組織の一部を採取し、顕微鏡で調べる検査。確定診断に用いられることが多い。',
+  'ESR（赤沈）':'赤血球が試験管内で沈む速さを見る検査。炎症があると沈降速度が速くなる。',
+  '抗核抗体（ANA）':'自分自身の細胞核を攻撃してしまう抗体。膠原病（自己免疫疾患）で陽性になりやすい。',
+  'RF（リウマトイド因子）':'関節リウマチなどでみられる自己抗体の一種。',
+  '抗CCP抗体':'関節リウマチに比較的特異的な自己抗体。',
+  'TSH':'脳下垂体から分泌され、甲状腺を刺激するホルモン。甲状腺機能の指標。',
+  'FT4':'甲状腺から分泌される甲状腺ホルモンの一種。',
+  'LDH':'細胞が壊れると血液中に増える酵素。様々な病気で上昇するが、悪性リンパ腫などでも高値になる。',
+  'CA19-9':'膵臓癌などの消化器癌で上昇しやすい腫瘍マーカー（腫瘍の目印になる物質）。',
+  '疝痛':'周期的に強くなったり弱くなったりする、波のような痛み。結石などでみられる。',
+  '黄疸':'血液中のビリルビンが増え、皮膚や白目が黄色くなる状態。',
+  '浮腫':'体の組織に水分がたまり、むくむこと。',
+  '駆出率（EF）':'心臓が一回の拍動でどれだけの血液を送り出せるかを示す割合。心臓のポンプ機能の指標。',
+  '弁膜症':'心臓の弁がうまく開閉できなくなる病気の総称。',
+  'マックバーニー点':'右下腹部にある特定の圧痛点の名称。腹部診察で痛みの場所を確認する目印になる。',
+  '敷石像':'内視鏡で見られる、石畳のようにデコボコした粘膜の所見の呼び名。',
+  '蝶形紅斑':'鼻を挟んで両頬に蝶のように広がる赤い発疹の呼び名。',
+  '顎跛行':'咀嚼を続けると顎の筋肉が虚血になり、痛みで噛めなくなる症状の呼び名。',
+  'NIHSS':'脳卒中の神経症状の重症度を点数化する評価スケール。',
+  '腫瘍マーカー':'体内に腫瘍があるときに血液中で増加しやすい物質の総称。',
+  '不明熱':'一定期間、原因がはっきりしないまま発熱が続く状態。',
+  '認知機能検査':'記憶力や見当識などを点数化して調べる検査（HDS-R、MMSEなど）。認知症の重症度評価に用いられる。',
+  '可溶性IL-2レセプター':'リンパ球が活性化・増殖しているときに血液中で上昇する物質。悪性リンパ腫などで高値になりやすい。',
+  '生活歴':'喫煙・飲酒・職業など、日常生活に関する情報。病気の背景を知る手がかりになる。',
+};
+
+/* 指導医のアドバイス欄で使う「候補病名の一般的な説明」。
+   個々の症例のヒントにならないよう、あくまで一般的な病気の説明にとどめる。 */
+const DISEASE_INFO = {
+  '急性心筋梗塞':'心臓の血管（冠動脈）が詰まり、心筋の一部が壊死する病気。突然の胸痛が典型的。',
+  '急性膵炎':'膵臓に急性の炎症が起こる病気。強い上腹部痛や背部痛を伴うことが多い。',
+  '逆流性食道炎':'胃酸が食道に逆流し、胸やけや胸の違和感を起こす病気。',
+  'パニック発作':'突然の動悸・呼吸困難・強い不安感が数分〜数十分続く発作。',
+  '肋間神経痛':'肋骨に沿った神経の痛み。姿勢や呼吸で痛みが変化することが多い。',
+  '急性虫垂炎':'虫垂（盲腸の一部）に炎症が起こる病気。多くは手術が必要になる。',
+  '尿路結石':'尿の通り道（腎盂・尿管など）に結石ができ、激しい痛みを起こす病気。',
+  '尿路結石（尿管結石）':'尿管に結石が詰まり、波のような激しい痛みを起こす病気。',
+  '急性胃腸炎':'胃腸の急性の炎症。嘔吐や下痢を伴うことが多い。',
+  '卵巣嚢腫茎捻転':'卵巣の腫れた部分がねじれ、強い下腹部痛を起こす婦人科の緊急疾患。',
+  '憩室炎':'大腸の壁にできた小さな袋（憩室）に炎症が起こる病気。',
+  '胃潰瘍（消化性潰瘍）':'胃や十二指腸の粘膜がただれ、深く傷ついた状態。空腹時痛や出血を伴うことがある。',
+  '胃がん':'胃の粘膜から発生する悪性腫瘍。',
+  '過敏性腸症候群':'検査で異常がないのに、腹痛や便通異常（下痢・便秘）を繰り返す機能性の病気。',
+  '胆石症':'胆嚢や胆管に結石ができる病気。食後の右上腹部痛が典型的。',
+  '胆石症（総胆管結石）':'胆管に結石が詰まった状態。黄疸や発熱を伴うことがある。',
+  '溶連菌感染症（猩紅熱）':'溶血性レンサ球菌による感染症。高熱・咽頭痛・発疹を伴うことが多い。',
+  '風疹':'風疹ウイルスによる感染症。発熱・発疹・リンパ節腫脹が特徴。',
+  '伝染性単核球症':'EBウイルス感染による病気。発熱・咽頭痛・リンパ節腫脹が特徴で若年者に多い。',
+  '川崎病':'主に乳幼児にみられる、全身の血管に炎症が起こる病気。高熱と発疹などを伴う。',
+  '麻疹':'麻疹ウイルスによる感染症。高熱と特徴的な発疹を伴う。',
+  '皮膚裂創（単純切創）':'鋭利なもので皮膚が切れた、単純な切り傷。',
+  '腱断裂の疑い':'腱（筋肉と骨をつなぐ組織）が切れている可能性がある状態。',
+  '開放骨折':'骨折部が皮膚の外に露出している、あるいは傷とつながっている骨折。',
+  '蜂窩織炎':'皮膚とその下の組織に細菌感染が広がり、赤み・腫れ・熱感を起こす病気。',
+  '深部感染症':'体の深い部分に及ぶ感染症の総称。',
+  '心不全':'心臓のポンプ機能が低下し、息切れやむくみなどの症状が出る状態。',
+  '急性心不全':'心臓のポンプ機能が急激に低下し、呼吸困難などが急速に進行する状態。',
+  '肺炎':'肺に細菌やウイルスなどが感染し、炎症を起こす病気。',
+  '慢性腎臓病':'腎臓の機能が慢性的に低下していく状態。',
+  '肺塞栓症':'肺の血管に血の塊（血栓）が詰まる病気。突然の呼吸困難などを起こす。',
+  '貧血':'血液中の赤血球やヘモグロビンが減少した状態。倦怠感や息切れを起こす。',
+  'バセドウ病（甲状腺機能亢進症）':'甲状腺が働きすぎてホルモンが過剰になる病気。動悸・体重減少・暑がりなどを起こす。',
+  'パニック障害':'突然のパニック発作を繰り返し、その発作を恐れるあまり生活に支障が出る病気。',
+  '更年期障害':'閉経前後のホルモン変化に伴う、のぼせ・発汗・イライラなどの症状。',
+  '橋本病':'甲状腺に慢性の炎症が起こる自己免疫疾患。甲状腺機能低下を伴うことが多い。',
+  '褐色細胞腫':'副腎などにできる腫瘍で、過剰なホルモン分泌により発作性の血圧上昇や動悸を起こす。',
+  '脳梗塞（心原性脳塞栓症）':'心臓でできた血栓が脳の血管に飛んで詰まり、脳梗塞を起こす病態。',
+  '脳梗塞':'脳の血管が詰まり、その先の脳組織に血液が届かなくなる病気。',
+  '脳出血':'脳の血管が破れて出血する病気。',
+  '一過性脳虚血発作':'脳の血流が一時的に悪くなり、症状が短時間で自然に治まる状態。脳梗塞の前触れとされる。',
+  '片頭痛':'ズキズキとした拍動性の頭痛を繰り返す病気。',
+  '低血糖発作':'血糖値が下がりすぎることで起こる、冷汗・動悸・意識障害などの発作。',
+  '関節リウマチ':'関節に慢性の炎症が起こる自己免疫疾患。左右対称の関節の腫れや痛みが特徴。',
+  '変形性関節症':'関節の軟骨がすり減り、痛みや変形を起こす病気。加齢が主な原因。',
+  '全身性エリテマトーデス':'全身の様々な臓器に炎症を起こす自己免疫疾患。皮膚症状や関節痛などを伴う。',
+  '全身性エリテマトーデス（SLE）':'全身の様々な臓器に炎症を起こす自己免疫疾患。皮膚症状や関節痛、腎障害などを伴う。',
+  '痛風':'尿酸の結晶が関節にたまり、激しい痛みと腫れを起こす病気。',
+  '線維筋痛症':'全身の広い範囲に慢性的な痛みが続く病気。',
+  '急性腎盂腎炎':'腎臓に細菌感染が及んだ状態。発熱と背部痛を伴うことが多い。',
+  '大動脈解離':'大動脈の壁が裂ける、命に関わる緊急疾患。突然の激しい胸背部痛が典型的。',
+  '甲状腺機能亢進症':'甲状腺ホルモンが過剰に分泌される状態の総称。',
+  '不整脈（発作性頻拍）':'脈が発作的に速くなる不整脈。',
+  '喘息発作':'気道が狭くなり、咳や喘鳴、呼吸困難を起こす発作。',
+  '膵臓癌':'膵臓にできる悪性腫瘍。進行するまで症状が出にくいことが多い。',
+  '肝硬変':'肝臓が慢性的な障害により硬く変化し、機能が低下した状態。',
+  '慢性膵炎':'膵臓に慢性の炎症が続く病気。',
+  '皮膚筋炎':'筋肉と皮膚に炎症が起こる自己免疫疾患。',
+  '薬剤性ループス':'特定の薬剤の使用によって、SLEに似た症状が引き起こされる状態。',
+  '酒さ（顔面の皮膚疾患）':'顔面が慢性的に赤くなる皮膚の病気。',
+  '大動脈弁狭窄症':'心臓の大動脈弁が硬く狭くなり、血液の流れが悪くなる病気。',
+  '僧帽弁閉鎖不全症':'心臓の僧帽弁がうまく閉じず、血液が逆流する病気。',
+  '肥大型心筋症':'心臓の筋肉（心筋）が異常に厚くなる病気。',
+  '狭心症（冠動脈疾患）':'心臓の血管が狭くなり、労作時などに胸の痛みや圧迫感を起こす病気。',
+  '起立性低血圧':'立ち上がったときに血圧が急に下がり、めまいやふらつきを起こす状態。',
+  'クローン病':'消化管のどこにでも炎症や潰瘍が起こりうる、慢性の炎症性腸疾患。',
+  '潰瘍性大腸炎':'主に大腸の粘膜に慢性の炎症が続く、炎症性腸疾患。',
+  '腸結核':'結核菌による腸の感染症。',
+  '虚血性腸炎':'腸への血流が一時的に悪くなり、炎症を起こす病気。',
+  '巨細胞性動脈炎（側頭動脈炎）':'側頭動脈などの中〜大型の血管に炎症が起こる病気。頭痛や視力障害を起こすことがある。',
+  '三叉神経痛':'顔面の感覚を司る三叉神経の痛みで、電気が走るような激痛を繰り返す。',
+  '緑内障発作':'眼圧が急激に上昇し、強い眼の痛みや視力低下を起こす状態。',
+  '悪性リンパ腫':'リンパ球ががん化する血液のがん。リンパ節の腫れなどを伴う。',
+  '肺結核（リンパ節結核）':'結核菌による感染症で、肺やリンパ節などに病変を作る。',
+  'サルコイドーシス':'全身の様々な臓器に肉芽腫という炎症性の塊ができる原因不明の病気。',
+  '急性中耳炎':'中耳に細菌やウイルスが感染し、炎症を起こす病気。小児に多い。',
+  '外耳炎':'耳の入り口から鼓膜までの外耳道に炎症が起こる病気。',
+  '滲出性中耳炎':'中耳に液体がたまるが、急性の炎症症状は目立たない状態。',
+  '咽後膿瘍':'のどの奥の咽頭後壁に膿がたまる、重篤な感染症。',
+  '流行性耳下腺炎（おたふくかぜ）':'ムンプスウイルスによる感染症。耳下腺の腫れが特徴。',
+  '深部静脈血栓症':'足などの深い静脈に血の塊（血栓）ができる病気。',
+  '接触皮膚炎':'特定の物質が皮膚に触れることで起こる炎症（かぶれ）。',
+  '壊死性筋膜炎':'筋膜に沿って組織が急速に壊死していく、命に関わる重篤な感染症。',
+  '丹毒':'皮膚の浅い部分に生じる、境界がはっきりした細菌感染症。',
+  '急性膀胱炎':'膀胱に細菌感染が起こる病気。排尿時痛や頻尿を伴う。',
+  '膣炎':'腟に炎症が起こる状態。',
+  '過活動膀胱':'膀胱が過敏になり、急な尿意切迫感や頻尿を起こす状態。',
+  'COPD増悪（慢性閉塞性肺疾患の急性増悪）':'慢性閉塞性肺疾患（COPD）の症状が急に悪化した状態。',
+  '気管支喘息発作':'気道が狭くなり咳や喘鳴、呼吸困難を起こす発作性の病気。',
+  '気胸':'肺から空気が漏れて胸腔にたまり、肺がしぼんでしまう状態。',
+  '良性発作性頭位めまい症（BPPV）':'頭の位置を変えたときに誘発される、回転性のめまいを起こす病気。',
+  '前庭神経炎':'内耳の平衡感覚を司る前庭神経に炎症が起こり、強いめまいが続く病気。',
+  'メニエール病':'内耳のむくみにより、めまい・難聴・耳鳴りを繰り返す病気。',
+  '中枢性めまい（脳血管障害）':'脳の血流障害などによって起こる、危険性の高いめまい。',
+  'アルツハイマー型認知症':'脳の変性により、記憶力などの認知機能が緩やかに低下していく病気。',
+  'うつ病による仮性認知症':'うつ病によって、認知症のような症状が現れる状態。',
+  '慢性硬膜下血腫':'頭部打撲などの後、脳の表面にゆっくりと血液がたまる病気。',
+  '正常圧水頭症':'脳室に脳脊髄液がたまり、歩行障害・認知機能低下・尿失禁を起こす病気。',
+  'せん妄':'急激に出現する意識・注意力の障害。高齢者の入院中などに起こりやすい。',
+  'アナフィラキシー':'アレルギー反応が全身に急速に広がり、血圧低下や呼吸困難など命に関わる症状を起こす状態。',
+  '血管迷走神経反射（迷走神経反射性失神）':'強い痛みや恐怖などをきっかけに、血圧・脈拍が急激に下がって失神する反応。',
+  '蕁麻疹（単純性）':'皮膚に赤みを伴う膨らみ（膨疹）が出て、かゆみを伴う病気。',
+  '蕁麻疹':'皮膚に赤みを伴う膨らみ（膨疹）が出て、かゆみを伴う病気。多くは数時間〜数日で自然に消える。',
+  '蕁麻疹（特発性）':'原因がはっきりしないまま繰り返す蕁麻疹。',
+  '敗血症性ショック':'重い感染症により全身の血圧が保てなくなる、命に関わる状態。',
+  '甲状腺機能低下症（橋本病）':'甲状腺の働きが低下し、ホルモンが不足する病気。',
+  '甲状腺機能低下症':'甲状腺の働きが低下し、ホルモンが不足する病気。',
+  'うつ病':'気分の落ち込みや意欲低下が長期間続く病気。',
+  '慢性疲労症候群':'強い疲労感が長期間続き、日常生活に支障をきたす病気。',
+  'クッシング症候群':'副腎皮質ホルモンが過剰になることで、様々な症状を起こす病気。',
+  '薬疹':'内服した薬剤が原因で、皮膚に発疹などのアレルギー反応が現れる状態。',
+  '多形滲出性紅斑':'皮膚に円形の紅斑が多発する病気。感染症や薬剤が誘因となることがある。',
+  'スティーブンス・ジョンソン症候群':'薬剤などが原因で、皮膚や粘膜に重い障害が起こる、命に関わることもある重篤な疾患。',
+  'ウイルス性発疹症':'ウイルス感染に伴って全身に発疹が出る病気の総称。',
+  '感染性心内膜炎':'心臓の弁などに細菌が感染し、発熱や皮膚症状を起こす重篤な病気。',
+  'アルコール依存症':'飲酒のコントロールができなくなり、心身や生活に問題が生じている状態。',
+  'アルコール性肝障害':'長期の飲酒により肝臓に障害が生じた状態。',
+  'うつ病（アルコール関連）':'アルコールの影響や関連する要因によって生じる、気分の落ち込みなどの症状。',
+  '双極性障害':'気分の高揚（躁状態）と落ち込み（うつ状態）を繰り返す病気。',
+  '離脱症候群（アルコール離脱）':'習慣的な飲酒を急に中断・減量した際に生じる、手のふるえや不眠、けいれんなどの症状。',
+  'がん性疼痛':'がんそのもの、またはその治療に関連して生じる痛み。',
+  '骨転移による病的骨折':'がんが骨に転移した部分が弱くなり、軽い力でも骨折してしまう状態。',
+  'オピオイド過量投与':'医療用麻薬（オピオイド）の量が多すぎることによる、眠気や呼吸抑制などの症状。',
+  '消化管閉塞（がん性）':'がんにより消化管の通過が妨げられている状態。',
+  'うつ状態（終末期）':'重い病気の経過の中で生じる、気分の落ち込みなどの精神症状。',
+  '市中肺炎':'病院外の日常生活の中でかかる肺炎。細菌やウイルスなどが原因となる。',
+  '急性気管支炎':'気管支に急性の炎症が起こる病気。多くはウイルス感染が原因。',
+  '肺結核':'結核菌による肺の感染症。長引く咳や微熱などが特徴。',
+  '心不全（うっ血性）':'心臓のポンプ機能低下により、肺や全身にうっ血が生じる状態。',
+  '誤嚥性肺炎':'食べ物や唾液などが誤って気管に入ることで生じる肺炎。',
+  '気管支喘息':'気道に慢性の炎症があり、発作的に咳・喘鳴・呼吸困難を繰り返す病気。',
+  '過換気症候群':'不安などをきっかけに呼吸が速く深くなりすぎ、手足のしびれなどを起こす状態。',
+  '心因性咳嗽':'心理的な要因が関与すると考えられる、慢性的な咳。',
+  '緊張型頭痛':'頭全体が締め付けられるような、筋肉の緊張に関連する頭痛。',
+  'くも膜下出血':'脳を覆う血管（動脈瘤など）が破れて出血する、命に関わる緊急疾患。突然の激しい頭痛が特徴。',
+  '群発頭痛':'目の奥などに激しい痛みが一定期間集中して起こる頭痛。',
+  '薬物乱用頭痛':'頭痛薬の使いすぎによって、かえって頭痛が慢性化する状態。',
+  '帯状疱疹':'水痘（水ぼうそう）のウイルスが再活性化し、神経に沿って痛みと発疹を起こす病気。',
+  '単純ヘルペス':'単純ヘルペスウイルスによる、皮膚や粘膜の水疱性の病気。',
+  '接触皮膚炎（かぶれ）':'特定の物質が皮膚に触れることで起こる炎症。',
+  '水痘（水ぼうそう）':'水痘帯状疱疹ウイルスの初感染による、全身の水疱を特徴とする病気。',
+  '肋間神経痛（帯状疱疹前駆症状）':'帯状疱疹の発疹が出る前に生じることがある、神経に沿った痛み。',
+  '急性巣状細菌性腎炎':'腎臓の限られた部分に炎症が生じる、腎盂腎炎に近い病態。',
+  '腎周囲膿瘍':'腎臓の周囲に膿がたまる、重篤な感染症。',
+  '尿管結石':'尿管に結石ができ、激しい痛みを起こす病気。',
+  '糖尿病性ケトアシドーシス':'血糖コントロールが著しく乱れ、血液が酸性に傾く糖尿病の急性合併症。強い倦怠感や吐き気などを伴う。',
+  '胆嚢炎':'胆嚢に細菌感染などによる炎症が起こる病気。右上腹部痛や発熱を伴うことが多い。',
+  '不安定狭心症':'心臓の血管が狭くなり、安静時にも胸の痛みが起こるようになった状態。心筋梗塞に移行する危険がある。',
+  '骨盤内炎症性疾患（PID）':'子宮・卵管・卵巣など骨盤内の臓器に細菌感染が広がる病気。下腹部痛や発熱を伴う。',
+  '十二指腸潰瘍':'十二指腸の粘膜がただれ、深く傷ついた状態。空腹時痛が典型的。',
+  'アデノウイルス感染症（咽頭結膜熱）':'アデノウイルスによる感染症。高熱・咽頭炎・結膜炎を特徴とする（プール熱とも呼ばれる）。',
+  'COPD（慢性閉塞性肺疾患）':'長期の喫煙などにより気道や肺胞が慢性的に傷害される病気。労作時の息切れが特徴。',
+  '甲状腺中毒症（無痛性甲状腺炎）':'甲状腺に痛みを伴わない炎症が起こり、一時的に甲状腺ホルモンが漏れ出て症状を起こす状態。',
+  'ベル麻痺（顔面神経麻痺）':'顔面神経の麻痺により、片側の顔が動かしにくくなる病気。脳卒中と異なり額の筋肉も麻痺するのが特徴。',
+  '乾癬性関節炎':'皮膚の乾癬に伴って関節に炎症が起こる病気。',
+  '精巣捻転':'精巣が捻れて血流が途絶える、緊急性の高い病気。突然の陰嚢部の激痛が特徴。',
+  '胆管癌':'胆管にできる悪性腫瘍。黄疸を伴うことが多い。',
+  'シェーグレン症候群':'涙腺や唾液腺を中心に炎症が起こる自己免疫疾患。目や口の乾燥が特徴。',
+  '肺高血圧症':'肺の血管の血圧が高くなる病気。労作時の息切れや失神を起こすことがある。',
+  'がんのリンパ節転移':'体のどこかにあるがんが、リンパ節に転移して腫れを起こしている状態。',
+  '刺創（異物迷入の可能性）':'尖ったものが突き刺さってできた傷。内部に異物が残っている可能性がある。',
+  '乳様突起炎':'中耳炎が周囲の骨（乳様突起）に波及した、重篤な合併症。',
+  '間質性膀胱炎':'膀胱の壁に慢性の炎症が起こり、頻尿や膀胱の痛みを繰り返す病気。',
+  '前庭性片頭痛':'片頭痛に伴って、めまいの症状が前面に出るタイプの片頭痛。',
+  'レビー小体型認知症':'脳に異常なタンパク質（レビー小体）がたまることで起こる認知症。幻視やパーキンソン症状を伴うことがある。',
+  'アレルギー性血管性浮腫':'アレルギー反応により、皮膚の深い部分や粘膜が急に腫れる状態。',
+  '細菌性腸炎':'細菌感染による腸の炎症。血便を伴うことがある。',
+  '急性胃腸炎（ウイルス性）':'ウイルス感染による胃腸の急性炎症。嘔吐・下痢を主症状とし、多くは自然に軽快する。',
+  '腸重積':'腸の一部が別の腸に入り込んでしまう、主に乳幼児に多い病気。緊急の処置が必要になることがある。',
+  '食物アレルギー':'特定の食べ物に対して免疫が過剰に反応し、じんましんや嘔吐などの症状を起こす状態。',
+  '熱性けいれん（単純型）':'発熱に伴って起こる、短時間で治まる全身のけいれん。多くは後遺症を残さない。',
+  '髄膜炎':'脳や脊髄を覆う膜に感染が起こる、重篤な病気。高熱・頭痛・首の硬直などを伴う。',
+  'てんかん':'脳の神経細胞の異常な興奮によって、発作を繰り返す病気。',
+  '熱性けいれん（複雑型）':'通常の熱性けいれんより長く続いたり、体の片側だけに起こったり、繰り返したりするタイプ。',
+  '褥瘡（仙骨部）':'同じ姿勢が続くことで皮膚が圧迫され、血流障害により皮膚や組織が傷ついてしまう状態（床ずれ）。',
+  '失禁関連皮膚炎':'尿や便による皮膚への刺激が続くことで起こる皮膚の炎症。',
+  '皮膚がん':'皮膚にできる悪性腫瘍の総称。',
+  '甲状腺クリーゼ':'甲状腺機能亢進症が極端に悪化し、高熱・頻脈・意識障害などを起こす、命に関わる緊急病態。',
+  '悪性症候群':'向精神薬などの影響で、高熱・筋強剛・意識障害を起こす重篤な状態。',
+  '褐色細胞腫クリーゼ':'副腎などの腫瘍から過剰なホルモンが急激に分泌され、著しい血圧上昇や動悸などを起こす発作。',
+  'セロトニン症候群':'セロトニンに関連する薬剤の影響で、興奮・発熱・筋強剛などを起こす状態。',
+  '成人発症スチル病':'高熱・関節痛・特徴的な発疹を繰り返す、原因不明の全身性炎症性疾患。',
+  'ANCA関連血管炎（多発血管炎性肉芽腫症）':'全身の血管に炎症が起こる病気で、上気道・肺・腎臓が侵されやすい。',
+  '肺がん':'肺にできる悪性腫瘍。',
+  'グッドパスチャー症候群（抗GBM病）':'肺と腎臓の両方が自己抗体によって傷害される、まれな自己免疫疾患。',
+  '心原性ショック':'心臓のポンプ機能が急激に低下し、全身に血液を送れなくなる状態。',
+  '出血性ショック':'大量の出血により、全身への血液供給が保てなくなる状態。',
+  '副腎クリーゼ（急性副腎不全）':'副腎からのホルモン分泌が急激に不足し、血圧低下や意識障害などを起こす緊急病態。',
+  '低体温症':'体の中心部の体温が異常に低下した状態。',
+  '急性結膜炎（細菌性）':'細菌感染により結膜（白目の表面）に炎症が起こる病気。目やにが特徴。',
+  'ウイルス性結膜炎':'ウイルス感染による結膜の炎症。人にうつりやすい。',
+  'アレルギー性結膜炎':'花粉やハウスダストなどのアレルギー反応により結膜に炎症が起こる病気。かゆみが強い。',
+  '角膜炎':'黒目の表面（角膜）に炎症や傷が生じる病気。視力に影響することがある。',
+  '強膜炎':'眼球の外側を覆う強膜に炎症が起こる、比較的まれな病気。',
+  'アレルギー性鼻炎（花粉症）':'花粉などのアレルゲンに対する反応で、くしゃみ・鼻水・鼻づまりを起こす病気。',
+  '急性副鼻腔炎':'鼻の周囲にある副鼻腔に急性の炎症が起こる病気。',
+  '血管運動性鼻炎':'アレルギーとは異なるメカニズムで、気温差などにより鼻の症状が起こる状態。',
+  '風邪症候群（かぜ）':'ウイルス感染による上気道の急性炎症の総称。',
+  '薬剤性鼻炎':'点鼻薬の使いすぎなどにより、かえって鼻づまりが悪化する状態。',
+  '食道がん':'食道にできる悪性腫瘍。',
+  '機能性ディスペプシア':'検査で異常がないのに、胃もたれや心窩部痛などの症状が続く機能性の病気。',
+  'リンパ浮腫':'リンパ液の流れが滞ることで、手足などがむくむ状態。',
+  '筋肉損傷（肉離れ）':'筋肉が急激に引き伸ばされることで部分的に断裂した状態。',
+  '非定型顔面痛':'典型的な神経痛とは異なる性質の、原因のはっきりしない慢性的な顔の痛み。',
+  '顎関節症':'顎の関節や周囲の筋肉に異常が生じ、痛みや開口障害を起こす病気。',
+  '熱中症（重症）':'高温環境により体温調節が破綻し、意識障害などを伴う重篤な状態。',
+  '熱疲労':'高温環境での脱水や塩分不足により、めまいや倦怠感などを起こす、熱中症の中等症。',
+  '薬物中毒':'薬物の過剰摂取などにより中毒症状を起こした状態。',
+  '全身性強皮症':'皮膚や内臓が硬くなっていく自己免疫疾患。',
+  '混合性結合組織病':'複数の膠原病の特徴を併せ持つ病気。',
+  '好酸球性筋膜炎':'筋膜（筋肉を包む膜）に炎症が起こり、皮膚が硬くなる病気。',
+  '母斑（ほくろ）':'皮膚の色素細胞が集まってできる、良性の色素斑（ほくろ）。',
+  '脂漏性角化症':'加齢に伴ってできる、良性のいぼ状の皮膚病変。',
+  '基底細胞癌':'皮膚にできる悪性腫瘍の一種。転移は少ないが局所で進行する。',
+  '血管腫':'血管が増殖してできる、良性の腫瘤。',
+  '過敏性肺炎（慢性）':'特定の環境中の物質を繰り返し吸い込むことで、肺に慢性の炎症が起こる病気。',
+  '特発性肺線維症':'原因不明に肺が線維化（硬く）していく、慢性の肺の病気。',
+  '食道破裂':'食道の壁が破れてしまう、命に関わる緊急疾患。',
+  '緊張性気胸':'胸腔内に空気がたまり続け、心臓や血管を圧迫する、命に関わる緊急状態。',
+  '腰部脊柱管狭窄症':'背骨の中を通る神経の通り道が狭くなり、足の痛みやしびれを起こす病気。',
+  '椎間板ヘルニア':'背骨のクッションである椎間板が飛び出し、神経を圧迫する病気。',
+  '硬膜外膿瘍':'脊髄を覆う膜の外側に膿がたまる、重篤な感染症。',
+  'ギラン・バレー症候群':'感染などをきっかけに、自分の免疫が末梢神経を攻撃してしまう病気。手足の脱力が進行する。',
+  '劇症肝炎（急性肝不全）':'肝臓の機能が急速に失われ、意識障害などを起こす、命に関わる重篤な病態。',
+  '急性ウイルス性肝炎':'ウイルス感染による肝臓の急性炎症。',
+  '薬剤性肝障害':'薬剤の影響により肝臓に障害が生じる状態。',
+  '自己免疫性肝炎':'自分の免疫が肝臓を攻撃してしまう自己免疫疾患。',
+  'ウィルソン病':'銅の代謝異常により、肝臓や脳に銅が蓄積する遺伝性の病気。',
+  '血栓性血小板減少性紫斑病（TTP）':'全身の細い血管に血栓ができ、血小板減少や溶血、臓器障害を起こす、まれで重篤な病気。',
+  '溶血性尿毒症症候群（HUS）':'溶血性貧血・血小板減少・急性腎障害を特徴とする病気。',
+  '播種性血管内凝固症候群（DIC）':'重い病気の合併症として、全身で血が固まりやすくなると同時に出血もしやすくなる状態。',
+  '免疫性血小板減少性紫斑病（ITP）':'自己抗体により血小板が破壊され、出血しやすくなる病気。',
+  '好酸球性多発血管炎性肉芽腫症（EGPA）':'喘息を背景に、好酸球が増加し全身の血管に炎症が起こる病気。',
+  '結節性多発動脈炎':'中型の血管に炎症が起こる血管炎の一種。',
+  '好酸球増多症候群':'血液中の好酸球が持続的に増加し、様々な臓器に障害を起こしうる状態。',
+  '家族性地中海熱':'遺伝子の異常により、発熱や腹痛の発作を周期的に繰り返す病気。',
+  '再発性虫垂炎':'虫垂の炎症が軽快と再燃を繰り返す状態。',
+  '周期性発熱症候群（PFAPA症候群）':'定期的な発熱発作を繰り返す、主に小児にみられる病気。',
+  '全身性若年性特発性関節炎':'発熱や発疹を伴う、小児にみられる関節炎の一種。',
+  '本態性高血圧':'原因となる特定の病気が見つからない、最も一般的なタイプの高血圧。',
+  '原発性アルドステロン症':'副腎からホルモンが過剰に分泌され、高血圧を起こす病気。',
+  'てんかん発作':'脳の神経細胞の異常な興奮によって引き起こされる発作。',
+  '悪性黒色腫':'皮膚の色素細胞（メラノサイト）ががん化した、悪性度の高い皮膚がん。',
+  '脊髄圧迫症候群（がん性）':'がんが脊椎やその周囲に広がり、脊髄を圧迫することで手足の麻痺などを起こす、緊急性の高い病態。',
+};
+
+function esc(s){ return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+/* 同じ症例でも毎回同じ主訴の文面だと丸暗記されてしまうため、
+   chiefVariants があればその中からランダムに1つ選ぶ（無ければ標準の chief を使う）。 */
+function pickChiefVariant(c){
+  if(c.chiefVariants && c.chiefVariants.length>0){
+    const all = [c.chief, ...c.chiefVariants];
+    return all[Math.floor(Math.random()*all.length)];
+  }
+  return c.chief;
+}
+
+/* ============================================================
+   2周目・3周目では、同じ症例（同じ病態・問診・検査内容）でも
+   患者の氏名・年齢・性別を変えて「別の患者」として再登場させる。
+   小児症例（母親の付き添いを前提とした問診など）や、妊娠・前立腺など
+   性別に医学的な意味がある症例は年齢・性別を変えない。
+   ============================================================ */
+const ALT_MALE_NAMES = ['佐々木 健一','村田 隆','平野 修','土屋 誠','近藤 学','菅原 剛','桜井 大輔','福田 洋一','杉山 拓真','宮本 直樹'];
+const ALT_FEMALE_NAMES = ['金子 真理','後藤 直美','阿部 美穂','石川 恵','小川 千尋','清水 由紀子','斉藤 麻衣子','村上 智恵','原田 早苗','荒木 明日香'];
+const GENDER_SENSITIVE_KEYWORDS = ['妊娠','妊婦','産後','前立腺','精巣','陰嚢','卵巣','子宮','腟','膣','閉経','月経','生理','乳がん','乳房','褥婦'];
+function isGenderSensitive(c){
+  const text = c.chief + ' ' + c.qa.map(q=>q.a).join(' ') + ' ' + c.explain;
+  return GENDER_SENSITIVE_KEYWORDS.some(k=>text.includes(k));
+}
+function buildIdentity(c, loopStage, rngSeed){
+  // loopStage: 1=そのまま／2・3=見た目を変える
+  if(loopStage===1 || c.specialty==='pediatric' || c.age<18){
+    return {name:c.name, age:c.age, gender:c.gender, seed:c.seed};
+  }
+  const rnd = (n)=> Math.abs(Math.sin(rngSeed*13.37 + n*7.77)) % 1;
+  let gender = c.gender;
+  if(!isGenderSensitive(c) && rnd(1) < 0.4){
+    gender = (c.gender==='男性') ? '女性' : '男性';
+  }
+  const names = gender==='女性' ? ALT_FEMALE_NAMES : ALT_MALE_NAMES;
+  const name = names[Math.floor(rnd(2)*names.length)];
+  const shiftRange = loopStage===2 ? 12 : 18;
+  const shift = Math.floor((rnd(3)*2 - 1) * shiftRange);
+  const age = Math.max(20, Math.min(90, c.age + shift));
+  const seed = c.seed + loopStage*97 + Math.floor(rnd(4)*1000);
+  return {name, age, gender, seed};
+}
+
+/* 医療用語には必ず、わかりやすい注釈をインライン表示する（毎回・省略なし）。 */
+function withGlossary(text){
+  let out = esc(text);
+  out = out.replace(/\*\*(.+?)\*\*/g, (m, term)=>{
+    const def = GLOSSARY_FULL[term];
+    if(!def) return `<b>${esc(term)}</b>`;
+    return `<span class="term">${esc(term)}</span><span class="term-note">（${esc(def)}）</span>`;
+  });
+  return out;
+}
+/* **での明示的マークアップがない検査名などにも、含まれる医療用語を自動検出して注釈を付ける
+   （検査を選ぶ時点、まだ結果が出る前でも用語の意味がわかるように）。 */
+const GLOSSARY_TERMS_BY_LENGTH = Object.keys(GLOSSARY_FULL).sort((a,b)=>b.length-a.length);
+function autoGlossary(text){
+  let matched = null;
+  for(const term of GLOSSARY_TERMS_BY_LENGTH){ if(text.includes(term)){ matched = term; break; } }
+  if(!matched) return esc(text);
+  const idx = text.indexOf(matched);
+  const before = esc(text.slice(0,idx));
+  const after = esc(text.slice(idx+matched.length));
+  return `${before}<span class="term">${esc(matched)}</span><span class="term-note">（${esc(GLOSSARY_FULL[matched])}）</span>${after}`;
+}
+
+function labBar(label, value, unit, min, max, dispMin, dispMax, abnormal){
+  dispMin = dispMin===undefined?min - (max-min)*0.6:dispMin;
+  dispMax = dispMax===undefined?max + (max-min)*1.2:dispMax;
+  const pct = v => Math.max(0,Math.min(100,((v-dispMin)/(dispMax-dispMin))*100));
+  const rangeL = pct(min), rangeR = pct(max);
+  const markerPos = pct(value);
+  return `<div class="labbar">
+    <div class="lrow"><span>${label}（基準値 ${min}〜${max} ${unit}）</span><span style="font-weight:700;color:${abnormal?'#B23A2E':'#2C7A4F'}">${value} ${unit} ${abnormal?'⚠異常':'正常'}</span></div>
+    <div class="track">
+      <div class="range" style="left:${rangeL}%;width:${rangeR-rangeL}%;"></div>
+      <div class="marker ${abnormal?'':'normal'}" style="left:${markerPos}%;"></div>
+    </div>
+  </div>`;
+}
+
+function ecgSvg(pattern){
+  const normal = "M0,25 L40,25 L48,10 L56,40 L64,25 L110,25 L118,15 L126,25 L160,25 L168,10 L176,40 L184,25 L230,25";
+  const stemi = "M0,25 L40,25 L48,10 L56,40 L64,14 L110,14 L118,4 L126,14 L160,14 L168,25 L230,25";
+  const afib = "M0,26 L18,22 L34,28 L46,18 L58,32 L64,10 L72,40 L80,25 L96,20 L112,30 L128,16 L136,25 L150,34 L168,18 L184,26 L200,22 L216,29 L230,25";
+  const map={normal, stemi, afib};
+  const path = map[pattern]||normal;
+  return `<svg viewBox="0 0 230 50" style="width:100%;max-width:320px;height:56px;background:#0B1319;border-radius:6px;border:1px solid #2C3D45;">
+    <path d="${path}" fill="none" stroke="#4FE0A6" stroke-width="2"/>
+  </svg>`;
+}
+
+function patientAvatar(seed, gender){
+  const r = n=> (Math.abs(Math.sin(seed*99+n))*1000)%1;
+  const skin = '#E8C9A0';
+  const hairColors=['#3A2E23','#1C1C1C','#5C4632','#2E2A26'];
+  const hair = hairColors[Math.floor(r(1)*hairColors.length)];
+  const worried = r(2)>0.4;
+  const female = gender==='女性';
+  const hairShape = female
+    ? `<path d="M18,40 Q14,10 50,8 Q86,10 82,40 L82,55 Q78,30 50,30 Q22,30 18,55 Z" fill="${hair}"/><path d="M14,42 Q10,70 20,90 L28,90 Q22,60 26,44 Z" fill="${hair}"/><path d="M86,42 Q90,70 80,90 L72,90 Q78,60 74,44 Z" fill="${hair}"/>`
+    : `<path d="M16,42 Q12,8 50,6 Q88,8 84,42 Q84,20 50,22 Q16,20 16,42Z" fill="${hair}"/>`;
+  const mouth = worried ? `<path d="M40,68 Q50,60 60,68" stroke="#7a4a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/>`
+                        : `<path d="M40,64 Q50,72 60,64" stroke="#7a4a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 100 100">
+    <circle cx="50" cy="52" r="34" fill="${skin}"/>
+    ${hairShape}
+    <circle cx="38" cy="50" r="3.2" fill="#2b2b2b"/>
+    <circle cx="62" cy="50" r="3.2" fill="#2b2b2b"/>
+    <path d="M36,42 Q38,39 42,40" stroke="#6a4a2a" stroke-width="1.6" fill="none"/>
+    <path d="M58,40 Q62,39 64,42" stroke="#6a4a2a" stroke-width="1.6" fill="none"/>
+    ${mouth}
+  </svg>`;
+}
+
+function testIcon(name){
+  const rules = [
+    [/心電図/, '📈'], [/エコー|超音波/, '📡'], [/X線|レントゲン/, '🩻'],
+    [/CT|MRI/, '🖥️'], [/内視鏡/, '🔦'], [/生検/, '🔬'], [/血液|バイオマーカー|腫瘍マーカー/, '🩸'],
+    [/尿/, '🧪'], [/触診|診察|聴診|視診|眼底/, '🖐️'], [/培養/, '🦠'],
+  ];
+  for(const [re,icon] of rules) if(re.test(name)) return icon;
+  return '🩺';
+}
+function testCategory(name){
+  if(/血液|バイオマーカー|腫瘍マーカー/.test(name)) return '血液検査';
+  if(/エコー|超音波|X線|CT|MRI/.test(name)) return '画像検査';
+  if(/心電図|内視鏡/.test(name)) return '生理・内視鏡検査';
+  if(/生検|培養/.test(name)) return '病理・微生物検査';
+  if(/触診|診察|聴診|視診|眼底/.test(name)) return '診察・身体所見';
+  return 'その他の検査';
+}
+function costTag(cost){ return '¥'.repeat(cost); }
+
+/* バイタルサインの異常判定と、それに気づいた看護師のひとことコメント */
+function vitalCheck(type, valueStr){
+  const nums = (valueStr.match(/-?\d+\.?\d*/g)||[]).map(Number);
+  if(nums.length===0) return {abnormal:false};
+  if(type==='temp'){
+    const t = nums[0];
+    if(t>=38.0) return {abnormal:true, note:'高熱が出ています'};
+    if(t>=37.5) return {abnormal:true, note:'微熱がありますね'};
+    if(t<36.0) return {abnormal:true, note:'体温が低めです'};
+    return {abnormal:false};
+  }
+  if(type==='bp'){
+    const sys=nums[0], dia=nums[1];
+    if(sys!==undefined && (sys>=140 || (dia!==undefined && dia>=90))) return {abnormal:true, note:'血圧が高めです'};
+    if(sys!==undefined && sys<90) return {abnormal:true, note:'血圧が低めです'};
+    return {abnormal:false};
+  }
+  if(type==='pulse'){
+    const p = nums[0];
+    if(p>100) return {abnormal:true, note:'脈が速いです'};
+    if(p<60) return {abnormal:true, note:'脈が遅めです'};
+    return {abnormal:false};
+  }
+  if(type==='spo2'){
+    const o = nums[0];
+    if(o<95) return {abnormal:true, note:'酸素飽和度が下がっています'};
+    return {abnormal:false};
+  }
+  return {abnormal:false};
+}
+function vitalHtml(label, type, value){
+  const check = vitalCheck(type, value);
+  return `<div class="vital ${check.abnormal?'abnormal':''}">${label} <b>${esc(value)}</b>${check.abnormal?`<span class="nurse-bubble">👩‍⚕️${check.note}</span>`:''}</div>`;
+}
+
+/* 問診票の内容を自動分類するための簡易ヒューリスティック（症例データを手直しせず再利用） */
+function questionCategory(q){
+  if(/既往歴|持病|指摘された|内服|薬/.test(q)) return 'pmh';
+  if(/家族/.test(q)) return 'family';
+  if(/喫煙|飲酒|生活習慣|職業|食事|塩分|水分摂取|生活/.test(q)) return 'social';
+  return 'hpi'; // 現病歴（症状の性質・経過・随伴症状・悪化寛解因子など）
+}
+function buildIntakeForm(c){
+  const groups = {hpi:[], pmh:[], social:[], family:[]};
+  c.qa.forEach(q=>{ groups[questionCategory(q.q)].push(q.a); });
+  return {
+    hpi: groups.hpi.join(' ') || '詳細な記載はありません。',
+    pmh: groups.pmh.join(' ') || '特記事項なし。',
+    social: groups.social.join(' ') || '特記事項なし。',
+    family: groups.family.join(' ') || '特記事項なし。',
+  };
+}
+
+/* ---------- 全身図（不調の場所に印） ---------- */
+const BODY_REGIONS = {
+  head:{x:60,y:20}, temple:{x:75,y:23}, eye:{x:67,y:25}, face:{x:60,y:24}, ear:{x:76,y:27},
+  throat:{x:60,y:50}, neck:{x:60,y:52},
+  chest_center:{x:60,y:82}, chest_left:{x:48,y:85},
+  abdomen_upper:{x:60,y:112}, abdomen_lower_right:{x:46,y:138}, abdomen_lower_left:{x:74,y:138},
+  flank_right:{x:36,y:122}, hands:{x:16,y:168}, hands2:{x:104,y:168},
+  forearm_right:{x:100,y:150}, legs:{x:60,y:225}, skin_general:{x:60,y:95},
+};
+function bodySilhouetteSvg(markKeys){
+  const marks = (markKeys||[]).map(k=>BODY_REGIONS[k]).filter(Boolean);
+  const dots = marks.map(m=>`<circle cx="${m.x}" cy="${m.y}" r="3" class="bodymark-ring"/><circle cx="${m.x}" cy="${m.y}" r="3" fill="#D14A42"/>`).join('');
+  return `<svg viewBox="0 0 120 250" class="bodysvg" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="60" cy="20" rx="15" ry="17" fill="#B7C4BD" stroke="#8FA098"/>
+    <path d="M40,58 Q60,48 80,58 L85,145 Q60,155 35,145 Z" fill="#B7C4BD" stroke="#8FA098"/>
+    <path d="M40,60 L16,118 L25,124 L46,70 Z" fill="#B7C4BD" stroke="#8FA098"/>
+    <path d="M80,60 L104,118 L95,124 L74,70 Z" fill="#B7C4BD" stroke="#8FA098"/>
+    <path d="M42,145 L36,240 L50,240 L56,155 Z" fill="#B7C4BD" stroke="#8FA098"/>
+    <path d="M78,145 L84,240 L70,240 L64,155 Z" fill="#B7C4BD" stroke="#8FA098"/>
+    ${dots}
+  </svg>`;
+}
+
+/* ============================================================
+   症例データ
+   qa: 問診票（自動でカテゴリ分類され、統一書式の問診票に整形される）
+   tests: 精密検査（すべて最初から選択可。key:true は診断に必要な検査、
+          そうでないものは「無駄な検査」＝コストが評価にマイナスとなる）
+   disposition: 'refer'（専門科へ引き継ぎ） or 'treat'（治療して終診）
+   ============================================================ */
+const CASES = [
+/* ---------------- Tier 1 ---------------- */
+{
+  id:'c1', tier:1, name:'田中 誠', age:45, gender:'男性', seed:11, urgent:true, arrival:'ambulance', specialty:'emergency',
+  vitals:{temp:'36.8℃', bp:'148/92', pulse:'98/分', spo2:'96%'},
+  chief:'30分前から突然、胸の中央が締め付けられるように痛む。冷や汗あり。',
+  chiefVariants:['夕食後から突然、胸の真ん中が万力で締め付けられるように痛み、脂汗が止まらない。'],
+  bodyMarks:['chest_center'],
+  qa:[
+    {q:'痛みの性質を教えてください', a:'万力で締め付けられるような、重苦しい痛みです。左肩から顎にかけて、鈍い痛みが放散している気がします。', key:true},
+    {q:'安静にすると痛みは軽くなりますか？', a:'いいえ、じっとしていても全く治まりません。30分前から持続しています。', key:true},
+    {q:'既往歴や生活習慣について教えてください', a:'20歳から1日20本、25年間タバコを吸っています。健診で高血圧と高コレステロールを指摘されたことがあります。', key:true},
+    {q:'今までにも同じような症状はありましたか？', a:'半年前から階段を上ると胸が少し苦しくなることがありましたが、休むと治っていました。'},
+  ],
+  tests:[
+    {name:'心電図（ECG）', cost:1, key:true, type:'ecg', pattern:'stemi', result:'前胸部誘導で**ST上昇**の著明な所見を認めます。'},
+    {name:'血液検査（心筋バイオマーカー）', cost:1, key:true, type:'lab', label:'トロポニンI', value:'4.8', unit:'ng/mL', min:0, max:0.04, dispMax:6, abnormal:true},
+    {name:'胸部X線', cost:1, type:'text', result:'心陰影の軽度拡大あり。肺うっ血は明らかではありません。'},
+    {name:'腹部超音波検査', cost:2, type:'text', result:'肝臓・胆嚢・膵臓に明らかな異常所見はありません。'},
+    {name:'血液検査（一般：白血球数）', cost:1, type:'lab', label:'白血球数', value:'9800', unit:'/μL', min:3500, max:9000, dispMax:14000, abnormal:true},
+  ],
+  diagnosisCorrect:'急性心筋梗塞',
+  diagnosisOptions:['急性心筋梗塞','急性膵炎','逆流性食道炎','パニック発作','肋間神経痛','不安定狭心症'],
+  disposition:'refer', deptCorrect:'cardio',
+  explain:'典型的な**ST上昇**を伴う**急性心筋梗塞**です。持続する締め付けられるような胸痛、左肩・顎への放散痛、喫煙・高血圧という危険因子、そして**心電図**での**ST上昇**と**トロポニン**上昇が診断の決め手になります。腹部エコーや一般血液検査は診断に必須ではなく、緊急性の高いこの症例では時間の浪費にもなり得ます。',
+},
+{
+  id:'c2', tier:1, name:'山本 恵子', age:60, gender:'女性', seed:22, specialty:'internal',
+  vitals:{temp:'38.2℃', bp:'126/78', pulse:'92/分', spo2:'98%'},
+  chief:'昨日からみぞおちが痛く、今日になって右下腹部に痛みが移ってきた。',
+  chiefVariants:['今朝からへその周りが痛み、昼頃には右下腹部に痛みが移動してきた。歩くと響く。'],
+  bodyMarks:['abdomen_lower_right'],
+  qa:[
+    {q:'痛みの場所は最初からそこでしたか？', a:'いいえ、最初はみぞおちから臍のあたりが痛くて、半日ほどで右下腹部に痛みが移動しました。', key:true},
+    {q:'咳をしたりお腹に力を入れると痛みますか？', a:'はい、咳やくしゃみをすると右下腹部に響くように痛みます。吐き気もあり、朝から食欲もありません。', key:true},
+    {q:'排尿や排便に異常はありますか？', a:'特に変わりはありません。下痢もしていません。'},
+    {q:'以前に似たような症状はありましたか？', a:'いいえ、初めてです。'},
+  ],
+  tests:[
+    {name:'血液検査（炎症反応）', cost:1, key:true, type:'lab', label:'CRP', value:'6.8', unit:'mg/dL', min:0, max:0.3, dispMax:10, abnormal:true},
+    {name:'血液検査（白血球）', cost:1, key:true, type:'lab', label:'白血球数', value:'13200', unit:'/μL', min:3500, max:9000, dispMax:16000, abnormal:true},
+    {name:'診察（圧痛点の確認）', cost:1, key:true, type:'text', result:'右下腹部の**マックバーニー点**に強い圧痛を認めます。反跳痛も陽性です。'},
+    {name:'腹部超音波検査', cost:2, key:true, type:'text', result:'右下腹部に、腫大し壁が肥厚した管状構造を認め、周囲に軽度の液体貯留があります。'},
+    {name:'尿検査', cost:1, type:'text', result:'明らかな血尿・膿尿はありません。'},
+  ],
+  diagnosisCorrect:'急性虫垂炎',
+  diagnosisOptions:['急性虫垂炎','尿路結石','急性胃腸炎','卵巣嚢腫茎捻転','憩室炎','骨盤内炎症性疾患（PID）'],
+  disposition:'refer', deptCorrect:'surgery',
+  explain:'心窩部から右下腹部への痛みの移動、**マックバーニー点**の圧痛、**白血球**・**CRP**の上昇、超音波での虫垂腫大という所見が揃い、**急性虫垂炎**と診断できます。尿検査は otherwise の鑑別（尿路結石など）の除外には意味がありますが、この症例では確定的な情報を与えません。',
+},
+{
+  id:'c3', tier:1, name:'佐藤 健太', age:30, gender:'男性', seed:33, specialty:'internal',
+  vitals:{temp:'36.5℃', bp:'118/74', pulse:'76/分', spo2:'99%'},
+  chief:'2ヶ月ほど、空腹時にみぞおちがキリキリ痛む。最近黒っぽい便が出た。',
+  chiefVariants:['ここ数週間、朝食前になるとみぞおちがキリキリと痛む。今朝、真っ黒な便に気づいた。'],
+  bodyMarks:['abdomen_upper'],
+  qa:[
+    {q:'痛みはいつ強くなりますか？', a:'お腹が空いているときに強くなり、何か食べると少し楽になります。', key:true},
+    {q:'黒い便について詳しく教えてください', a:'2日前に、タールのような真っ黒でネバネバした便が出ました。', key:true},
+    {q:'内服中の薬はありますか？', a:'腰痛のため、市販の痛み止め（NSAIDs）を毎日飲んでいます。', key:true},
+    {q:'ストレスの多い生活をしていますか？', a:'転職したばかりで、緊張することが多いです。体重の変化は特にありません。'},
+  ],
+  tests:[
+    {name:'便潜血検査', cost:1, key:true, type:'text', result:'陽性です。消化管のどこかから出血していることを示唆します。'},
+    {name:'血液検査（貧血の有無）', cost:1, key:true, type:'lab', label:'ヘモグロビン', value:'10.2', unit:'g/dL', min:13.5, max:17.5, dispMax:18, abnormal:true},
+    {name:'上部内視鏡（胃カメラ）', cost:3, key:true, type:'text', result:'胃角部に境界明瞭な潰瘍を認めます。出血の痕跡もあります。'},
+    {name:'ピロリ菌検査', cost:1, type:'text', result:'陽性です。'},
+    {name:'腹部X線', cost:1, type:'text', result:'明らかな異常ガス像はありません。'},
+  ],
+  diagnosisCorrect:'胃潰瘍（消化性潰瘍）',
+  diagnosisOptions:['胃潰瘍（消化性潰瘍）','急性胃腸炎','胃がん','過敏性腸症候群','胆石症','十二指腸潰瘍'],
+  disposition:'refer', deptCorrect:'gi',
+  explain:'空腹時に増悪する心窩部痛、タール便（**黒色便**は消化管出血のサイン）、NSAIDs常用歴、そして**内視鏡**で確認された潰瘍から**胃潰瘍**と診断します。腹部X線は消化性潰瘍の診断にはほとんど寄与しません。',
+},
+{
+  id:'c4', tier:1, name:'中村 由美', age:25, gender:'女性', seed:44, specialty:'internal',
+  vitals:{temp:'38.9℃', bp:'108/68', pulse:'88/分', spo2:'98%'},
+  chief:'3日前から喉が痛く、高熱が続いている。首のリンパ節も腫れている気がする。',
+  chiefVariants:['3日前からのどの痛みと高熱が続き、鏡で見ると扁桃が真っ白になっていた。'],
+  bodyMarks:['throat'],
+  qa:[
+    {q:'喉の痛みの様子を教えてください', a:'唾を飲み込むだけでも激痛があります。首の左右のリンパ節にも軽い圧痛があります。', key:true},
+    {q:'発疹は出ていますか？', a:'首から胸にかけて、細かい赤い発疹が出ています。', key:true},
+    {q:'周囲で同じ症状の人はいますか？', a:'小学生の娘が数日前に同じような症状で「溶連菌」と言われました。', key:true},
+    {q:'咳や鼻水、関節の痛みはありますか？', a:'いいえ、咳や鼻水、関節痛はほとんどありません。'},
+  ],
+  tests:[
+    {name:'咽頭診察', cost:1, key:true, type:'text', result:'扁桃に白い滲出物を伴う発赤・腫脹を認めます。イチゴのようにブツブツした舌（イチゴ舌）もみられます。'},
+    {name:'迅速抗原検査（咽頭ぬぐい液）', cost:1, key:true, type:'text', result:'A群溶血性レンサ球菌 陽性。'},
+    {name:'血液検査', cost:1, type:'lab', label:'白血球数', value:'12500', unit:'/μL', min:3500, max:9000, dispMax:15000, abnormal:true},
+    {name:'胸部聴診', cost:1, type:'text', result:'肺雑音は聴取されません。'},
+  ],
+  diagnosisCorrect:'溶連菌感染症（猩紅熱）',
+  diagnosisOptions:['溶連菌感染症（猩紅熱）','風疹','伝染性単核球症','川崎病','麻疹','アデノウイルス感染症（咽頭結膜熱）'],
+  disposition:'treat',
+  treatmentNote:'抗菌薬（アモキシシリン）を10日間処方し、解熱・鎮痛薬を併用。安静と水分摂取を指導し、自宅療養で経過観察としました。合併症（リウマチ熱・急性糸球体腎炎）の兆候があれば再受診するよう説明しました。',
+  explain:'高熱と激しい咽頭痛、イチゴ舌、細かい発疹、家族内での類似症状、そして**迅速抗原検査**での陽性という所見から**溶連菌感染症（猩紅熱）**と診断します。健康な成人の典型的な溶連菌感染症は、専門科への引き継ぎを要さず、総合診療科で抗菌薬治療を開始し外来で経過をみることができます。',
+},
+{
+  id:'c17', tier:1, name:'高田 蓮', age:22, gender:'男性', seed:187, specialty:'internal',
+  vitals:{temp:'36.6℃', bp:'122/76', pulse:'82/分', spo2:'99%'},
+  chief:'30分前、自転車で転倒し、右前腕をガラス片で切った。出血している。',
+  chiefVariants:['作業中に誤ってカッターで右手首を切ってしまい、出血が止まらない。'],
+  bodyMarks:['forearm_right'],
+  qa:[
+    {q:'受傷の状況を詳しく教えてください', a:'自転車で転倒し、割れたガラス片で右前腕を切りました。出血は圧迫でおさまっています。', key:true},
+    {q:'手指のしびれや動かしにくさはありますか？', a:'いいえ、手指の感覚も動きも普段どおりです。', key:true},
+    {q:'既往歴や内服中の薬はありますか？', a:'特記すべき既往はありません。血液をサラサラにする薬も飲んでいません。破傷風トキソイドの接種歴ははっきりしません。'},
+    {q:'糖尿病などの持病はありますか？', a:'ありません。健康です。'},
+  ],
+  tests:[
+    {name:'創部の視診', cost:1, key:true, type:'text', result:'右前腕に約4cmの切創があります。創縁は整で、皮下組織までの深さです。活動性出血や明らかな異物混入は認めません。'},
+    {name:'神経学的診察（手指の運動・感覚）', cost:1, key:true, type:'text', result:'手指の運動・感覚に異常はありません。腱損傷は疑われません。'},
+    {name:'血液検査（全血算）', cost:1, type:'lab', label:'白血球数', value:'7200', unit:'/μL', min:3500, max:9000, dispMax:11000, abnormal:false},
+    {name:'X線（異物・骨折評価）', cost:2, type:'text', result:'明らかな異物や骨折は認めません。'},
+  ],
+  diagnosisCorrect:'皮膚裂創（単純切創）',
+  diagnosisOptions:['皮膚裂創（単純切創）','腱断裂の疑い','開放骨折','蜂窩織炎','深部静脈血栓症','刺創（異物迷入の可能性）'],
+  disposition:'treat',
+  treatmentNote:'創部を生理食塩水で洗浄し、縫合処置と破傷風トキソイドの接種を行いました。抗菌薬の予防内服を処方し、5日後の抜糸で経過観察としました。',
+  explain:'受傷機転が明確な単純な切創で、視診で活動性出血や異物がなく、神経学的診察でも腱・神経損傷を示唆する所見がないことから**皮膚裂創（単純切創）**と診断できます。専門科への引き継ぎは不要で、総合診療科での創傷処置（縫合・破傷風予防）で対応可能です。血液検査やX線は、この所見だけの若く健康な患者には基本的に不要で、費用の浪費になります。',
+},
+
+/* ---------------- Tier 2 ---------------- */
+{
+  id:'c5', tier:2, name:'木村 修一', age:55, gender:'男性', seed:55, specialty:'internal',
+  vitals:{temp:'36.6℃', bp:'134/86', pulse:'92/分', spo2:'94%'},
+  chief:'半年前から階段や坂道で息切れするようになり、最近は足がむくんできた。',
+  bodyMarks:['chest_center','legs'],
+  qa:[
+    {q:'息切れが強くなる場面はありますか？', a:'平地は大丈夫ですが、階段2階分でかなり息が上がります。夜、横になると息苦しくて起き上がることもあります。', key:true},
+    {q:'足のむくみはいつからですか？', a:'2週間くらい前から夕方になると靴がきつく感じます。この1週間で体重が2kgほど増えました。', key:true},
+    {q:'今までに心臓の病気を指摘されたことは？', a:'3年前に心筋梗塞で入院したことがあります。薬は最近、通院が滞りがちで切らしていました。', key:true},
+    {q:'塩分の多い食事は好きですか？', a:'漬物やラーメンが好きでよく食べます。'},
+  ],
+  tests:[
+    {name:'血液検査（BNP測定）', cost:1, key:true, type:'lab', label:'BNP', value:'560', unit:'pg/mL', min:0, max:18.4, dispMax:700, abnormal:true},
+    {name:'胸部X線', cost:1, key:true, type:'text', result:'心陰影の拡大と、両側肺野のうっ血像（肺うっ血）を認めます。'},
+    {name:'心エコー（心臓超音波検査）', cost:2, key:true, type:'text', result:'左室**駆出率（EF）**35%と低下しています（正常は55%以上）。以前の心筋梗塞による壁運動異常もみられます。'},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'陳旧性心筋梗塞を示唆する所見はありますが、急性のST変化はありません。'},
+    {name:'血液検査（腎機能）', cost:1, type:'lab', label:'クレアチニン', value:'1.1', unit:'mg/dL', min:0.6, max:1.1, dispMax:2.0, abnormal:false},
+  ],
+  diagnosisCorrect:'心不全',
+  diagnosisOptions:['心不全','肺炎','慢性腎臓病','肺塞栓症','貧血','COPD（慢性閉塞性肺疾患）'],
+  disposition:'refer', deptCorrect:'cardio',
+  explain:'労作時の息切れ、起座呼吸、下腿**浮腫**、体重増加、既往の心筋梗塞に加え、**BNP**上昇、胸部X線での肺うっ血、心エコーでの**駆出率（EF）**低下から**心不全**と診断します。内服中断が増悪の誘因と考えられます。',
+},
+{
+  id:'c6', tier:2, name:'小林 直子', age:40, gender:'女性', seed:66, specialty:'internal',
+  vitals:{temp:'37.1℃', bp:'128/64', pulse:'112/分', spo2:'99%'},
+  chief:'数ヶ月で体重が5kg減り、動悸や手の震えがある。暑がりになった気もする。',
+  bodyMarks:['throat','eye'],
+  qa:[
+    {q:'食欲や体重の変化について教えてください', a:'むしろ食欲は増えているのに、体重が減っています。', key:true},
+    {q:'暑さや発汗、手の震えについて教えてください', a:'真冬でも人より薄着で、汗をよくかきます。じっとしていても手が細かく震え、イライラしやすくなりました。', key:true},
+    {q:'目の症状はありますか？', a:'最近、目つきがきつくなった、目が飛び出て見えると言われます。', key:true},
+    {q:'月経に変化はありますか？', a:'最近、月経の量が減った気がします。'},
+  ],
+  tests:[
+    {name:'血液検査（甲状腺機能：TSH）', cost:1, key:true, type:'lab', label:'TSH', value:'0.01', unit:'μIU/mL', min:0.4, max:4.0, dispMax:5, abnormal:true},
+    {name:'血液検査（甲状腺ホルモン：FT4）', cost:1, key:true, type:'lab', label:'FT4', value:'4.8', unit:'ng/dL', min:0.9, max:1.7, dispMax:6, abnormal:true},
+    {name:'眼球突出の診察', cost:1, key:true, type:'text', result:'両側の眼球突出を認めます。'},
+    {name:'甲状腺超音波検査', cost:2, type:'text', result:'甲状腺全体がびまん性に腫大し、血流の増加を認めます。'},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'洞頻脈を認めますが、それ以外の異常はありません。'},
+  ],
+  diagnosisCorrect:'バセドウ病（甲状腺機能亢進症）',
+  diagnosisOptions:['バセドウ病（甲状腺機能亢進症）','パニック障害','更年期障害','橋本病','褐色細胞腫','甲状腺中毒症（無痛性甲状腺炎）'],
+  disposition:'refer', deptCorrect:'endo',
+  explain:'体重減少にもかかわらず食欲は保たれ、暑がり・手指振戦・眼球突出という所見に加え、**TSH**低下と**FT4**上昇という典型的な甲状腺機能亢進のパターンから**バセドウ病**と診断します。ホルモン治療の調整が必要です。',
+},
+{
+  id:'c7', tier:2, name:'高橋 徹', age:65, gender:'男性', seed:77, urgent:true, arrival:'ambulance', specialty:'emergency',
+  vitals:{temp:'36.7℃', bp:'168/98', pulse:'88/分（不整）', spo2:'97%'},
+  chief:'1時間前から突然、左手足に力が入らなくなり、ろれつが回らなくなった。',
+  bodyMarks:['head'],
+  qa:[
+    {q:'症状が始まった時刻ははっきりしていますか？', a:'家族と話している最中に突然始まり、時刻ははっきり分かります（1時間前）。左の手と足、両方に力が入らず、顔の左側も下がっています。', key:true},
+    {q:'不整脈を指摘されたことはありますか？', a:'数年前の健診で「脈がたまに飛ぶ」と言われたことがあります。', key:true},
+    {q:'高血圧や糖尿病はありますか？', a:'高血圧で薬を飲んでいますが、飲み忘れがちです。'},
+    {q:'頭痛や意識障害はありますか？', a:'軽い頭痛はありますが、意識ははっきりしています。'},
+  ],
+  tests:[
+    {name:'心電図', cost:1, key:true, type:'ecg', pattern:'afib', result:'R-R間隔が不規則で、P波がはっきりしません。心房細動を示唆する波形です。'},
+    {name:'神経学的診察', cost:1, key:true, type:'text', result:'左片麻痺、構音障害、左顔面麻痺を認めます。**NIHSS**は8点相当です。'},
+    {name:'頭部MRI（拡散強調画像）', cost:3, key:true, type:'text', result:'右中大脳動脈領域に、新しい脳虚血を示唆する拡散強調画像の高信号域を認めます。'},
+    {name:'頭部CT', cost:2, type:'text', result:'明らかな出血はありません。発症早期のため、虚血性変化はまだはっきり描出されていません。'},
+    {name:'血液検査（血糖）', cost:1, type:'lab', label:'血糖値', value:'102', unit:'mg/dL', min:70, max:109, dispMax:150, abnormal:false},
+  ],
+  diagnosisCorrect:'脳梗塞（心原性脳塞栓症）',
+  diagnosisOptions:['脳梗塞（心原性脳塞栓症）','脳出血','一過性脳虚血発作','片頭痛','低血糖発作','ベル麻痺（顔面神経麻痺）'],
+  disposition:'refer', deptCorrect:'neuro',
+  explain:'突然発症の左片麻痺・構音障害という典型的な脳卒中症状に、心電図での心房細動が加わり、心原性脳塞栓症による**脳梗塞**と考えられます。緊急症例のため、頭部CTで出血を除外したら速やかにMRIと専門科評価に進むべきで、不要な追加検査は時間の浪費になります。',
+},
+{
+  id:'c8', tier:2, name:'渡辺 桂子', age:50, gender:'女性', seed:88, specialty:'internal',
+  vitals:{temp:'37.0℃', bp:'122/76', pulse:'80/分', spo2:'98%'},
+  chief:'3ヶ月前から、朝起きたときに手の指や手首がこわばって動かしにくい。',
+  bodyMarks:['hands','hands2'],
+  qa:[
+    {q:'こわばりはどれくらい続きますか？', a:'朝起きてから1時間以上は指が動かしにくいです。', key:true},
+    {q:'どの関節が痛みますか？', a:'両手の指の付け根（第二関節）や手首が、左右対称に腫れて痛みます。', key:true},
+    {q:'発熱やだるさはありますか？', a:'微熱が続くことがあり、全身がだるく疲れやすいです。'},
+    {q:'家族にリウマチの人はいますか？', a:'母がリウマチだったと聞いています。'},
+  ],
+  tests:[
+    {name:'関節の診察', cost:1, key:true, type:'text', result:'両手の中手指節関節・手首に腫脹と圧痛を左右対称に認めます。'},
+    {name:'血液検査（RF・抗CCP抗体）', cost:2, key:true, type:'text', result:'**RF（リウマトイド因子）** 陽性、**抗CCP抗体** 高値陽性。'},
+    {name:'手のX線', cost:1, key:true, type:'text', result:'両手の指の関節に骨びらん（骨が欠けたような所見）と関節裂隙の狭小化を認めます。'},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'2.4', unit:'mg/dL', min:0, max:0.3, dispMax:4, abnormal:true},
+    {name:'血液検査（抗核抗体）', cost:1, type:'text', result:'陰性です。'},
+  ],
+  diagnosisCorrect:'関節リウマチ',
+  diagnosisOptions:['関節リウマチ','変形性関節症','全身性エリテマトーデス','痛風','線維筋痛症','乾癬性関節炎'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'1時間以上続く朝のこわばり、左右対称性の小関節腫脹、**RF（リウマトイド因子）**・**抗CCP抗体**陽性、X線での骨びらんという所見から**関節リウマチ**と診断します。抗リウマチ薬による早期治療介入が重要です。',
+},
+
+/* ---------------- Tier 3 ---------------- */
+{
+  id:'c9', tier:3, name:'伊藤 大輔', age:35, gender:'男性', seed:99,
+  vitals:{temp:'36.9℃', bp:'138/84', pulse:'96/分', spo2:'98%'},
+  chief:'2時間前から右の腰から下腹部にかけて、のたうち回るほどの激痛が波のように押し寄せる。',
+  bodyMarks:['flank_right'],
+  qa:[
+    {q:'痛みは持続していますか、それとも波がありますか？', a:'強くなったり少し楽になったりを繰り返しています。じっとしていられず動き回ってしまいます。発熱はありません。', key:true},
+    {q:'尿の色に変化はありますか？', a:'心なしか赤みがかっている気がします。', key:true},
+    {q:'水分摂取や食生活について教えてください', a:'仕事が忙しく、水をあまり飲まず、肉類が好きです。'},
+    {q:'以前に同じような痛みはありましたか？', a:'2年前にも一度、同じような激痛があり、自然に治りました。'},
+  ],
+  tests:[
+    {name:'尿検査', cost:1, key:true, type:'text', result:'潜血反応 強陽性。白血球反応は陰性です。'},
+    {name:'腹部CT', cost:2, key:true, type:'text', result:'右尿管に7mm大の結石を認め、その上流の腎盂が軽度拡張しています。'},
+    {name:'診察（叩打痛の確認）', cost:1, type:'text', result:'右の肋骨脊柱角に軽度の叩打痛を認めます。'},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'0.2', unit:'mg/dL', min:0, max:0.3, dispMax:3, abnormal:false},
+    {name:'血液検査（腎機能）', cost:1, type:'lab', label:'クレアチニン', value:'0.9', unit:'mg/dL', min:0.6, max:1.1, dispMax:2, abnormal:false},
+  ],
+  diagnosisCorrect:'尿路結石（尿管結石）',
+  diagnosisOptions:['尿路結石（尿管結石）','急性腎盂腎炎','急性虫垂炎','卵巣嚢腫茎捻転','大動脈解離','精巣捻転'],
+  disposition:'refer', deptCorrect:'uro',
+  explain:'発熱を伴わない波状の激しい**疝痛**、血尿、CTでの尿管結石という所見から**尿路結石**と診断します。発熱・炎症反応陽性がないことから感染は考えにくく、この鑑別が重要です。',
+},
+{
+  id:'c10', tier:3, name:'加藤 美咲', age:28, gender:'女性', seed:110,
+  vitals:{temp:'36.6℃', bp:'128/80', pulse:'118/分', spo2:'99%'},
+  chief:'突然、動悸と息苦しさ、強い不安感に襲われることが月に数回ある。「このまま死んでしまうのでは」と感じる。',
+  bodyMarks:['chest_center'],
+  qa:[
+    {q:'発作はどれくらい続き、きっかけはありますか？', a:'10〜20分ほどでピークに達します。満員電車や人混みで起こりやすい気がしますが、何もしていない時にも起こります。', key:true},
+    {q:'最近、大きな出来事や生活の変化はありましたか？', a:'半年前に近しい人を亡くし、それ以降から症状が始まりました。仕事のストレスも強いです。発作が怖くて電車を避けています。', key:true},
+    {q:'体重減少や暑がりはありますか？', a:'特にありません。体重も変わっていません。', key:true},
+    {q:'発作の間、めまいや手足のしびれはありますか？', a:'手足がしびれるような感覚と、めまいがあります。過呼吸気味になります。'},
+  ],
+  tests:[
+    {name:'心電図', cost:1, key:true, type:'ecg', pattern:'normal', result:'洞頻脈を認めますが、それ以外に異常はありません。'},
+    {name:'血液検査（甲状腺機能）', cost:1, key:true, type:'lab', label:'TSH', value:'2.1', unit:'μIU/mL', min:0.4, max:4.0, dispMax:5, abnormal:false},
+    {name:'血液検査（貧血・電解質）', cost:1, type:'lab', label:'ヘモグロビン', value:'13.2', unit:'g/dL', min:12, max:16, dispMax:17, abnormal:false},
+    {name:'ホルター心電図（24時間心電図）', cost:2, type:'text', result:'発作を疑う時間帯にも重篤な不整脈は記録されませんでした。'},
+    {name:'血液検査（血糖）', cost:1, type:'lab', label:'血糖値', value:'92', unit:'mg/dL', min:70, max:109, dispMax:140, abnormal:false},
+  ],
+  diagnosisCorrect:'パニック障害',
+  diagnosisOptions:['パニック障害','甲状腺機能亢進症','不整脈（発作性頻拍）','褐色細胞腫','喘息発作','過換気症候群'],
+  disposition:'refer', deptCorrect:'psych',
+  explain:'動悸・呼吸困難感・強い不安を伴う発作的な症状ですが、甲状腺機能・心電図に異常がなく、器質的な原因を除外できたことが重要です。誘因やストレスの背景、予期不安による回避行動もあわせて**パニック障害**と診断します。ホルター心電図は基本的な心電図で異常がなければ優先度は低く、費用対効果の面では慎重に検討すべき検査です。',
+},
+{
+  id:'c11', tier:3, name:'鈴木 一郎', age:70, gender:'男性', seed:121,
+  vitals:{temp:'36.5℃', bp:'116/70', pulse:'82/分', spo2:'97%'},
+  chief:'2ヶ月で体重が6kg減り、最近は白目や皮膚が黄色くなってきた。背中の鈍い痛みもある。',
+  bodyMarks:['abdomen_upper','skin_general'],
+  qa:[
+    {q:'黄疸に気づいたのはいつからですか？', a:'1週間ほど前、家族に「顔色が黄色い」と言われて気づきました。尿が濃い茶色になり、便は逆に白っぽくなった気がします。', key:true},
+    {q:'背中の痛みについて詳しく', a:'みぞおちから背中にかけて、鈍く重い痛みが続いています。前かがみになると少し楽です。', key:true},
+    {q:'糖尿病を指摘されたことはありますか？', a:'最近になって急に血糖値が高いと言われました。', key:true},
+    {q:'かゆみや飲酒歴はありますか？', a:'全身がかゆく、夜も眠れないほどです。飲酒はほとんどしません。'},
+  ],
+  tests:[
+    {name:'血液検査（肝胆道系）', cost:1, key:true, type:'text', result:'直接ビリルビンが著明に上昇しており、閉塞性**黄疸**のパターンを示しています。'},
+    {name:'腫瘍マーカー（CA19-9）', cost:1, key:true, type:'lab', label:'CA19-9', value:'480', unit:'U/mL', min:0, max:37, dispMax:600, abnormal:true},
+    {name:'腹部造影CT', cost:3, key:true, type:'text', result:'膵頭部に約3cmの造影不良な腫瘤を認め、周囲の胆管・膵管の拡張を伴っています。'},
+    {name:'腹部超音波検査', cost:2, type:'text', result:'肝内胆管の拡張を認めます。膵臓の詳細はガスの影響で評価困難です。'},
+    {name:'血液検査（血糖）', cost:1, type:'lab', label:'HbA1c', value:'7.8', unit:'%', min:4.6, max:6.2, dispMax:9, abnormal:true},
+  ],
+  diagnosisCorrect:'膵臓癌',
+  diagnosisOptions:['膵臓癌','胆石症（総胆管結石）','急性膵炎','肝硬変','慢性膵炎','胆管癌'],
+  disposition:'refer', deptCorrect:'gi',
+  explain:'進行性の体重減少、閉塞性**黄疸**、新規発症の糖尿病という所見と、**CA19-9**高値、CTでの膵頭部腫瘤から**膵臓癌**が強く疑われます。腹部超音波はガスの影響で評価が難しいことが多く、造影CTが優先されるべきでした。',
+},
+{
+  id:'c12', tier:3, name:'松本 麻衣', age:45, gender:'女性', seed:132,
+  vitals:{temp:'37.6℃', bp:'118/74', pulse:'88/分', spo2:'98%'},
+  chief:'半年前から微熱が続き、両頬に赤い発疹が出ている。日光に当たると悪化する気がする。',
+  bodyMarks:['face','hands'],
+  qa:[
+    {q:'発疹の形と、日光との関係について教えてください', a:'鼻を挟んで両頬に、蝶が羽を広げたような形の赤みがあります。海に行った後、発疹と発熱がひどくなりました。', key:true},
+    {q:'関節の痛みはありますか？', a:'手指や膝の関節が、あちこち痛みます。', key:true},
+    {q:'尿の泡立ちなど、腎臓に関わる症状はありますか？', a:'最近、尿の泡立ちが気になるようになりました。', key:true},
+    {q:'口の中や脱毛の変化はありますか？', a:'口内炎が繰り返しでき、髪も抜けやすくなった気がします。'},
+  ],
+  tests:[
+    {name:'皮膚の診察', cost:1, key:true, type:'text', result:'両頬部に境界不明瞭な紅斑（**蝶形紅斑**）を認めます。'},
+    {name:'血液検査（抗核抗体）', cost:1, key:true, type:'text', result:'**抗核抗体（ANA）** 強陽性（320倍以上）。'},
+    {name:'尿検査', cost:1, key:true, type:'text', result:'蛋白尿を認めます。腎臓への影響（ループス腎炎）が疑われます。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'2800', unit:'/μL', min:3500, max:9000, dispMax:10000, abnormal:true},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'0.4', unit:'mg/dL', min:0, max:0.3, dispMax:3, abnormal:true},
+  ],
+  diagnosisCorrect:'全身性エリテマトーデス（SLE）',
+  diagnosisOptions:['全身性エリテマトーデス（SLE）','関節リウマチ','皮膚筋炎','薬剤性ループス','酒さ（顔面の皮膚疾患）','シェーグレン症候群'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'**蝶形紅斑**、日光過敏、多関節痛、蛋白尿、そして**抗核抗体（ANA）**強陽性という多臓器にわたる所見から**全身性エリテマトーデス（SLE）**と診断します。全身の炎症・免疫のコントロールと臓器障害の管理が必要です。',
+},
+
+/* ---------------- Tier 4 ---------------- */
+{
+  id:'c13', tier:4, name:'井上 正夫', age:60, gender:'男性', seed:143, urgent:true, arrival:'inhospital', specialty:'emergency',
+  vitals:{temp:'36.6℃', bp:'128/82', pulse:'72/分', spo2:'97%'},
+  chief:'半年前から階段で胸が苦しくなり、先週、庭仕事中に一瞬意識を失って倒れた。',
+  bodyMarks:['chest_center'],
+  qa:[
+    {q:'意識を失った時の状況を教えてください', a:'庭で重い物を持ち上げようとした直後に、目の前が真っ暗になって数秒間気を失いました。すぐに意識は戻りました。', key:true},
+    {q:'胸の苦しさはどんな時に出ますか？', a:'坂道や階段など、体を動かしたときに胸が締め付けられる感じがします。休むと楽になります。最近、動くと息切れしやすくなった気がします。', key:true},
+    {q:'心臓の弁膜症を指摘されたことはありますか？', a:'昔の健診で「心臓に雑音がある」と言われたことがありますが、精査はしていません。', key:true},
+    {q:'家族に心臓病の人はいますか？', a:'父が高齢で弁膜症の手術を受けたと聞いています。'},
+  ],
+  tests:[
+    {name:'聴診', cost:1, key:true, type:'text', result:'胸骨右縁第2肋間を最強点とする、駆出性の収縮期雑音を聴取します。頸部への放散も認めます。'},
+    {name:'心エコー（心臓超音波検査）', cost:2, key:true, type:'text', result:'大動脈弁の高度石灰化と可動性低下を認め、弁口面積0.7cm²、平均圧較差52mmHgと高度の狭窄を示しています。'},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'左室肥大を示唆する所見はありますが、急性の変化はありません。'},
+    {name:'胸部X線', cost:1, type:'text', result:'心陰影は正常範囲内です。大動脈弁の石灰化陰影がわずかに見えます。'},
+    {name:'血液検査（BNP）', cost:1, type:'lab', label:'BNP', value:'210', unit:'pg/mL', min:0, max:18.4, dispMax:400, abnormal:true},
+  ],
+  diagnosisCorrect:'大動脈弁狭窄症',
+  diagnosisOptions:['大動脈弁狭窄症','僧帽弁閉鎖不全症','肥大型心筋症','狭心症（冠動脈疾患）','起立性低血圧','肺高血圧症'],
+  disposition:'refer', deptCorrect:'cardio',
+  explain:'労作時胸痛・労作時失神・労作時息切れという三徴に、特徴的な駆出性収縮期雑音、心エコーでの高度狭窄所見が揃っています。高度な大動脈弁狭窄症は突然死のリスクもあり、速やかな専門科評価が必要です。',
+},
+{
+  id:'c14', tier:4, name:'林 さくら', age:38, gender:'女性', seed:154,
+  vitals:{temp:'37.4℃', bp:'108/68', pulse:'92/分', spo2:'98%'},
+  chief:'半年以上、1日5〜6回の下痢が続き、体重が8kg減った。右下腹部の鈍い痛みもある。',
+  bodyMarks:['abdomen_lower_right'],
+  qa:[
+    {q:'口の中や肛門周りに症状はありますか？', a:'口内炎が治りにくく、繰り返しできます。肛門の横に、膿が出るような小さな穴（痔ろうのようなもの）もあります。', key:true},
+    {q:'食事と症状の関係はありますか？', a:'食後に右下腹部が痛むことが多いです。発熱も繰り返しています。', key:true},
+    {q:'便に血や粘液は混じりますか？', a:'時々、粘液が混じることがあります。血はあまり目立ちません。'},
+    {q:'家族に同じような腸の病気の人はいますか？', a:'特に思い当たりません。'},
+  ],
+  tests:[
+    {name:'血液検査（炎症・貧血）', cost:1, key:true, type:'lab', label:'CRP', value:'3.2', unit:'mg/dL', min:0, max:0.3, dispMax:5, abnormal:true},
+    {name:'大腸内視鏡検査', cost:3, key:true, type:'text', result:'回盲部を中心に、縦走する潰瘍と粘膜が石畳状に隆起する**敷石像**を認めます。病変は飛び飛びに（非連続性に）分布しています。'},
+    {name:'腹部CT', cost:2, type:'text', result:'回腸末端の壁肥厚と周囲の炎症性変化を認めます。'},
+    {name:'便培養検査', cost:1, type:'text', result:'病原性のある細菌は検出されませんでした。'},
+    {name:'血液検査（栄養状態）', cost:1, type:'lab', label:'アルブミン', value:'2.9', unit:'g/dL', min:3.8, max:5.2, dispMax:5.5, abnormal:true},
+  ],
+  diagnosisCorrect:'クローン病',
+  diagnosisOptions:['クローン病','潰瘍性大腸炎','腸結核','過敏性腸症候群','虚血性腸炎','憩室炎'],
+  disposition:'refer', deptCorrect:'gi',
+  explain:'慢性の下痢・体重減少に加え、難治性口内炎や痔ろうといった消化管外病変、そして内視鏡での縦走潰瘍・**敷石像**・非連続性病変という特徴的所見から**クローン病**と診断します。専門的な栄養療法・生物学的製剤による治療が必要です。',
+},
+{
+  id:'c15', tier:4, name:'岡田 勝', age:50, gender:'男性', seed:165, urgent:true, specialty:'emergency',
+  vitals:{temp:'37.8℃', bp:'138/84', pulse:'90/分', spo2:'98%'},
+  chief:'1週間前から左目が急に見えにくくなり、こめかみのあたりがズキズキ痛む。物を噛んでいると顎が疲れて痛くなる。',
+  bodyMarks:['temple','eye'],
+  qa:[
+    {q:'視力の変化について詳しく', a:'2日前から左目の視野の一部が急に暗くなり、見えなくなってきています。', key:true},
+    {q:'こめかみの痛みと顎の症状について詳しく', a:'こめかみを押すと強く痛みます。髪をとかすだけでも痛いです。固いものを噛み続けると顎の筋肉が痛くなって噛めなくなり、しばらく休むと治ります。', key:true},
+    {q:'全身のだるさや体重減少はありますか？', a:'ここ1ヶ月で体重が3kg減り、微熱と全身のだるさが続いています。'},
+    {q:'肩や腰のこわばりはありますか？', a:'朝、肩や腰周りが強くこわばります。'},
+  ],
+  tests:[
+    {name:'血液検査（炎症反応：ESR）', cost:1, key:true, type:'lab', label:'ESR（赤沈）', value:'98', unit:'mm/hr', min:0, max:20, dispMax:120, abnormal:true},
+    {name:'側頭動脈の触診', cost:1, key:true, type:'text', result:'左側頭動脈に硬結と圧痛を認め、拍動が触れにくくなっています。'},
+    {name:'眼科的診察（眼底検査）', cost:2, key:true, type:'text', result:'左視神経乳頭に蒼白浮腫を認め、虚血性視神経症を疑う所見です。'},
+    {name:'血液検査（CRP）', cost:1, type:'lab', label:'CRP', value:'7.5', unit:'mg/dL', min:0, max:0.3, dispMax:10, abnormal:true},
+    {name:'側頭動脈生検', cost:3, type:'text', result:'血管壁に炎症細胞の浸潤と多核巨細胞を認め、内弾性板の断裂がみられます。'},
+  ],
+  diagnosisCorrect:'巨細胞性動脈炎（側頭動脈炎）',
+  diagnosisOptions:['巨細胞性動脈炎（側頭動脈炎）','片頭痛','三叉神経痛','脳梗塞','緑内障発作','帯状疱疹'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'側頭部痛、**顎跛行**、急激な視力障害、著明な**ESR（赤沈）**上昇という所見は**巨細胞性動脈炎（側頭動脈炎）**に典型的です。治療が遅れると失明の危険がある緊急症例で、生検の結果を待たず速やかに専門科へ引き継ぐべきです。生検は確定診断には有用ですが、コストが高く、初期の緊急対応としては優先度が低い検査です。',
+},
+{
+  id:'c16', tier:4, name:'村上 花子', age:42, gender:'女性', seed:176,
+  vitals:{temp:'38.5℃', bp:'112/70', pulse:'96/分', spo2:'98%'},
+  chief:'3週間以上、原因不明の発熱が続いている。体重も減り、夜中に寝汗をひどくかく。',
+  bodyMarks:['neck'],
+  qa:[
+    {q:'首や脇の下にしこりはありますか？', a:'首の左側に、痛みのないしこりを触れます。だんだん大きくなっている気がします。', key:true},
+    {q:'寝汗や体重の変化について教えてください', a:'寝間着を着替えるほどの大量の寝汗をかきます。この2ヶ月で5kg減りました。', key:true},
+    {q:'結核患者との接触歴はありますか？', a:'特に思い当たりません。'},
+    {q:'かゆみや熱の出方の特徴はありますか？', a:'原因不明の全身のかゆみがあります。夕方から夜にかけて熱が上がる傾向があります。'},
+  ],
+  tests:[
+    {name:'頸部リンパ節の触診', cost:1, key:true, type:'text', result:'左頸部に2cm大の弾性硬・可動性良好な無痛性リンパ節を触れます。'},
+    {name:'血液検査（LDH）', cost:1, key:true, type:'lab', label:'LDH', value:'620', unit:'U/L', min:120, max:245, dispMax:800, abnormal:true},
+    {name:'血液検査（可溶性IL-2レセプター）', cost:2, key:true, type:'lab', label:'sIL-2R', value:'3200', unit:'U/mL', min:122, max:496, dispMax:4000, abnormal:true},
+    {name:'胸腹部CT', cost:2, key:true, type:'text', result:'頸部・縦隔・腹部に多発するリンパ節腫大を認めます。'},
+    {name:'胸部X線', cost:1, type:'text', result:'肺野に明らかな結核を示唆する陰影はありません。'},
+  ],
+  diagnosisCorrect:'悪性リンパ腫',
+  diagnosisOptions:['悪性リンパ腫','肺結核（リンパ節結核）','伝染性単核球症','サルコイドーシス','甲状腺機能亢進症','がんのリンパ節転移'],
+  disposition:'refer', deptCorrect:'hema',
+  explain:'3週間以上続く**不明熱**、著明な寝汗、体重減少という「B症状」に、無痛性のリンパ節腫大、**LDH**・**可溶性IL-2レセプター**の上昇が加わり、**悪性リンパ腫**が強く疑われます。血液がん専門科での精査・治療が必要です。',
+},
+
+/* ---------------- 追加症例：総合診療専門研修の到達目標（症候・疾患・小児科/在宅/へき地ローテーション等）に対応 ---------------- */
+{
+  id:'c18', tier:1, name:'中村 大和', age:5, gender:'男性', seed:201, specialty:'pediatric',
+  vitals:{temp:'38.3℃', bp:'104/62', pulse:'110/分', spo2:'99%'},
+  chief:'2日前から発熱があり、今日から右耳を痛がって触るようになった（母親より）。',
+  chiefVariants:['昨夜から夜泣きがひどく、しきりに右耳を触るようになった（母親より）。'],
+  bodyMarks:['ear'],
+  qa:[
+    {q:'耳の痛みの様子について教えてください（母親より）', a:'右耳を気にして触ったり引っ張ったりします。夜も痛みで何度も泣いて起きます。', key:true},
+    {q:'発熱や機嫌について教えてください', a:'38℃台の発熱が2日続いています。食欲が落ち、機嫌が悪いです。', key:true},
+    {q:'鼻水や咳はありますか？', a:'3日前から黄色い鼻水と軽い咳が出ています。保育園でも風邪が流行っているそうです。', key:true},
+    {q:'既往歴はありますか？', a:'耳の症状で受診したのは今回が初めてです。特記すべき既往はありません。'},
+  ],
+  tests:[
+    {name:'耳鏡による鼓膜の診察', cost:1, key:true, type:'text', result:'右鼓膜の発赤・膨隆を認め、光錐の消失がみられます。中耳腔に貯留液を疑う所見です。'},
+    {name:'鼻腔・咽頭の診察', cost:1, key:true, type:'text', result:'鼻腔に黄色い鼻汁、咽頭に軽度発赤を認めます。先行する上気道感染に伴う所見と考えられます。'},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'1.8', unit:'mg/dL', min:0, max:0.3, dispMax:3, abnormal:true},
+    {name:'鼓膜穿刺・排膿検査', cost:3, type:'text', result:'鼓膜切開を行うと、中耳腔から少量の膿性貯留液が確認されました。'},
+    {name:'聴力検査（オージオメトリー）', cost:2, type:'text', result:'現時点での聴力は軽度低下していますが、正確な評価には炎症軽快後の再検査が必要です。'},
+  ],
+  diagnosisCorrect:'急性中耳炎',
+  diagnosisOptions:['急性中耳炎','外耳炎','滲出性中耳炎','咽後膿瘍','流行性耳下腺炎（おたふくかぜ）','乳様突起炎'],
+  disposition:'treat',
+  treatmentNote:'経口抗菌薬（アモキシシリン）を処方し、鎮痛解熱薬を併用。3日後に症状が改善しない場合は再受診するよう説明し、外来で経過観察としました。',
+  explain:'先行する上気道感染に続く発熱・耳痛、鼓膜の発赤・膨隆という所見から**急性中耳炎**と診断します。小児科領域の代表的な感染症で、多くは総合診療科で抗菌薬治療と経過観察により対応可能です。鼓膜穿刺や聴力検査は、通常の急性中耳炎の初期対応では必須ではありません。',
+},
+{
+  id:'c19', tier:1, name:'岡本 美穂', age:55, gender:'女性', seed:202, specialty:'internal',
+  vitals:{temp:'37.6℃', bp:'128/78', pulse:'88/分', spo2:'98%'},
+  chief:'3日前から左下腿が赤く腫れて熱を持ち、触ると痛む。',
+  chiefVariants:['1週間前の虫刺されの跡が、ここ2日で急に赤く腫れあがってきた。'],
+  bodyMarks:['legs'],
+  qa:[
+    {q:'皮膚の症状の経過を教えてください', a:'3日前、庭仕事中に小さな傷を作ったのですが、その後その部分を中心に赤み・腫れが広がってきました。', key:true},
+    {q:'患部の熱感や痛みはどうですか？', a:'触ると熱っぽく、境界がはっきりしない赤みが広がっています。押すと痛みがあります。', key:true},
+    {q:'発熱や寒気はありますか？', a:'昨日から37度台後半の熱があり、軽い寒気もありました。'},
+    {q:'糖尿病などの持病はありますか？', a:'特にありません。健康です。'},
+  ],
+  tests:[
+    {name:'患部の視診・触診', cost:1, key:true, type:'text', result:'左下腿に境界不明瞭な発赤・腫脹・熱感を認めます。小さな擦過傷が侵入門戸と考えられます。波動は触れず、膿瘍形成は疑われません。'},
+    {name:'血液検査（炎症反応）', cost:1, key:true, type:'lab', label:'CRP', value:'4.2', unit:'mg/dL', min:0, max:0.3, dispMax:8, abnormal:true},
+    {name:'血液検査（白血球）', cost:1, type:'lab', label:'白血球数', value:'11800', unit:'/μL', min:3500, max:9000, dispMax:15000, abnormal:true},
+    {name:'下肢静脈エコー', cost:2, type:'text', result:'深部静脈血栓は認めません。'},
+    {name:'血液培養', cost:2, type:'text', result:'結果は陰性でした（判明まで数日を要しました）。'},
+  ],
+  diagnosisCorrect:'蜂窩織炎',
+  diagnosisOptions:['蜂窩織炎','深部静脈血栓症','接触皮膚炎','壊死性筋膜炎','丹毒','痛風'],
+  disposition:'treat',
+  treatmentNote:'経口抗菌薬（セファレキシン）を処方し、患肢の挙上と安静を指導。改善が乏しい場合や範囲拡大時はすぐに再受診するよう説明し、外来で経過観察としました。',
+  explain:'外傷を侵入門戸とした境界不明瞭な発赤・腫脹・熱感、**CRP**上昇という所見から**蜂窩織炎**と診断します。全身状態が安定した典型的な蜂窩織炎は、総合診療科で経口抗菌薬による外来治療が可能です。血液培養や静脈エコーは、重症例や診断が非典型的な場合に検討すべきで、本症例では必須ではありません。',
+},
+{
+  id:'c20', tier:1, name:'石川 由紀', age:32, gender:'女性', seed:203, specialty:'internal',
+  vitals:{temp:'36.9℃', bp:'112/70', pulse:'78/分', spo2:'99%'},
+  chief:'2日前から排尿時にしみるような痛みがあり、トイレが近い。',
+  chiefVariants:['今朝からトイレが近く、排尿のたびに焼けるような痛みがある。'],
+  bodyMarks:['abdomen_lower_left'],
+  qa:[
+    {q:'排尿時の症状を詳しく教えてください', a:'排尿の終わりごろにツーンとしみるような痛みがあります。頻尿もあり、1時間に何度もトイレに行きたくなります。', key:true},
+    {q:'発熱や背中・腰の痛みはありますか？', a:'熱はなく、背中や腰の痛みもありません。', key:true},
+    {q:'血尿や尿の濁りはありますか？', a:'尿が少し濁って見える気がします。血が混じっているようには見えません。'},
+    {q:'以前にも同じような症状はありましたか？', a:'去年も一度、同じような症状があり、その時は自然に治りました。'},
+  ],
+  tests:[
+    {name:'尿検査', cost:1, key:true, type:'text', result:'白血球反応・亜硝酸塩ともに陽性です。細菌尿を示唆する所見です。'},
+    {name:'診察（肋骨脊柱角の叩打痛の確認）', cost:1, key:true, type:'text', result:'肋骨脊柱角に叩打痛は認めません。腎盂腎炎を示唆する所見はありません。'},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'0.3', unit:'mg/dL', min:0, max:0.3, dispMax:3, abnormal:false},
+    {name:'尿培養検査', cost:2, type:'text', result:'大腸菌が検出されました（結果判明まで数日を要しました）。'},
+    {name:'腹部超音波検査', cost:2, type:'text', result:'明らかな水腎症や結石は認めません。'},
+  ],
+  diagnosisCorrect:'急性膀胱炎',
+  diagnosisOptions:['急性膀胱炎','急性腎盂腎炎','膣炎','過活動膀胱','尿路結石','間質性膀胱炎'],
+  disposition:'treat',
+  treatmentNote:'経口抗菌薬（ホスホマイシン）を短期処方し、十分な水分摂取を指導。症状の悪化や発熱があれば再受診するよう説明し、外来で経過観察としました。',
+  explain:'排尿時痛・頻尿という下部尿路症状に、発熱や肋骨脊柱角叩打痛といった上部尿路感染（腎盂腎炎）を示唆する所見がないことから、単純性の**急性膀胱炎**と診断します。典型例では総合診療科での経験的抗菌薬治療で対応可能です。尿培養や画像検査は、治療に反応しない場合や再発を繰り返す場合に検討します。',
+},
+{
+  id:'c21', tier:2, name:'森田 勝', age:68, gender:'男性', seed:204, urgent:true, specialty:'emergency',
+  vitals:{temp:'37.2℃', bp:'138/84', pulse:'102/分', spo2:'89%'},
+  chief:'3日前から咳と痰が増え、今日は坂道を歩くだけで息が切れて苦しい。',
+  bodyMarks:['chest_center'],
+  qa:[
+    {q:'呼吸困難の程度について教えてください', a:'いつもは坂道でも大丈夫なのですが、今日は少し歩いただけで息が切れて立ち止まってしまいます。会話も途切れ途切れになります。', key:true},
+    {q:'痰の量や色に変化はありますか？', a:'3日前から痰の量が増え、色が黄色っぽく濃くなりました。', key:true},
+    {q:'喫煙歴について教えてください', a:'20歳から1日30本、48年間タバコを吸っています。数年前に「肺気腫」と言われたことがあります。', key:true},
+    {q:'発熱や胸の痛みはありますか？', a:'微熱はありますが、胸の痛みはありません。'},
+  ],
+  tests:[
+    {name:'経皮的酸素飽和度と呼吸音の診察', cost:1, key:true, type:'text', result:'SpO2 89%と低下しています。両肺野で呼気の延長と、かすかな喘鳴（wheeze）を聴取します。'},
+    {name:'胸部X線', cost:1, key:true, type:'text', result:'肺の過膨張と横隔膜の平低化を認めます。明らかな新規浸潤影は指摘できません。'},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'3.1', unit:'mg/dL', min:0, max:0.3, dispMax:6, abnormal:true},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'洞頻脈を認めますが、それ以外に急性の異常はありません。'},
+    {name:'胸部CT', cost:3, type:'text', result:'気腫性変化を認めます。明らかな腫瘤性病変や気胸は指摘できません。'},
+  ],
+  diagnosisCorrect:'COPD増悪（慢性閉塞性肺疾患の急性増悪）',
+  diagnosisOptions:['COPD増悪（慢性閉塞性肺疾患の急性増悪）','気管支喘息発作','急性心不全','肺炎','気胸','肺塞栓症'],
+  disposition:'refer', deptCorrect:'pulmo',
+  explain:'長期喫煙歴と気腫の既往がある患者の、喀痰増加・膿性痰・呼吸困難増悪という所見は**COPD増悪**の典型像です。SpO2低下を伴っており、気管支拡張薬・ステロイド・場合により酸素療法や抗菌薬治療を要するため、呼吸器内科への引き継ぎが必要です。胸部CTは初期評価では必須ではなく、時間とコストを要する検査です。',
+},
+{
+  id:'c22', tier:2, name:'藤原 智子', age:45, gender:'女性', seed:205, specialty:'internal',
+  vitals:{temp:'36.5℃', bp:'118/72', pulse:'74/分', spo2:'99%'},
+  chief:'朝、寝返りを打った瞬間に、天井がグルグル回るような激しいめまいがあった。',
+  bodyMarks:['head'],
+  qa:[
+    {q:'めまいの性質と持続時間を教えてください', a:'景色がグルグル回転するようなめまいで、数十秒から1分程度で治まります。', key:true},
+    {q:'めまいが起こるきっかけはありますか？', a:'朝ベッドで寝返りを打ったときや、頭を上に向けたときに起こります。じっとしていると症状はありません。', key:true},
+    {q:'手足のしびれや麻痺、ろれつが回らないといった症状はありますか？', a:'いいえ、手足の動きや言葉には全く問題ありません。', key:true},
+    {q:'難聴や耳鳴りはありますか？', a:'いいえ、耳の聞こえや耳鳴りに変化はありません。'},
+  ],
+  tests:[
+    {name:'頭位変換眼振検査', cost:1, key:true, type:'text', result:'頭位変換により回旋性の眼振が誘発され、数十秒で消失します。特定の頭位で症状が再現性をもって誘発されます。'},
+    {name:'神経学的診察', cost:1, key:true, type:'text', result:'四肢の麻痺・感覚障害、構音障害、指鼻試験の異常など、中枢性を示唆する所見は認めません。'},
+    {name:'血圧測定（起立性低血圧の評価）', cost:1, type:'text', result:'臥位・立位での血圧に明らかな差は認めません。'},
+    {name:'頭部MRI', cost:3, type:'text', result:'明らかな脳梗塞や腫瘍性病変は認めません。'},
+    {name:'血液検査（貧血の有無）', cost:1, type:'lab', label:'ヘモグロビン', value:'13.0', unit:'g/dL', min:12, max:16, dispMax:17, abnormal:false},
+  ],
+  diagnosisCorrect:'良性発作性頭位めまい症（BPPV）',
+  diagnosisOptions:['良性発作性頭位めまい症（BPPV）','前庭神経炎','メニエール病','中枢性めまい（脳血管障害）','起立性低血圧','前庭性片頭痛'],
+  disposition:'treat',
+  treatmentNote:'頭位治療（エプリー法などの浮遊耳石置換法）を実施し、日常生活での頭位変換の注意点を指導しました。症状が遷延・増悪する場合の再受診について説明し、外来で経過観察としました。',
+  explain:'特定の頭位変換で誘発される数十秒程度の回転性めまいと回旋性眼振、そして神経学的診察で中枢性を示唆する所見がないことから**良性発作性頭位めまい症（BPPV）**と診断します。中枢性めまい（脳血管障害）の除外が最も重要で、随伴する神経症状がないことを確認できれば、総合診療科での頭位治療により対応可能です。頭部MRIは中枢性を疑う所見がある場合に検討すべきで、本症例では必須ではありません。',
+},
+{
+  id:'c23', tier:3, name:'高橋 清', age:78, gender:'男性', seed:206,
+  vitals:{temp:'36.4℃', bp:'132/78', pulse:'70/分', spo2:'98%'},
+  chief:'半年ほど前から物忘れが目立つようになったと、同居する娘が心配して連れてきた。',
+  bodyMarks:['head'],
+  qa:[
+    {q:'物忘れの様子について教えてください（娘より）', a:'同じことを何度も聞いたり、直前に聞いた話を忘れたりすることが増えました。財布や鍵をしまった場所を忘れて探し回ることもあります。', key:true},
+    {q:'日常生活への影響はありますか？', a:'料理の手順を間違えたり、公共料金の支払いを忘れて滞納したりするようになりました。以前は几帳面な性格だったので驚いています。', key:true},
+    {q:'症状の始まり方や経過について教えてください', a:'はっきりした発症時期は分からず、半年ほどかけて少しずつ進行してきた印象です。', key:true},
+    {q:'脳卒中などの既往はありますか？', a:'特にありません。高血圧で内服治療中です。'},
+  ],
+  tests:[
+    {name:'認知機能検査（HDS-R／MMSE）', cost:1, key:true, type:'text', result:'**認知機能検査**の結果は18点（30点満点）と低下しています。特に遅延再生（少し前に覚えたことを思い出す力）の障害が目立ちます。'},
+    {name:'神経学的診察', cost:1, key:true, type:'text', result:'明らかな麻痺や感覚障害、歩行障害は認めません。急性の局所神経症状はありません。'},
+    {name:'頭部MRI', cost:3, key:true, type:'text', result:'海馬を中心とした内側側頭葉の萎縮を認めます。明らかな脳梗塞や慢性硬膜下血腫など、治療可能な器質的疾患は認めません。'},
+    {name:'血液検査（甲状腺機能・ビタミンB12など）', cost:1, key:true, type:'text', result:'甲状腺機能、ビタミンB12・葉酸値はいずれも正常範囲内です。治療可能な認知機能低下の原因は否定的です。'},
+    {name:'胸部X線', cost:1, type:'text', result:'明らかな異常所見はありません。'},
+  ],
+  diagnosisCorrect:'アルツハイマー型認知症',
+  diagnosisOptions:['アルツハイマー型認知症','うつ病による仮性認知症','慢性硬膜下血腫','正常圧水頭症','せん妄','レビー小体型認知症'],
+  disposition:'refer', deptCorrect:'neuro',
+  explain:'半年かけて緩徐に進行する記憶障害と、日常生活動作への支障、**認知機能検査**での遅延再生障害、そしてMRIでの海馬萎縮という所見から**アルツハイマー型認知症**と診断します。治療可能な二次性認知症（甲状腺機能低下症、ビタミン欠乏、慢性硬膜下血腫など）を除外することが重要で、専門的な評価と治療方針の検討のため脳神経内科への引き継ぎが必要です。',
+},
+{
+  id:'c24', tier:2, name:'中島 蓮', age:19, gender:'男性', seed:207, urgent:true, specialty:'emergency',
+  vitals:{temp:'36.8℃', bp:'88/58', pulse:'118/分', spo2:'94%'},
+  chief:'20分前、庭で蜂に刺された直後から全身に蕁麻疹が広がり、息苦しさを感じている。',
+  bodyMarks:['skin_general','chest_center'],
+  qa:[
+    {q:'症状の経過を教えてください', a:'蜂に刺された数分後から、刺された場所だけでなく全身に赤い蕁麻疹が広がりました。今は喉の違和感と息苦しさもあります。', key:true},
+    {q:'以前にも虫刺されで強い反応が出たことはありますか？', a:'去年も蜂に刺されて腫れが強く出たことがありますが、今回ほどではありませんでした。', key:true},
+    {q:'めまいや意識が遠のく感じはありますか？', a:'立ち上がると少しふらつく感じがあります。', key:true},
+    {q:'喘息などのアレルギー疾患の既往はありますか？', a:'子どもの頃に軽い喘息がありましたが、今は治療していません。'},
+  ],
+  tests:[
+    {name:'全身の視診と血圧測定', cost:1, key:true, type:'text', result:'全身に膨疹（蕁麻疹）を認めます。血圧88/58mmHgと低下しており、頻脈を伴っています。'},
+    {name:'呼吸音の聴診とSpO2測定', cost:1, key:true, type:'text', result:'軽度の喘鳴を聴取し、SpO2は94%とやや低下しています。喉頭浮腫による気道症状が疑われます。'},
+    {name:'皮膚の刺し口の確認', cost:1, key:true, type:'text', result:'右前腕に蜂刺されによる刺し口と局所の腫脹を認めます。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'10200', unit:'/μL', min:3500, max:9000, dispMax:14000, abnormal:true},
+    {name:'血液検査（トリプターゼ）', cost:2, type:'text', result:'結果は数日後に判明する予定です。'},
+  ],
+  diagnosisCorrect:'アナフィラキシー',
+  diagnosisOptions:['アナフィラキシー','血管迷走神経反射（迷走神経反射性失神）','蕁麻疹（単純性）','パニック発作','敗血症性ショック','アレルギー性血管性浮腫'],
+  disposition:'refer', deptCorrect:'er',
+  explain:'蜂刺傷後の急速な全身蕁麻疹、気道症状（喘鳴・呼吸困難）、血圧低下という複数臓器にわたる症状から**アナフィラキシー**と診断します。生命に関わる緊急病態であり、アドレナリン筋注などの初期対応と二相性反応に備えた経過観察のため、直ちに救急科へ引き継ぐ必要があります。確定診断のための特殊検査を待って対応が遅れることは許されません。',
+},
+{
+  id:'c25', tier:3, name:'佐野 幸子', age:60, gender:'女性', seed:208,
+  vitals:{temp:'35.9℃', bp:'128/82', pulse:'58/分', spo2:'98%'},
+  chief:'半年ほど前から、寒がりになり、体がだるく、体重も増えてきた。',
+  bodyMarks:['throat'],
+  qa:[
+    {q:'寒がりや倦怠感について詳しく教えてください', a:'以前より寒がりになり、厚着をしても寒く感じます。全身がだるく、朝起きるのがつらいです。', key:true},
+    {q:'体重や皮膚の変化はありますか？', a:'食欲は変わらないのに体重が3kg増えました。肌が乾燥してカサカサするようになりました。', key:true},
+    {q:'便通や声の変化はありますか？', a:'便秘がちになりました。声が以前よりかすれる、低くなった気がします。', key:true},
+    {q:'甲状腺の病気を指摘されたことはありますか？', a:'いいえ、これまで指摘されたことはありません。'},
+  ],
+  tests:[
+    {name:'血液検査（甲状腺機能：TSH）', cost:1, key:true, type:'lab', label:'TSH', value:'18.5', unit:'μIU/mL', min:0.4, max:4.0, dispMax:22, abnormal:true},
+    {name:'血液検査（甲状腺ホルモン：FT4）', cost:1, key:true, type:'lab', label:'FT4', value:'0.4', unit:'ng/dL', min:0.9, max:1.7, dispMax:2, abnormal:true},
+    {name:'甲状腺の触診', cost:1, key:true, type:'text', result:'甲状腺は軽度びまん性に腫大し、弾性硬です。圧痛はありません。'},
+    {name:'血液検査（脂質）', cost:1, type:'lab', label:'LDLコレステロール', value:'168', unit:'mg/dL', min:70, max:139, dispMax:220, abnormal:true},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'洞性徐脈を認めますが、それ以外の異常はありません。'},
+  ],
+  diagnosisCorrect:'甲状腺機能低下症（橋本病）',
+  diagnosisOptions:['甲状腺機能低下症（橋本病）','うつ病','貧血','慢性疲労症候群','クッシング症候群','線維筋痛症'],
+  disposition:'refer', deptCorrect:'endo',
+  explain:'寒がり、倦怠感、体重増加、皮膚乾燥、便秘、嗄声という典型的な症状に、**TSH**上昇と**FT4**低下という所見が加わり、**甲状腺機能低下症**と診断します。多くは慢性甲状腺炎（橋本病）が原因であり、甲状腺ホルモン補充療法の導入と調整のため内分泌代謝内科への引き継ぎが必要です。',
+},
+
+/* ---------------- 追加症例2：蕁麻疹・薬疹・依存症・緩和ケア、および既存診断の別パターン ---------------- */
+{
+  id:'c26', tier:1, name:'西田 彩花', age:27, gender:'女性', seed:209, specialty:'internal',
+  vitals:{temp:'36.6℃', bp:'112/70', pulse:'76/分', spo2:'99%'},
+  chief:'2日前から全身に赤い膨らみが出たり消えたりし、強いかゆみがある。',
+  chiefVariants:['夕食後から、体のあちこちに赤い膨らみが次々と現れては消えていく。かゆみが強い。'],
+  qa:[
+    {q:'症状の見た目について教えてください', a:'皮膚が赤く盛り上がった発疹が、体のあちこちに出たり消えたりします。一つ一つは数時間で消え、また別の場所に出てきます。', key:true},
+    {q:'何かきっかけに心当たりはありますか？', a:'特に思い当たる食べ物や薬はありません。数日前から仕事が忙しく、寝不足が続いていました。'},
+    {q:'呼吸苦しさや喉の違和感はありますか？', a:'いいえ、呼吸は普段どおりで、喉の違和感もありません。', key:true},
+    {q:'以前にも同じような発疹が出たことはありますか？', a:'今回が初めてです。'},
+  ],
+  tests:[
+    {name:'皮膚の視診', cost:1, key:true, type:'text', result:'体幹・四肢に、境界明瞭でやや隆起した紅斑が多発しています。個々の皮疹は境界が移動し、24時間以内に消退・再出現を繰り返す経過です。'},
+    {name:'全身状態の確認（血圧・呼吸音）', cost:1, key:true, type:'text', result:'血圧・脈拍は安定しており、呼吸音に異常はありません。顔面や口唇の腫脹も認めません。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'7600', unit:'/μL', min:3500, max:9000, dispMax:11000, abnormal:false},
+    {name:'アレルギー検査（特異的IgE）', cost:2, type:'text', result:'主要な食物・吸入抗原に対する明らかな陽性反応は認めませんでした。'},
+  ],
+  diagnosisCorrect:'蕁麻疹（特発性）',
+  diagnosisOptions:['蕁麻疹（特発性）','接触皮膚炎（かぶれ）','多形滲出性紅斑','アナフィラキシー','薬疹'],
+  disposition:'treat',
+  treatmentNote:'抗ヒスタミン薬を処方し、症状が続く場合は継続するよう説明。呼吸苦しさなど危険な症状が出た場合はすぐに受診するよう指導し、外来で経過観察としました。',
+  explain:'個々の皮疹が短時間で移動・消退を繰り返す膨疹と強いかゆみ、そして呼吸器症状や血圧低下を伴わないことから**蕁麻疹（特発性）**と診断します。多くは誘因がはっきりせず、総合診療科での対症療法（抗ヒスタミン薬）により経過をみることができます。',
+},
+{
+  id:'c27', tier:2, name:'松井 隆', age:50, gender:'男性', seed:210, specialty:'internal',
+  vitals:{temp:'37.4℃', bp:'124/78', pulse:'88/分', spo2:'98%'},
+  chief:'5日前に新しい薬を飲み始めてから、全身に赤い発疹が広がってきた。',
+  qa:[
+    {q:'発疹が出るまでの経過を教えてください', a:'1週間前、皮膚科で処方された抗菌薬を飲み始め、5日目くらいから体幹を中心に赤い発疹が出始め、だんだん広がっています。', key:true},
+    {q:'発疹の見た目やかゆみについて教えてください', a:'左右対称に広がる、やや盛り上がった赤い発疹で、かゆみを伴います。', key:true},
+    {q:'発熱や粘膜（口・目）の症状はありますか？', a:'微熱がありますが、口内炎や目の充血など粘膜の症状はありません。', key:true},
+    {q:'以前に薬でアレルギーが出たことはありますか？', a:'これまで薬でアレルギーが出たことはありません。'},
+  ],
+  tests:[
+    {name:'皮膚の視診', cost:1, key:true, type:'text', result:'体幹を中心に左右対称性の紅斑が多発し、一部は融合傾向にあります。水疱や粘膜疹、皮膚の剥離は認めません。'},
+    {name:'内服薬の確認', cost:1, key:true, type:'text', result:'発疹出現の5日前から、新規に開始した抗菌薬の内服歴を確認しました。時間的な関連が疑われます。'},
+    {name:'粘膜（眼・口腔）の診察', cost:1, key:true, type:'text', result:'眼球結膜、口腔粘膜に明らかなびらんや潰瘍は認めません。'},
+    {name:'血液検査（一般・炎症反応）', cost:1, type:'lab', label:'白血球数', value:'9200', unit:'/μL', min:3500, max:9000, dispMax:13000, abnormal:true},
+    {name:'血液検査（肝機能）', cost:1, type:'text', result:'肝逸脱酵素の軽度上昇を認めます。'},
+  ],
+  diagnosisCorrect:'薬疹',
+  diagnosisOptions:['薬疹','ウイルス性発疹症','蕁麻疹','スティーブンス・ジョンソン症候群','接触皮膚炎（かぶれ）'],
+  disposition:'refer', deptCorrect:'derma',
+  explain:'新規薬剤開始から数日後に生じた左右対称性の紅斑という時間的関連と分布から**薬疹**と診断します。粘膜疹や皮膚剥離など重症薬疹を示唆する所見はありませんが、原因薬剤の中止と皮膚科的評価のため引き継ぎが必要です。',
+},
+{
+  id:'c28', tier:2, name:'前田 誠', age:52, gender:'男性', seed:211, specialty:'internal',
+  vitals:{temp:'36.5℃', bp:'138/86', pulse:'92/分', spo2:'98%'},
+  chief:'健康診断で肝機能異常を指摘され受診。家族から飲酒量を心配されている。',
+  qa:[
+    {q:'飲酒の量や頻度について教えてください', a:'ほぼ毎日、缶チューハイやビールを合わせて2リットル近く飲んでいます。休肝日はほとんどありません。', key:true},
+    {q:'飲酒を減らそうとしたことはありますか？', a:'何度か減らそうとしましたが、イライラして眠れなくなり、結局元の量に戻ってしまいます。', key:true},
+    {q:'飲酒によって生活や仕事に影響は出ていますか？', a:'二日酔いで仕事に遅刻することが増え、家族からも飲酒について強く注意されています。', key:true},
+    {q:'飲酒をやめると手が震えたり、汗が出たりすることはありますか？', a:'朝、飲酒しないと手が震えることがあり、一杯飲むと落ち着きます。'},
+  ],
+  tests:[
+    {name:'問診によるスクリーニング（飲酒習慣の確認）', cost:1, key:true, type:'text', result:'連日の多量飲酒、飲酒量のコントロール困難、離脱時の症状、耐性の増大が確認されました。'},
+    {name:'血液検査（肝機能）', cost:1, key:true, type:'text', result:'γ-GTPおよびAST・ALTの上昇を認め、慢性的な飲酒による肝障害を示唆する所見です。'},
+    {name:'血液検査（血算・MCV）', cost:1, type:'lab', label:'平均赤血球容積（MCV）', value:'104', unit:'fL', min:83, max:99, dispMax:115, abnormal:true},
+    {name:'腹部超音波検査', cost:2, type:'text', result:'肝臓に軽度の脂肪肝を示唆する所見を認めます。明らかな肝硬変所見はありません。'},
+  ],
+  diagnosisCorrect:'アルコール依存症',
+  diagnosisOptions:['アルコール依存症','アルコール性肝障害','うつ病（アルコール関連）','双極性障害','離脱症候群（アルコール離脱）'],
+  disposition:'refer', deptCorrect:'psych',
+  explain:'飲酒量のコントロール困難、離脱時の症状、生活への支障という所見から**アルコール依存症**と診断します。専門的な評価と治療（節酒・断酒支援、離脱症状の管理）のため精神神経科への引き継ぎが必要です。',
+},
+{
+  id:'c29', tier:3, name:'竹内 昭子', age:68, gender:'女性', seed:212, specialty:'homecare',
+  vitals:{temp:'36.7℃', bp:'118/72', pulse:'84/分', spo2:'96%'},
+  chief:'進行した膵臓のがんで通院中。ここ1週間、痛み止めが効きにくくなり、背中の痛みが強くなってきた。',
+  qa:[
+    {q:'痛みの変化について教えてください', a:'これまでの痛み止めで抑えられていた背中の痛みが、この1週間でだんだん強くなり、夜も眠れないほどです。', key:true},
+    {q:'現在の痛み止めの使用状況について教えてください', a:'処方されている医療用麻薬を指示通りに使っていますが、効果が以前より弱くなった気がします。追加で使う頓服薬の回数も増えています。', key:true},
+    {q:'吐き気やねむけなど、薬の副作用と思われる症状はありますか？', a:'強い眠気やもうろうとした感じはありません。吐き気も今のところありません。', key:true},
+    {q:'痛み以外につらい症状はありますか？', a:'食欲が落ち、体重も減ってきました。気分が沈むこともあります。'},
+  ],
+  tests:[
+    {name:'痛みの性状と部位の評価', cost:1, key:true, type:'text', result:'背部から側腹部にかけての持続痛で、体動により増悪します。放散するしびれなど神経の圧迫を示唆する所見は伴っていません。'},
+    {name:'内服・使用中の薬剤の確認', cost:1, key:true, type:'text', result:'医療用麻薬の定期投与量に対し、痛みのコントロールが不十分になっていることを確認しました。増量や薬剤変更の検討が必要な状況です。'},
+    {name:'腹部造影CT', cost:3, key:true, type:'text', result:'膵臓の腫瘍は増大しており、周囲組織への浸潤が進行しています。新たな骨転移を示唆する所見も認めます。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'ヘモグロビン', value:'9.8', unit:'g/dL', min:11.5, max:15, dispMax:16, abnormal:true},
+    {name:'意識レベル・呼吸状態の確認', cost:1, type:'text', result:'意識は清明で、呼吸状態にも問題はありません。'},
+  ],
+  diagnosisCorrect:'がん性疼痛',
+  diagnosisOptions:['がん性疼痛','骨転移による病的骨折','オピオイド過量投与','消化管閉塞（がん性）','うつ状態（終末期）'],
+  disposition:'refer', deptCorrect:'palliative',
+  explain:'進行がんに伴う痛みの増悪と、既存の医療用麻薬でのコントロール不良という所見から**がん性疼痛**と診断します。オピオイドの増量や薬剤変更、全人的な症状緩和のため、緩和ケア科への引き継ぎが適切です。',
+},
+{
+  id:'c30', tier:2, name:'小野寺 陽子', age:62, gender:'女性', seed:213, urgent:true, specialty:'emergency',
+  vitals:{temp:'36.6℃', bp:'108/68', pulse:'96/分', spo2:'95%'},
+  chief:'今朝から強い吐き気と全身のだるさがあり、様子がおかしいと家族が心配して連れてきた。',
+  qa:[
+    {q:'症状の始まりについて教えてください', a:'今朝、急に強い吐き気と冷や汗が出て、体がだるくて動けなくなりました。', key:true},
+    {q:'胸の症状はありますか？', a:'胸が痛いというほどではありませんが、みぞおちのあたりに重苦しい違和感があります。', key:true},
+    {q:'既往歴や危険因子について教えてください', a:'糖尿病と高血圧で治療中です。閉経後、コレステロールも高いと言われています。', key:true},
+    {q:'息切れや動悸はありますか？', a:'軽い息切れがあります。'},
+  ],
+  tests:[
+    {name:'心電図（ECG）', cost:1, key:true, type:'ecg', pattern:'stemi', result:'下壁誘導を中心にST部分の上昇を認めます。'},
+    {name:'血液検査（心筋バイオマーカー）', cost:1, key:true, type:'lab', label:'トロポニンI', value:'3.6', unit:'ng/mL', min:0, max:0.04, dispMax:5, abnormal:true},
+    {name:'腹部の診察', cost:1, type:'text', result:'腹部は平坦・軟で、圧痛は明らかではありません。'},
+    {name:'血液検査（血糖）', cost:1, type:'lab', label:'血糖値', value:'182', unit:'mg/dL', min:70, max:109, dispMax:250, abnormal:true},
+    {name:'胸部X線', cost:1, type:'text', result:'心陰影は軽度拡大していますが、明らかな肺うっ血は指摘できません。'},
+  ],
+  diagnosisCorrect:'急性心筋梗塞',
+  diagnosisOptions:['急性心筋梗塞','急性胃腸炎','糖尿病性ケトアシドーシス','胆嚢炎','パニック発作','大動脈解離'],
+  disposition:'refer', deptCorrect:'cardio',
+  explain:'女性・糖尿病患者では、典型的な胸痛ではなく吐き気・倦怠感・心窩部の違和感といった非典型的な症状で**急性心筋梗塞**が発症することがあります。**心電図**でのST上昇と**トロポニン**上昇が診断の決め手であり、症状が非典型的であっても危険因子のある患者では常に心臓を鑑別に入れる必要があります。緊急性の高い症例であり、迅速に循環器内科へ引き継ぐ必要があります。',
+},
+{
+  id:'c31', tier:1, name:'川口 明美', age:45, gender:'女性', seed:214, specialty:'internal',
+  vitals:{temp:'38.6℃', bp:'116/74', pulse:'96/分', spo2:'95%'},
+  chief:'3日前からの発熱と咳が続き、今日から痰に色がつくようになった。',
+  chiefVariants:['1週間前の風邪が治りきらず、ここ2日で高熱と黄色い痰、右胸の痛みが出てきた。'],
+  qa:[
+    {q:'咳や痰について詳しく教えてください', a:'乾いた咳で始まりましたが、今日から黄色っぽい痰が絡むようになりました。', key:true},
+    {q:'呼吸苦しさや胸の痛みはありますか？', a:'深呼吸をすると右の胸が少し痛みます。階段を上ると息が切れます。', key:true},
+    {q:'既往歴や基礎疾患はありますか？', a:'特に持病はなく、普段は健康です。'},
+    {q:'周囲で同じような症状の人はいますか？', a:'特に思い当たりません。'},
+  ],
+  tests:[
+    {name:'胸部聴診', cost:1, key:true, type:'text', result:'右下肺野で断続性の副雑音（水泡音）を聴取します。'},
+    {name:'胸部X線', cost:1, key:true, type:'text', result:'右下肺野に浸潤影を認めます。'},
+    {name:'血液検査（炎症反応）', cost:1, key:true, type:'lab', label:'CRP', value:'8.4', unit:'mg/dL', min:0, max:0.3, dispMax:12, abnormal:true},
+    {name:'経皮的酸素飽和度測定', cost:1, type:'text', result:'SpO2 95%で、室内気での大きな低下は認めません。'},
+    {name:'血液検査（白血球）', cost:1, type:'lab', label:'白血球数', value:'13400', unit:'/μL', min:3500, max:9000, dispMax:16000, abnormal:true},
+  ],
+  diagnosisCorrect:'市中肺炎',
+  diagnosisOptions:['市中肺炎','急性気管支炎','肺結核','心不全（うっ血性）','誤嚥性肺炎'],
+  disposition:'treat',
+  treatmentNote:'経口抗菌薬を処方し、水分摂取と安静を指導。症状悪化時（呼吸困難の増強、高熱の遷延など）はすぐに再受診するよう説明し、外来で経過観察としました。',
+  explain:'発熱・膿性痰・胸膜痛という所見に、胸部聴診での副雑音、胸部X線での浸潤影、**CRP**上昇が加わり、**市中肺炎**と診断します。基礎疾患のない健康な成人で、バイタルサインが安定した軽症例は、総合診療科での外来治療が可能です。',
+},
+{
+  id:'c32', tier:1, name:'山下 拓也', age:24, gender:'男性', seed:215, specialty:'internal',
+  vitals:{temp:'36.7℃', bp:'122/76', pulse:'100/分', spo2:'94%'},
+  chief:'昨夜から咳と息苦しさが続き、ゼーゼーという音がする。',
+  qa:[
+    {q:'症状のきっかけや経過について教えてください', a:'昨日、掃除をしていたらほこりを吸い込んでから、夜になって咳と息苦しさが出てきました。', key:true},
+    {q:'呼吸の様子について詳しく教えてください', a:'息を吐くときにゼーゼーという音がして、苦しいです。夜間や早朝に症状が強くなる気がします。', key:true},
+    {q:'喘息と診断されたことはありますか？', a:'子どもの頃に喘息と言われたことがあります。最近は症状が落ち着いていたので治療は受けていませんでした。', key:true},
+    {q:'アレルギー体質はありますか？', a:'ハウスダストやほこりで鼻炎の症状が出やすいです。'},
+  ],
+  tests:[
+    {name:'呼吸音の聴診', cost:1, key:true, type:'text', result:'両側肺野で呼気時の高調性喘鳴（wheeze）を聴取します。呼気の延長も認めます。'},
+    {name:'経皮的酸素飽和度測定', cost:1, key:true, type:'text', result:'SpO2 94%とやや低下しています。'},
+    {name:'胸部X線', cost:1, type:'text', result:'明らかな浸潤影や気胸は認めません。過膨張の所見も目立ちません。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'8100', unit:'/μL', min:3500, max:9000, dispMax:12000, abnormal:false},
+  ],
+  diagnosisCorrect:'気管支喘息発作',
+  diagnosisOptions:['気管支喘息発作','COPD増悪（慢性閉塞性肺疾患の急性増悪）','過換気症候群','気胸','心因性咳嗽'],
+  disposition:'treat',
+  treatmentNote:'気管支拡張薬の吸入を行い、症状の改善を確認しました。吸入薬を処方し、増悪時の対応と定期受診について説明し、外来で経過観察としました。',
+  explain:'誘因（ほこり吸入）に続く咳・呼吸困難、両側性の呼気性喘鳴という所見と、小児喘息の既往から**気管支喘息発作**と診断します。軽症〜中等症で気管支拡張薬に反応する場合は、総合診療科での対応が可能です。',
+},
+{
+  id:'c33', tier:1, name:'遠藤 さくら', age:29, gender:'女性', seed:216, specialty:'internal',
+  vitals:{temp:'36.5℃', bp:'110/68', pulse:'72/分', spo2:'99%'},
+  chief:'半年前から月に2〜3回、片側がズキズキする頭痛を繰り返している。',
+  chiefVariants:['生理の前になると決まって、右のこめかみがズキズキと脈打つように痛む。'],
+  qa:[
+    {q:'頭痛の性質について教えてください', a:'右側のこめかみを中心に、脈打つようなズキズキした痛みです。動くと痛みが強くなります。', key:true},
+    {q:'頭痛に伴う症状はありますか？', a:'頭痛の時は光や音がつらく感じ、吐き気を伴うこともあります。暗い部屋で休むと楽になります。', key:true},
+    {q:'頭痛の前に前兆のような症状はありますか？', a:'時々、頭痛が始まる前にキラキラした光が見えることがあります。', key:true},
+    {q:'手足のしびれや麻痺、ろれつが回らないといった症状はありますか？', a:'いいえ、そのような症状はありません。'},
+  ],
+  tests:[
+    {name:'神経学的診察', cost:1, key:true, type:'text', result:'四肢の麻痺・感覚障害、構音障害など、局所神経症状は認めません。'},
+    {name:'頭痛の性状・随伴症状の評価', cost:1, key:true, type:'text', result:'片側性・拍動性の頭痛で、悪心や光過敏・音過敏を伴い、日常動作で増悪するという特徴を認めます。'},
+    {name:'血圧測定', cost:1, type:'text', result:'血圧は正常範囲内です。'},
+    {name:'頭部CT', cost:2, type:'text', result:'明らかな出血や占拠性病変は認めません。'},
+  ],
+  diagnosisCorrect:'片頭痛',
+  diagnosisOptions:['片頭痛','緊張型頭痛','くも膜下出血','群発頭痛','薬物乱用頭痛'],
+  disposition:'treat',
+  treatmentNote:'頭痛時の頓服薬（トリプタン製剤）を処方し、頭痛日記をつけることを勧めました。頭痛の頻度が増える場合は予防薬の相談のため再受診するよう説明し、外来で経過観察としました。',
+  explain:'片側性・拍動性の頭痛に、悪心や光過敏・音過敏の随伴症状、閃輝暗点のような前兆、そして神経学的診察で異常がないことから**片頭痛**と診断します。危険な二次性頭痛を示唆する所見（突然の激しい発症、神経症状など）がなければ、総合診療科での治療が可能です。',
+},
+{
+  id:'c34', tier:1, name:'木下 正人', age:58, gender:'男性', seed:217, specialty:'internal',
+  vitals:{temp:'37.3℃', bp:'130/80', pulse:'80/分', spo2:'98%'},
+  chief:'3日前から右の脇腹がピリピリ痛み、今日になってその部分に発疹が出てきた。',
+  chiefVariants:['数日前からわき腹がピリピリ痛み、今朝鏡を見たら赤い発疹が帯状に出ていた。'],
+  qa:[
+    {q:'痛みの性質と経過を教えてください', a:'3日前から右の脇腹に、ピリピリ・チクチクした痛みがありました。今日、その痛む場所に沿って発疹が出てきました。', key:true},
+    {q:'発疹の見た目について教えてください', a:'赤い地面に小さな水ぶくれが集まってできていて、右脇腹から背中にかけて帯のように分布しています。', key:true},
+    {q:'発疹は体の正中線（真ん中）を超えていますか？', a:'いいえ、右側だけにとどまっていて、体の真ん中を超えることはありません。', key:true},
+    {q:'水ぼうそうにかかったことはありますか？', a:'子どもの頃に水ぼうそうにかかったことがあります。'},
+  ],
+  tests:[
+    {name:'皮膚の視診', cost:1, key:true, type:'text', result:'右第9〜10胸髄神経支配領域に一致して、紅斑を伴う小水疱が集簇しています。皮疹は体の正中線を超えていません。'},
+    {name:'疼痛の性状の評価', cost:1, key:true, type:'text', result:'皮膚分節（デルマトーム）に沿った、ピリピリ・焼けるような神経障害性の痛みを認めます。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'8300', unit:'/μL', min:3500, max:9000, dispMax:12000, abnormal:false},
+    {name:'眼の診察（眼病変の有無）', cost:1, type:'text', result:'眼周囲や鼻先への皮疹はなく、眼症状も認めません。'},
+  ],
+  diagnosisCorrect:'帯状疱疹',
+  diagnosisOptions:['帯状疱疹','単純ヘルペス','接触皮膚炎（かぶれ）','水痘（水ぼうそう）','肋間神経痛（帯状疱疹前駆症状）'],
+  disposition:'treat',
+  treatmentNote:'抗ウイルス薬を処方し、疼痛コントロールのため鎮痛薬を併用。皮疹や痛みが長引く場合や眼症状が出た場合はすぐに受診するよう説明し、外来で経過観察としました。',
+  explain:'神経の走行（デルマトーム）に沿った片側性の帯状の水疱性皮疹と、先行する神経痛様の痛みという特徴的な経過から**帯状疱疹**と診断します。眼病変を伴わない典型例は、総合診療科での抗ウイルス薬治療が可能です。',
+},
+{
+  id:'c35', tier:2, name:'桜井 陽子', age:38, gender:'女性', seed:218, specialty:'internal',
+  vitals:{temp:'39.1℃', bp:'108/66', pulse:'108/分', spo2:'97%'},
+  chief:'2日前からの排尿時痛に続き、今日から高熱と右の背中の痛みが出てきた。',
+  qa:[
+    {q:'症状の経過を教えてください', a:'2日前から排尿時にしみるような痛みがありました。今日になって39度台の高熱と、右側の腰から背中にかけての痛みが出てきました。', key:true},
+    {q:'吐き気や倦怠感はありますか？', a:'強い倦怠感と軽い吐き気があります。', key:true},
+    {q:'以前にも膀胱炎になったことはありますか？', a:'去年、膀胱炎で治療を受けたことがあります。'},
+    {q:'悪寒やふるえはありますか？', a:'先ほど、ガタガタ震えるような悪寒がありました。', key:true},
+  ],
+  tests:[
+    {name:'尿検査', cost:1, key:true, type:'text', result:'白血球反応・亜硝酸塩ともに強陽性です。'},
+    {name:'診察（肋骨脊柱角の叩打痛の確認）', cost:1, key:true, type:'text', result:'右の肋骨脊柱角に明らかな叩打痛を認めます。'},
+    {name:'血液検査（炎症反応）', cost:1, key:true, type:'lab', label:'CRP', value:'12.6', unit:'mg/dL', min:0, max:0.3, dispMax:16, abnormal:true},
+    {name:'血液検査（白血球）', cost:1, type:'lab', label:'白血球数', value:'15800', unit:'/μL', min:3500, max:9000, dispMax:18000, abnormal:true},
+    {name:'腹部超音波検査', cost:2, type:'text', result:'右腎盂の軽度拡張を認めます。明らかな結石や膿瘍は指摘できません。'},
+  ],
+  diagnosisCorrect:'急性腎盂腎炎',
+  diagnosisOptions:['急性腎盂腎炎','急性膀胱炎','尿管結石','急性巣状細菌性腎炎','腎周囲膿瘍'],
+  disposition:'refer', deptCorrect:'nephro',
+  explain:'排尿時痛に続く高熱・悪寒戦慄・肋骨脊柱角の叩打痛という所見から、下部尿路感染が上行した**急性腎盂腎炎**と診断します。発熱を伴う腎盂腎炎は、点滴抗菌薬治療や入院加療が必要となることもあり、専門科への引き継ぎが適切です。',
+},
+
+/* ---------------- 追加症例3：小児科ローテーション・在宅医療ローテーション向け ---------------- */
+{
+  id:'c36', tier:1, name:'小林 陽菜', age:3, gender:'女性', seed:219, specialty:'pediatric',
+  vitals:{temp:'37.8℃', bp:'92/58', pulse:'112/分', spo2:'98%'},
+  chief:'1日前から嘔吐と下痢が続き、食欲がない（母親より）。',
+  qa:[
+    {q:'嘔吐や下痢の様子を教えてください（母親より）', a:'昨日の夜から嘔吐を繰り返し、その後水っぽい下痢が1日に5〜6回出ています。', key:true},
+    {q:'水分は摂れていますか？', a:'欲しがる時に少しずつ飲ませていますが、量は普段より少ないです。おしっこの回数もいつもより少ない気がします。', key:true},
+    {q:'便に血や粘液は混じっていますか？', a:'いいえ、血や粘液は見当たりません。', key:true},
+    {q:'保育園や周りで同じ症状の子はいますか？', a:'保育園で嘔吐下痢が流行っていると聞きました。'},
+  ],
+  tests:[
+    {name:'全身状態と脱水の評価', cost:1, key:true, type:'text', result:'皮膚のハリはやや低下し、口唇はやや乾燥しています。啼泣時の涙もやや少なめです。活気はありますが、軽度から中等度の脱水を示唆する所見です。'},
+    {name:'腹部の診察', cost:1, key:true, type:'text', result:'腹部は平坦・軟で、著明な圧痛や腫瘤は触れません。腸雑音はやや亢進しています。'},
+    {name:'便の性状確認', cost:1, type:'text', result:'水様便で、血液や粘液の混入は認めません。'},
+    {name:'血液検査（電解質）', cost:2, type:'text', result:'軽度の脱水を反映した所見ですが、著明な電解質異常は認めません。'},
+  ],
+  diagnosisCorrect:'急性胃腸炎（ウイルス性）',
+  diagnosisOptions:['急性胃腸炎（ウイルス性）','細菌性腸炎','急性虫垂炎','腸重積','食物アレルギー'],
+  disposition:'treat',
+  treatmentNote:'経口補水液によるこまめな水分補給の方法を保護者に説明し、消化に良い食事を指導しました。ぐったりする、水分が全く摂れない、尿が出ないなどのサインがあれば、すぐに再受診するよう伝え、外来で経過観察としました。',
+  explain:'嘔吐に続く水様下痢、周囲での流行という経過と、軽度から中等度の脱水所見から**急性胃腸炎（ウイルス性）**と診断します。多くは自然に軽快するため、経口補水療法を中心とした外来管理が可能です。血便や強い腹痛があれば、腸重積などの重篤な疾患の除外が必要になります。',
+},
+{
+  id:'c37', tier:1, name:'佐々木 蓮', age:2, gender:'男性', seed:220, specialty:'pediatric',
+  vitals:{temp:'38.7℃', bp:'90/56', pulse:'118/分', spo2:'99%'},
+  chief:'発熱中に、数十秒間体を突っ張らせてガクガクと震え、目を見開いた（母親より）。',
+  qa:[
+    {q:'けいれんの様子を教えてください（母親より）', a:'突然、手足を突っ張らせてガクガクと震え、白目をむいていました。呼びかけへの反応もありませんでした。1分ほどで治まりました。', key:true},
+    {q:'発熱について教えてください', a:'けいれんの数時間前から38度台の発熱がありました。', key:true},
+    {q:'けいれんの後の様子はどうですか？', a:'けいれんが治まった後は少しぼんやりしていましたが、今はいつも通り元気に遊んでいます。', key:true},
+    {q:'今までにもけいれんを起こしたことはありますか？', a:'いいえ、今回が初めてです。家族にも、発熱時にけいれんを起こしたことがある人がいます。'},
+  ],
+  tests:[
+    {name:'神経学的診察', cost:1, key:true, type:'text', result:'意識は清明で、四肢の麻痺や左右差は認めません。項部硬直などの髄膜刺激症状も認めません。'},
+    {name:'発熱の原因検索（咽頭・耳・皮疹などの診察）', cost:1, key:true, type:'text', result:'咽頭に軽度の発赤を認めますが、他に明らかな感染源は指摘できません。ウイルス性の上気道炎に伴う発熱と考えられます。'},
+    {name:'けいれんの持続時間・様式の確認', cost:1, key:true, type:'text', result:'左右対称性の全身性のけいれんで、持続時間は1分程度と短く、24時間以内の再発はありません。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'9800', unit:'/μL', min:5000, max:13000, dispMax:15000, abnormal:false},
+  ],
+  diagnosisCorrect:'熱性けいれん（単純型）',
+  diagnosisOptions:['熱性けいれん（単純型）','髄膜炎','てんかん','熱性けいれん（複雑型）','低血糖発作'],
+  disposition:'treat',
+  treatmentNote:'発熱の原因（ウイルス性上気道炎）に対する対症療法を行い、熱性けいれんの一般的な経過と、自宅でけいれんが起きた際の対応を保護者に説明しました。5分以上けいれんが続く場合や意識が戻らない場合はすぐに救急要請するよう伝え、外来で経過観察としました。',
+  explain:'発熱に伴う短時間（数分以内）の全身性けいれんで、けいれん後の意識障害が遷延せず、24時間以内の再発や神経学的異常所見がないことから**熱性けいれん（単純型）**と診断します。項部硬直などの髄膜刺激症状がなければ髄膜炎は考えにくく、多くは総合診療科での対症療法と保護者への説明で対応可能です。',
+},
+{
+  id:'c38', tier:2, name:'田村 満', age:84, gender:'男性', seed:221, specialty:'homecare',
+  vitals:{temp:'38.4℃', bp:'126/76', pulse:'98/分', spo2:'91%'},
+  chief:'在宅療養中。3日前から食事中にむせることが増え、今日から発熱と喀痰の増加がみられる（訪問看護師より）。',
+  qa:[
+    {q:'普段の様子とむせ込みについて教えてください（介護者より）', a:'数年前に脳梗塞を患ってから嚥下機能が低下しており、最近は食事中にむせることが増えていました。ここ3日はむせ込みが特に目立ちます。', key:true},
+    {q:'発熱や呼吸の様子について教えてください', a:'今日から38度台の熱があり、呼吸が荒く、痰がゴロゴロ絡む音がします。', key:true},
+    {q:'食事の形態や介助の状況について教えてください', a:'普段はきざみ食ととろみをつけた水分を、見守りながら介助で食べています。', key:true},
+    {q:'既往歴について教えてください', a:'5年前に脳梗塞の既往があり、左半身に軽い麻痺が残っています。高血圧の薬も飲んでいます。'},
+  ],
+  tests:[
+    {name:'呼吸音の聴診', cost:1, key:true, type:'text', result:'右下肺野を中心に、断続性の副雑音（水泡音）を聴取します。'},
+    {name:'経皮的酸素飽和度測定', cost:1, key:true, type:'text', result:'SpO2 91%と低下しています。'},
+    {name:'嚥下機能の評価（水飲みテストなど）', cost:1, key:true, type:'text', result:'水分を飲み込む際にむせ込みが誘発され、嚥下機能の低下を認めます。'},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'9.8', unit:'mg/dL', min:0, max:0.3, dispMax:14, abnormal:true},
+    {name:'胸部X線', cost:1, type:'text', result:'右下肺野に浸潤影を認めます。'},
+  ],
+  diagnosisCorrect:'誤嚥性肺炎',
+  diagnosisOptions:['誤嚥性肺炎','市中肺炎','心不全（うっ血性）','肺結核','COPD増悪（慢性閉塞性肺疾患の急性増悪）'],
+  disposition:'refer', deptCorrect:'pulmo',
+  explain:'嚥下機能低下を背景とした、むせ込みに続く発熱・喀痰増加、右下肺野優位の浸潤影という所見から**誤嚥性肺炎**と診断します。SpO2低下を伴い在宅での管理が困難と判断される場合は、入院加療も視野に専門科への引き継ぎが必要です。',
+},
+{
+  id:'c39', tier:1, name:'中野 光子', age:88, gender:'女性', seed:222, specialty:'homecare',
+  vitals:{temp:'36.8℃', bp:'118/70', pulse:'80/分', spo2:'97%'},
+  chief:'在宅で寝たきり。訪問看護師が、お尻の傷が悪化していることに気づいた。',
+  qa:[
+    {q:'普段の介護状況について教えてください（訪問看護師より）', a:'数年前から寝たきりで、体位変換は3〜4時間ごとに行っていますが、ここ最近は介護者の負担が増え、体位変換の間隔が空きがちでした。', key:true},
+    {q:'傷の経過について教えてください', a:'2週間ほど前から仙骨部（お尻の中心）の皮膚が赤くなり、今週になって皮膚がただれて浸出液が出るようになりました。', key:true},
+    {q:'栄養状態について教えてください', a:'食が細くなっており、最近体重も減ってきています。', key:true},
+    {q:'発熱はありますか？', a:'今のところ熱はありません。'},
+  ],
+  tests:[
+    {name:'創部の視診', cost:1, key:true, type:'text', result:'仙骨部に、皮下組織に達する潰瘍を認めます。創底には壊死組織が一部付着していますが、明らかな骨や筋肉の露出は認めません。'},
+    {name:'創周囲の皮膚の観察', cost:1, key:true, type:'text', result:'創周囲に発赤や熱感の広がりはなく、感染の波及を示唆する所見は目立ちません。'},
+    {name:'栄養状態の評価（血液検査）', cost:1, key:true, type:'lab', label:'アルブミン', value:'2.8', unit:'g/dL', min:3.8, max:5.2, dispMax:5.5, abnormal:true},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'0.8', unit:'mg/dL', min:0, max:0.3, dispMax:3, abnormal:true},
+  ],
+  diagnosisCorrect:'褥瘡（仙骨部）',
+  diagnosisOptions:['褥瘡（仙骨部）','蜂窩織炎','失禁関連皮膚炎','皮膚がん','壊死性筋膜炎'],
+  disposition:'treat',
+  treatmentNote:'創部の洗浄と被覆材による処置を行い、体位変換の頻度を増やすよう介護者に指導しました。栄養状態改善のための栄養補助食品の使用も提案し、訪問看護と連携しながら在宅で経過観察としました。',
+  explain:'同一体位が続くことによる持続的な圧迫と、栄養状態の低下を背景に、仙骨部に皮下組織に達する**褥瘡**が形成されたと考えられます。感染徴候（発赤の広がり、発熱）がなければ、在宅での創傷処置と体位変換・栄養管理により対応可能です。',
+},
+
+/* ---------------- 上級症例（advanced）：医長到達後の「2周目」でのみ登場する最難関症例 ---------------- */
+{
+  id:'c40', tier:4, name:'森山 恵美', age:35, gender:'女性', seed:223, urgent:true, arrival:'ambulance', advanced:true,
+  vitals:{temp:'40.2℃', bp:'156/88', pulse:'148/分（不整）', spo2:'96%'},
+  chief:'もともとバセドウ病で通院中。3日前からの発熱・下痢に続き、今朝から意識がもうろうとして家族に連れてこられた。',
+  qa:[
+    {q:'意識の状態について教えてください（家族より）', a:'呼びかけには反応しますが、受け答えがちぐはぐで、ひどく興奮したり急に落ち着かなくなったりを繰り返しています。', key:true},
+    {q:'もともとの持病について教えてください', a:'数年前からバセドウ病で通院していますが、最近は薬の飲み忘れが多く、通院も途絶えがちでした。', key:true},
+    {q:'発熱や下痢について教えてください', a:'3日前から38度台後半の発熱と下痢が続いています。', key:true},
+    {q:'動悸や体重減少はありますか？', a:'ここ数日、動悸が激しく、食欲はあるのに体重が減っています。'},
+  ],
+  tests:[
+    {name:'全身状態の診察（意識・体温・脈拍）', cost:1, key:true, type:'text', result:'体温40.2℃の高熱、著明な頻脈と不整脈を認めます。意識状態は変容しており、興奮と傾眠を繰り返しています。'},
+    {name:'甲状腺の診察', cost:1, key:true, type:'text', result:'甲状腺のびまん性腫大と、眼球突出を認めます。'},
+    {name:'血液検査（甲状腺機能）', cost:1, key:true, type:'text', result:'TSHは著明に低下し、FT4・FT3は測定上限を超える高値を示しています。'},
+    {name:'心電図', cost:1, key:true, type:'ecg', pattern:'afib', result:'心房細動を伴う高度の頻脈を認めます。'},
+    {name:'血液検査（肝機能・炎症反応）', cost:1, type:'text', result:'肝逸脱酵素の上昇と、炎症反応の軽度上昇を認めます。'},
+    {name:'尿検査', cost:1, type:'text', result:'明らかな尿路感染を示唆する所見はありません。'},
+  ],
+  diagnosisCorrect:'甲状腺クリーゼ',
+  diagnosisOptions:['甲状腺クリーゼ','敗血症性ショック','悪性症候群','褐色細胞腫クリーゼ','セロトニン症候群'],
+  disposition:'refer', deptCorrect:'endo',
+  explain:'既知のバセドウ病患者における、感染（発熱・下痢）を誘因とした高熱・著明な頻脈・意識変容という所見から**甲状腺クリーゼ**と診断します。内服中断による甲状腺ホルモンの制御不良が背景にあり、致死的となりうる内分泌緊急症であるため、直ちに専門科への引き継ぎと集中治療が必要です。',
+},
+{
+  id:'c41', tier:4, name:'山内 智也', age:29, gender:'男性', seed:224, advanced:true,
+  vitals:{temp:'39.4℃', bp:'112/70', pulse:'104/分', spo2:'98%'},
+  chief:'2週間前から毎日夕方に高熱が出て、その時だけ全身にサーモンピンク色の発疹が出る。',
+  qa:[
+    {q:'熱の出方について教えてください', a:'毎日夕方から夜にかけて39度台まで熱が上がり、朝には36度台まで下がります。これを2週間繰り返しています。', key:true},
+    {q:'発疹について教えてください', a:'熱が上がっている時だけ、体幹を中心にサーモンピンク色の発疹が出て、熱が下がると消えます。', key:true},
+    {q:'関節の痛みはありますか？', a:'手首や膝など、複数の関節が熱発作の時に痛みます。', key:true},
+    {q:'喉の痛みはありますか？', a:'熱が出るたびに、喉にも痛みがあります。'},
+  ],
+  tests:[
+    {name:'血液検査（炎症反応・フェリチン）', cost:1, key:true, type:'text', result:'CRP著明高値に加え、血清フェリチン値が基準上限の10倍以上と著しく上昇しています。'},
+    {name:'血液検査（自己抗体）', cost:1, key:true, type:'text', result:'リウマトイド因子、抗核抗体はいずれも陰性です。'},
+    {name:'皮膚の診察（発疹の観察）', cost:1, key:true, type:'text', result:'発熱時に一致して出現する、圧迫で退色するサーモンピンク色の紅斑を認めます。'},
+    {name:'血液培養', cost:2, type:'text', result:'2セットとも、明らかな菌の発育は認めませんでした。'},
+    {name:'胸腹部CT', cost:3, type:'text', result:'明らかな悪性腫瘍やリンパ節腫大は認めません。軽度の脾腫を認めます。'},
+  ],
+  diagnosisCorrect:'成人発症スチル病',
+  diagnosisOptions:['成人発症スチル病','関節リウマチ','悪性リンパ腫','感染性心内膜炎','全身性エリテマトーデス（SLE）'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'弛張熱（毎日決まった時間帯に上下する高熱）、熱発作に一致するサーモンピンク疹、多関節痛、著明なフェリチン上昇、そして自己抗体陰性・感染や悪性腫瘍の除外という所見から**成人発症スチル病**と診断します。診断が難しく除外診断となることが多い疾患で、専門的な評価・治療のため膠原病リウマチ内科への引き継ぎが必要です。',
+},
+{
+  id:'c42', tier:4, name:'藤田 健一', age:55, gender:'男性', seed:225, advanced:true,
+  vitals:{temp:'37.8℃', bp:'148/92', pulse:'88/分', spo2:'94%'},
+  chief:'2ヶ月前からの副鼻腔炎のような症状に続き、最近は血痰と急速な腎機能悪化を指摘された。',
+  qa:[
+    {q:'鼻や副鼻腔の症状について教えてください', a:'2ヶ月前から鼻づまりと膿性の鼻汁が続き、耳鼻科で「治りにくい副鼻腔炎」と言われていました。', key:true},
+    {q:'咳や痰について教えてください', a:'最近、咳とともに血の混じった痰が出るようになりました。', key:true},
+    {q:'全身症状はありますか？', a:'微熱と体重減少、全身の倦怠感が続いています。', key:true},
+    {q:'尿の異常はありますか？', a:'最近、健診で尿に血や蛋白が出ていると指摘されました。'},
+  ],
+  tests:[
+    {name:'尿検査', cost:1, key:true, type:'text', result:'血尿・蛋白尿を認めます。'},
+    {name:'血液検査（腎機能）', cost:1, key:true, type:'lab', label:'クレアチニン', value:'2.8', unit:'mg/dL', min:0.6, max:1.1, dispMax:4, abnormal:true},
+    {name:'血液検査（ANCA）', cost:2, key:true, type:'text', result:'PR3-ANCA（抗好中球細胞質抗体）が高値陽性です。'},
+    {name:'胸部CT', cost:2, key:true, type:'text', result:'両肺に結節影と一部空洞形成を認めます。'},
+    {name:'耳鼻科的診察所見の確認', cost:1, type:'text', result:'鼻中隔に肉芽性病変を認め、軟骨の破壊による鞍鼻（鼻の変形）がみられます。'},
+  ],
+  diagnosisCorrect:'ANCA関連血管炎（多発血管炎性肉芽腫症）',
+  diagnosisOptions:['ANCA関連血管炎（多発血管炎性肉芽腫症）','肺結核','肺がん','グッドパスチャー症候群（抗GBM病）','サルコイドーシス'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'難治性の副鼻腔炎、血痰を伴う肺病変、急速進行性の腎機能障害という上気道・肺・腎の三主徴に、**ANCA**陽性という所見が加わり、**ANCA関連血管炎（多発血管炎性肉芽腫症）**と診断します。放置すると致死的な臓器障害に進行するため、早急な専門科への引き継ぎと免疫抑制治療の導入が必要です。',
+},
+{
+  id:'c43', tier:4, name:'大塚 幸子', age:76, gender:'女性', seed:226, urgent:true, advanced:true,
+  vitals:{temp:'39.6℃', bp:'78/48', pulse:'126/分', spo2:'92%'},
+  chief:'施設入所中。3日前からの発熱と活気低下が続き、今朝から血圧が測定困難なほど低下していると連絡があった（施設職員より）。',
+  qa:[
+    {q:'発熱の経過について教えてください（施設職員より）', a:'3日前から38度台の発熱が続き、食事量も減っていました。今朝測定した血圧が非常に低く、呼びかけへの反応も鈍くなっていました。', key:true},
+    {q:'排尿に関する症状はありますか？', a:'ここ数日、尿の臭いが強く、失禁も増えていたそうです。', key:true},
+    {q:'皮膚の状態はどうですか？', a:'仙骨部に褥瘡があり、最近浸出液が増えて周囲が赤くなっていたと聞いています。', key:true},
+    {q:'基礎疾患について教えてください', a:'認知症と糖尿病で施設内の医師の管理を受けています。'},
+  ],
+  tests:[
+    {name:'全身状態とバイタルサインの確認', cost:1, key:true, type:'text', result:'血圧78/48mmHgと著明に低下し、頻脈と頻呼吸を認めます。四肢は末梢冷感があり、皮膚の網状チアノーゼもみられます。'},
+    {name:'尿検査', cost:1, key:true, type:'text', result:'白血球反応・亜硝酸塩ともに強陽性で、尿路感染を示唆する所見です。'},
+    {name:'仙骨部褥瘡の診察', cost:1, key:true, type:'text', result:'仙骨部の褥瘡周囲に発赤の拡大と悪臭を伴う浸出液を認め、感染巣として矛盾しません。'},
+    {name:'血液検査（炎症反応・乳酸値）', cost:2, key:true, type:'text', result:'CRP著明高値に加え、乳酸値の上昇を認めます。組織低灌流を示唆する所見です。'},
+    {name:'血液培養', cost:2, type:'text', result:'結果判明までに数日を要する見込みです。'},
+    {name:'胸部X線', cost:1, type:'text', result:'明らかな肺炎像や心不全を示唆する所見はありません。'},
+  ],
+  diagnosisCorrect:'敗血症性ショック',
+  diagnosisOptions:['敗血症性ショック','心原性ショック','出血性ショック','副腎クリーゼ（急性副腎不全）','低体温症'],
+  disposition:'refer', deptCorrect:'er',
+  explain:'尿路感染と褥瘡感染という複数の感染巣が疑われる高齢患者における、著明な血圧低下・頻脈・末梢循環不全・乳酸値上昇という所見から**敗血症性ショック**と診断します。急速に多臓器不全へ進行しうる致死的な病態であり、直ちに救急科へ引き継ぎ、輸液・抗菌薬治療などの初期蘇生を開始する必要があります。',
+},
+
+/* ================================================================
+   追加症例4：全ティアの拡充（1周目〜3周目それぞれの症例プールを増量）
+   ================================================================ */
+
+/* ---- Tier1 追加 ---- */
+{
+  id:'c44', tier:1, name:'松田 綾', age:26, gender:'女性', seed:227, specialty:'internal',
+  vitals:{temp:'36.5℃', bp:'110/68', pulse:'74/分', spo2:'99%'},
+  chief:'2日前から右目が充血し、目やにがひどくて朝はまぶたが開けにくい。',
+  qa:[
+    {q:'目の症状について詳しく教えてください', a:'右目の白目全体が赤くなり、黄色っぽいネバネバした目やにが出ます。朝起きるとまぶたが目やにでくっついています。', key:true},
+    {q:'かゆみや痛みはありますか？', a:'かゆみよりも、ゴロゴロした異物感があります。強い痛みはありません。', key:true},
+    {q:'視力の変化はありますか？', a:'見え方は普段と変わりません。', key:true},
+    {q:'周りに同じ症状の人はいますか？', a:'職場で同じような症状の人が数人いました。'},
+  ],
+  tests:[
+    {name:'眼の視診', cost:1, key:true, type:'text', result:'右眼球結膜のびまん性充血と、黄色調の膿性眼脂を認めます。角膜には明らかな混濁はありません。'},
+    {name:'視力の確認', cost:1, key:true, type:'text', result:'視力低下は認めません。'},
+    {name:'瞳孔・対光反射の確認', cost:1, type:'text', result:'瞳孔径は左右差なく、対光反射も正常です。'},
+    {name:'耳前リンパ節の触診', cost:1, type:'text', result:'右耳前リンパ節に軽度の腫脹を触れます。'},
+  ],
+  diagnosisCorrect:'急性結膜炎（細菌性）',
+  diagnosisOptions:['急性結膜炎（細菌性）','ウイルス性結膜炎','アレルギー性結膜炎','角膜炎','強膜炎'],
+  disposition:'treat',
+  treatmentNote:'抗菌点眼薬を処方し、手指衛生とタオルの共有を避けるよう指導しました。症状が改善しない場合や視力低下があればすぐに受診するよう説明し、外来で経過観察としました。',
+  explain:'膿性眼脂を伴う結膜充血、視力低下がないという所見から**急性結膜炎（細菌性）**と診断します。多くは自然軽快しますが、抗菌点眼薬により症状の改善が期待できます。視力低下や強い眼痛があれば、角膜炎などの除外のため眼科紹介を検討します。',
+},
+{
+  id:'c45', tier:1, name:'岡田 優', age:33, gender:'男性', seed:228, specialty:'internal',
+  vitals:{temp:'36.4℃', bp:'118/74', pulse:'72/分', spo2:'99%'},
+  chief:'2週間前から、くしゃみ・鼻水・鼻づまりが続いている。',
+  qa:[
+    {q:'症状について詳しく教えてください', a:'透明なさらさらした鼻水と、連続するくしゃみが続いています。両方の鼻づまりもひどく、夜も口呼吸になります。', key:true},
+    {q:'目の症状はありますか？', a:'目のかゆみと涙目もあります。', key:true},
+    {q:'症状が出やすい時期や場所はありますか？', a:'毎年この時期（花粉の季節）になると同じ症状が出ます。', key:true},
+    {q:'発熱はありますか？', a:'熱はありません。'},
+  ],
+  tests:[
+    {name:'鼻腔内の視診', cost:1, key:true, type:'text', result:'鼻粘膜は蒼白に浮腫状で、水様性の鼻汁を認めます。'},
+    {name:'眼の視診', cost:1, key:true, type:'text', result:'両側の眼球結膜に軽度の充血とかゆみを伴う所見を認めます。'},
+    {name:'体温測定と全身状態の確認', cost:1, type:'text', result:'発熱はなく、全身状態は良好です。'},
+    {name:'血液検査（好酸球・IgE）', cost:2, type:'text', result:'好酸球比率と総IgE値の上昇を認め、アレルギー体質を示唆する所見です。'},
+  ],
+  diagnosisCorrect:'アレルギー性鼻炎（花粉症）',
+  diagnosisOptions:['アレルギー性鼻炎（花粉症）','急性副鼻腔炎','血管運動性鼻炎','風邪症候群（かぜ）','薬剤性鼻炎'],
+  disposition:'treat',
+  treatmentNote:'抗ヒスタミン薬と点鼻薬を処方し、花粉の飛散が多い時間帯の外出を控えるなどのセルフケアを指導しました。症状が強い場合は追加の治療について相談するよう伝え、外来で経過観察としました。',
+  explain:'季節性に繰り返す水様鼻汁・くしゃみ・鼻閉に、眼のかゆみを伴うという所見から**アレルギー性鼻炎（花粉症）**と診断します。多くは抗ヒスタミン薬などの対症療法で総合診療科での対応が可能です。',
+},
+{
+  id:'c46', tier:1, name:'内田 剛', age:47, gender:'男性', seed:229, specialty:'internal',
+  vitals:{temp:'36.6℃', bp:'126/78', pulse:'76/分', spo2:'98%'},
+  chief:'3ヶ月前から、食後に胸やけと酸っぱいものが上がってくる感じが続いている。',
+  qa:[
+    {q:'症状について詳しく教えてください', a:'食後や横になったときに、みぞおちから胸にかけて焼けるような感じがあり、酸っぱい液体が喉まで上がってくることがあります。', key:true},
+    {q:'体重や生活習慣について教えてください', a:'ここ数年で体重が増え、脂っこい食事や飲酒の機会が多いです。', key:true},
+    {q:'嚥下困難や体重減少はありますか？', a:'いいえ、食べ物を飲み込みにくいことや、意図しない体重減少はありません。', key:true},
+    {q:'黒色便や吐血はありますか？', a:'いいえ、ありません。'},
+  ],
+  tests:[
+    {name:'症状の性状評価', cost:1, key:true, type:'text', result:'食後・臥位で増悪する胸やけと呑酸を認め、警告症状（嚥下困難・体重減少・出血）は伴っていません。'},
+    {name:'腹部の診察', cost:1, key:true, type:'text', result:'心窩部に軽度の圧痛を認めますが、腫瘤や著明な圧痛はありません。'},
+    {name:'便潜血検査', cost:1, type:'text', result:'陰性です。'},
+    {name:'血液検査（貧血の有無）', cost:1, type:'lab', label:'ヘモグロビン', value:'14.2', unit:'g/dL', min:13.5, max:17.5, dispMax:18, abnormal:false},
+  ],
+  diagnosisCorrect:'逆流性食道炎',
+  diagnosisOptions:['逆流性食道炎','胃潰瘍（消化性潰瘍）','食道がん','機能性ディスペプシア','狭心症（冠動脈疾患）'],
+  disposition:'treat',
+  treatmentNote:'プロトンポンプ阻害薬を処方し、体重管理・就寝前の食事を控える・上体を高くして眠るなどの生活指導を行いました。警告症状が出現した場合はすぐに再受診するよう説明し、外来で経過観察としました。',
+  explain:'食後・臥位で増悪する胸やけと呑酸という典型的な症状に、嚥下困難や体重減少、出血といった警告症状を伴わないことから**逆流性食道炎**と診断します。総合診療科でのプロトンポンプ阻害薬による治療と生活指導で対応可能です。',
+},
+
+/* ---- Tier2 追加 ---- */
+{
+  id:'c47', tier:2, name:'木下 陽子', age:58, gender:'女性', seed:230, specialty:'internal',
+  vitals:{temp:'37.1℃', bp:'128/78', pulse:'88/分', spo2:'96%'},
+  chief:'3日前から左足全体が腫れて痛み、歩くとふくらはぎが張るように痛む。',
+  qa:[
+    {q:'症状の経過について教えてください', a:'3日前から左足全体がむくみ、ふくらはぎを中心に痛みがあります。歩くと痛みが強くなります。', key:true},
+    {q:'最近手術や長時間の同一姿勢はありましたか？', a:'2週間前に足の骨折で手術を受け、その後しばらくベッド上安静が続いていました。', key:true},
+    {q:'呼吸苦しさや胸の痛みはありますか？', a:'今のところ息切れや胸の痛みはありません。', key:true},
+    {q:'左右の足の太さに違いはありますか？', a:'左足だけが右足より明らかに太くなっています。'},
+  ],
+  tests:[
+    {name:'下肢の視診・触診', cost:1, key:true, type:'text', result:'左下腿から大腿にかけて著明な腫脹を認め、左右差は3cm以上あります。左ふくらはぎに圧痛を認めます。'},
+    {name:'下肢静脈エコー', cost:2, key:true, type:'text', result:'左膝窩静脈から大腿静脈にかけて、圧迫で虚脱しない血栓像を認めます。'},
+    {name:'血液検査（Dダイマー）', cost:1, key:true, type:'lab', label:'Dダイマー', value:'8.2', unit:'μg/mL', min:0, max:1.0, dispMax:12, abnormal:true},
+    {name:'経皮的酸素飽和度と呼吸音の確認', cost:1, type:'text', result:'SpO2は96%で、呼吸音に異常はありません。'},
+  ],
+  diagnosisCorrect:'深部静脈血栓症',
+  diagnosisOptions:['深部静脈血栓症','蜂窩織炎','リンパ浮腫','筋肉損傷（肉離れ）','心不全'],
+  disposition:'refer', deptCorrect:'cardiosurg',
+  explain:'術後の長期臥床という危険因子に、片側性の下肢腫脹・疼痛、下肢静脈エコーでの血栓像、Dダイマー上昇という所見から**深部静脈血栓症**と診断します。肺塞栓症へ進展する危険があるため、抗凝固療法の導入など専門科への引き継ぎが必要です。',
+},
+{
+  id:'c48', tier:2, name:'中川 秀樹', age:62, gender:'男性', seed:231, specialty:'internal',
+  vitals:{temp:'36.5℃', bp:'134/82', pulse:'74/分', spo2:'98%'},
+  chief:'2週間前から、洗顔や歯磨きのたびに右頬に電気が走るような激痛が起こる。',
+  qa:[
+    {q:'痛みの性質について教えてください', a:'一瞬、電気が走るような、刺すような激痛が右頬から顎にかけて起こります。数秒で治まりますが、何度も繰り返します。', key:true},
+    {q:'痛みが誘発されるきっかけはありますか？', a:'洗顔、歯磨き、食事、ひげ剃りなど、頬に触れる動作で誘発されます。', key:true},
+    {q:'発疹や皮膚の異常はありますか？', a:'いいえ、皮膚に発疹やただれはありません。', key:true},
+    {q:'顔の動かしにくさやしびれはありますか？', a:'痛み以外に、顔の動かしにくさやしびれた感じはありません。'},
+  ],
+  tests:[
+    {name:'神経学的診察（顔面の感覚・運動）', cost:1, key:true, type:'text', result:'顔面の運動麻痺は認めません。特定の部位（トリガーポイント）に触れると、瞬間的な激痛が誘発されます。'},
+    {name:'皮膚の視診', cost:1, key:true, type:'text', result:'顔面に発疹や水疱などの皮膚病変は認めません。'},
+    {name:'頭部MRI', cost:3, key:true, type:'text', result:'三叉神経周囲に血管による圧迫を疑う所見を認めます。明らかな腫瘍性病変はありません。'},
+    {name:'血液検査（炎症反応）', cost:1, type:'lab', label:'CRP', value:'0.2', unit:'mg/dL', min:0, max:0.3, dispMax:2, abnormal:false},
+  ],
+  diagnosisCorrect:'三叉神経痛',
+  diagnosisOptions:['三叉神経痛','帯状疱疹','非定型顔面痛','顎関節症','群発頭痛'],
+  disposition:'refer', deptCorrect:'neuro',
+  explain:'特定の動作で誘発される、電撃様の短時間の激痛という特徴的な症状と、皮疹を伴わないことから**三叉神経痛**と診断します。血管による神経圧迫が原因となることが多く、薬物療法や外科的治療の検討のため脳神経内科への引き継ぎが必要です。',
+},
+{
+  id:'c49', tier:2, name:'橋本 大輝', age:20, gender:'男性', seed:232, urgent:true, arrival:'ambulance', specialty:'emergency',
+  vitals:{temp:'39.8℃', bp:'98/58', pulse:'118/分', spo2:'96%'},
+  chief:'炎天下での部活動中に倒れ、意識がもうろうとしている状態で搬送された。',
+  qa:[
+    {q:'倒れる前の状況について教えてください', a:'気温の高い屋外で長時間の部活動をしていました。倒れる前から頭痛と吐き気を訴えていたそうです。', key:true},
+    {q:'意識の状態はどうですか？', a:'呼びかけに対する反応が鈍く、受け答えがはっきりしません。', key:true},
+    {q:'発汗の状態について教えてください', a:'倒れた時、皮膚は熱く乾燥しており、あまり汗をかいていなかったそうです。', key:true},
+    {q:'水分摂取の状況はどうでしたか？', a:'休憩中もあまり水分を摂っていなかったようです。'},
+  ],
+  tests:[
+    {name:'全身状態とバイタルサインの確認', cost:1, key:true, type:'text', result:'体温39.8℃の高体温、血圧低下と頻脈を認めます。皮膚は熱感があり乾燥しています。'},
+    {name:'意識レベルの評価', cost:1, key:true, type:'text', result:'見当識障害を認め、呼びかけへの反応が鈍い状態です。'},
+    {name:'血液検査（腎機能・電解質）', cost:1, key:true, type:'text', result:'脱水と腎機能の軽度低下を示唆する所見を認めます。'},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'洞頻脈を認めますが、それ以外に急性の異常はありません。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'11200', unit:'/μL', min:3500, max:9000, dispMax:14000, abnormal:true},
+  ],
+  diagnosisCorrect:'熱中症（重症）',
+  diagnosisOptions:['熱中症（重症）','熱疲労','てんかん発作','敗血症性ショック','薬物中毒'],
+  disposition:'refer', deptCorrect:'er',
+  explain:'高温環境下での活動歴、著明な高体温、意識障害、発汗低下という所見から**熱中症（重症）**と診断します。急速な冷却処置と全身管理が必要な緊急病態であり、直ちに救急科への引き継ぎが必要です。',
+},
+
+/* ---- Tier3 追加 ---- */
+{
+  id:'c50', tier:3, name:'石田 由美子', age:52, gender:'女性', seed:233,
+  vitals:{temp:'36.6℃', bp:'132/84', pulse:'76/分', spo2:'97%'},
+  chief:'半年前から指先が冷えると白く変色し、最近は指の皮膚が硬くなってきた。',
+  qa:[
+    {q:'指の色調変化について教えてください', a:'寒い場所や冷たいものに触れると、指先が白くなり、その後紫色、赤色と変化します。', key:true},
+    {q:'皮膚の変化について教えてください', a:'両手の指の皮膚がつっぱるように硬くなり、指輪が外れにくくなりました。顔の皮膚もつっぱる感じがあります。', key:true},
+    {q:'嚥下や胸焼けの症状はありますか？', a:'最近、食べ物が飲み込みにくく、胸焼けもよくあります。', key:true},
+    {q:'息切れはありますか？', a:'階段を上ると以前より息切れするようになりました。'},
+  ],
+  tests:[
+    {name:'皮膚の診察', cost:1, key:true, type:'text', result:'両手指から前腕にかけて皮膚の硬化を認めます。顔面の皮膚も硬く、表情が乏しくなっています。'},
+    {name:'血液検査（自己抗体）', cost:1, key:true, type:'text', result:'抗トポイソメラーゼI抗体（抗Scl-70抗体）が陽性です。'},
+    {name:'爪郭部の毛細血管の観察', cost:1, key:true, type:'text', result:'爪郭部の毛細血管に拡張と脱落を認めます。'},
+    {name:'胸部CT', cost:2, type:'text', result:'両下肺野に軽度の間質性陰影を認めます。'},
+  ],
+  diagnosisCorrect:'全身性強皮症',
+  diagnosisOptions:['全身性強皮症','混合性結合組織病','皮膚筋炎','全身性エリテマトーデス（SLE）','好酸球性筋膜炎'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'指先の色調変化（レイノー現象）、皮膚硬化、逆流症状（食道病変）、そして抗Scl-70抗体陽性という所見から**全身性強皮症**と診断します。肺病変（間質性肺炎）などの臓器合併症の評価と治療のため、膠原病リウマチ内科への引き継ぎが必要です。',
+},
+{
+  id:'c51', tier:3, name:'上原 隆', age:64, gender:'男性', seed:234,
+  vitals:{temp:'36.5℃', bp:'128/76', pulse:'72/分', spo2:'98%'},
+  chief:'半年前から左足裏のほくろが大きくなり、色むらと出血がみられるようになった。',
+  qa:[
+    {q:'ほくろの変化について教えてください', a:'以前からあった左足裏のほくろが、半年ほどで明らかに大きくなり、色も均一だったのが黒褐色と黒色の混じった色むらになりました。', key:true},
+    {q:'形や境界に変化はありますか？', a:'以前は丸く整った形でしたが、今は左右非対称でギザギザした境界になっています。', key:true},
+    {q:'出血やかゆみはありますか？', a:'最近、靴に擦れると出血することがあります。', key:true},
+    {q:'大きさはどのくらいですか？', a:'直径は7〜8mmほどになりました。'},
+  ],
+  tests:[
+    {name:'病変の視診（ダーモスコピー含む）', cost:1, key:true, type:'text', result:'左足底に、左右非対称・境界不整・色調不均一な黒色病変を認めます。直径は7mm大で、一部に出血痕を認めます。'},
+    {name:'リンパ節の触診', cost:1, key:true, type:'text', result:'左鼡径部のリンパ節に軽度の腫大を触れます。'},
+    {name:'皮膚生検', cost:3, key:true, type:'text', result:'異型メラノサイトの増殖と真皮への浸潤を認め、悪性腫瘍に合致する所見です。'},
+    {name:'胸腹部CT', cost:2, type:'text', result:'明らかな遠隔転移を示唆する所見は指摘できません。'},
+  ],
+  diagnosisCorrect:'悪性黒色腫',
+  diagnosisOptions:['悪性黒色腫','母斑（ほくろ）','脂漏性角化症','基底細胞癌','血管腫'],
+  disposition:'refer', deptCorrect:'derma',
+  explain:'非対称性・境界不整・色調不均一・直径6mm以上という悪性を示唆する所見と、**生検**での異型細胞の所見から**悪性黒色腫**と診断します。転移の評価と切除範囲の決定のため、皮膚科への引き継ぎが必要です。',
+},
+{
+  id:'c52', tier:3, name:'川崎 洋子', age:59, gender:'女性', seed:235,
+  vitals:{temp:'37.4℃', bp:'122/76', pulse:'88/分', spo2:'93%'},
+  chief:'数ヶ月前から、自宅にいる時だけ咳と息切れが悪化し、外出すると楽になる。',
+  qa:[
+    {q:'症状のパターンについて教えてください', a:'家にいる時間が長いと咳と息切れがひどくなり、旅行や外出で家を離れると数日で症状が楽になります。', key:true},
+    {q:'自宅の環境について教えてください', a:'古い木造の家で、最近天井にカビが生えているのに気づきました。鳥は飼っていません。', key:true},
+    {q:'発熱はありますか？', a:'夕方から夜にかけて、微熱が出ることがあります。', key:true},
+    {q:'喫煙歴はありますか？', a:'喫煙はしたことがありません。'},
+  ],
+  tests:[
+    {name:'呼吸音の聴診', cost:1, key:true, type:'text', result:'両側肺野、特に背部下方でパチパチという吸気時の断続性副雑音を聴取します。'},
+    {name:'胸部CT', cost:2, key:true, type:'text', result:'両肺にすりガラス影と小葉中心性の淡い結節影を認めます。'},
+    {name:'血液検査（特異抗体）', cost:2, key:true, type:'text', result:'自宅環境中の真菌抗原に対する特異抗体が陽性です。'},
+    {name:'経皮的酸素飽和度測定', cost:1, type:'text', result:'SpO2 93%とやや低下しています。'},
+  ],
+  diagnosisCorrect:'過敏性肺炎（慢性）',
+  diagnosisOptions:['過敏性肺炎（慢性）','特発性肺線維症','サルコイドーシス','肺結核','気管支喘息'],
+  disposition:'refer', deptCorrect:'pulmo',
+  explain:'自宅滞在時に増悪し、離れると改善するという環境曝露との明確な関連、胸部CTでのすりガラス影、特異抗体陽性という所見から**過敏性肺炎（慢性）**と診断します。原因抗原の除去指導と治療方針の決定のため、呼吸器内科への引き継ぎが必要です。',
+},
+
+/* ---- Tier4「標準的な難症例」追加（2周目プール） ---- */
+{
+  id:'c53', tier:4, name:'遠山 正広', age:68, gender:'男性', seed:236, urgent:true, arrival:'ambulance',
+  vitals:{temp:'36.6℃', bp:'186/98', pulse:'96/分', spo2:'96%'},
+  chief:'突然、引き裂かれるような激しい胸背部痛が出現し、痛みの場所が移動していく。',
+  qa:[
+    {q:'痛みの性質と発症様式について教えてください', a:'何の前触れもなく、突然、胸から背中にかけて引き裂かれるような激痛が始まりました。痛みは時間とともに背中から腰の方へ移動していく感じがあります。', key:true},
+    {q:'高血圧の既往はありますか？', a:'長年高血圧を指摘されていましたが、治療を中断していました。', key:true},
+    {q:'手足のしびれや動かしにくさはありますか？', a:'左手の脈が触れにくいと言われ、左手にしびれもあります。', key:true},
+    {q:'意識状態はどうですか？', a:'意識ははっきりしています。'},
+  ],
+  tests:[
+    {name:'左右の血圧・脈拍の左右差の確認', cost:1, key:true, type:'text', result:'右上肢の血圧186/98mmHgに対し、左上肢では測定困難で、左橈骨動脈の脈拍が触知しにくい状態です。'},
+    {name:'胸部造影CT', cost:3, key:true, type:'text', result:'上行大動脈から下行大動脈にかけて、大動脈壁が二層に解離した所見（フラップ）を認めます。'},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'明らかな虚血性変化は認めません。'},
+    {name:'胸部X線', cost:1, type:'text', result:'縦隔陰影の拡大を認めます。'},
+  ],
+  diagnosisCorrect:'大動脈解離',
+  diagnosisOptions:['大動脈解離','急性心筋梗塞','肺塞栓症','食道破裂','緊張性気胸'],
+  disposition:'refer', deptCorrect:'cardiosurg',
+  explain:'突然発症の引き裂かれるような胸背部痛が移動する経過、左右血圧差、造影CTでのフラップという所見から**大動脈解離**と診断します。致死的な血管緊急症であり、直ちに心臓血管外科への引き継ぎが必要です。',
+},
+{
+  id:'c54', tier:4, name:'秋山 光男', age:70, gender:'男性', seed:237, urgent:true,
+  vitals:{temp:'36.8℃', bp:'128/78', pulse:'82/分', spo2:'97%'},
+  chief:'前立腺がんで治療中。2日前からの背部痛に続き、今朝から両足に力が入りにくくなった。',
+  qa:[
+    {q:'背部痛について教えてください', a:'2日前から中背部に持続する強い痛みがあり、夜間や横になると悪化します。', key:true},
+    {q:'足の症状について教えてください', a:'今朝から両足に力が入りにくく、立ち上がるのもやっとの状態です。', key:true},
+    {q:'排尿・排便の異常はありますか？', a:'今朝から尿が出にくい感じがあります。', key:true},
+    {q:'がんの治療歴について教えてください', a:'2年前に前立腺がんと診断され、治療を受けています。'},
+  ],
+  tests:[
+    {name:'神経学的診察（下肢の筋力・感覚）', cost:1, key:true, type:'text', result:'両下肢に筋力低下を認め、臍のレベルより下で感覚低下がみられます。深部腱反射は両側とも亢進しています。'},
+    {name:'直腸診・膀胱機能の評価', cost:1, key:true, type:'text', result:'肛門括約筋の緊張低下を認め、膀胱に尿の貯留を触れます。神経因性膀胱を示唆する所見です。'},
+    {name:'脊椎MRI', cost:3, key:true, type:'text', result:'胸椎レベルに骨転移巣と、それに伴う硬膜外腫瘤による脊髄の圧迫を認めます。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'CRP', value:'1.2', unit:'mg/dL', min:0, max:0.3, dispMax:3, abnormal:true},
+    {name:'腰椎単純X線', cost:1, type:'text', result:'明らかな骨破壊像ははっきりしませんが、詳細な評価にはMRIが必要です。'},
+  ],
+  diagnosisCorrect:'脊髄圧迫症候群（がん性）',
+  diagnosisOptions:['脊髄圧迫症候群（がん性）','腰部脊柱管狭窄症','椎間板ヘルニア','硬膜外膿瘍','ギラン・バレー症候群'],
+  disposition:'refer', deptCorrect:'neurosurg',
+  explain:'既知の前立腺がん患者における急速進行性の両下肢麻痺、感覚障害、膀胱直腸障害、そしてMRIでの硬膜外腫瘤による脊髄圧迫という所見から**脊髄圧迫症候群（がん性）**と診断します。不可逆的な麻痺を防ぐため、緊急の減圧処置を検討すべく直ちに脳神経外科への引き継ぎが必要です。',
+},
+{
+  id:'c55', tier:4, name:'西村 恭子', age:34, gender:'女性', seed:238, urgent:true,
+  vitals:{temp:'37.6℃', bp:'104/64', pulse:'98/分', spo2:'97%'},
+  chief:'1週間前からの倦怠感と黄疸に続き、今日から言動がおかしくなってきた（家族より）。',
+  qa:[
+    {q:'症状の経過について教えてください', a:'1週間前から強い倦怠感と食欲不振があり、数日前から白目が黄色くなってきました。今日になって、受け答えがちぐはぐになり、普段と様子が違います。', key:true},
+    {q:'肝臓の病気の既往や内服薬はありますか？', a:'特に肝臓の病気は指摘されたことがありません。最近、体調不良で市販の解熱鎮痛薬を多めに服用していました。', key:true},
+    {q:'出血しやすい症状はありますか？', a:'歯茎からの出血が増えた気がします。', key:true},
+    {q:'お酒はよく飲みますか？', a:'ほとんど飲みません。'},
+  ],
+  tests:[
+    {name:'意識レベルと神経学的評価', cost:1, key:true, type:'text', result:'見当識障害を認め、羽ばたき振戦がみられます。肝性脳症を示唆する所見です。'},
+    {name:'血液検査（肝機能・凝固）', cost:1, key:true, type:'text', result:'著明な肝逸脱酵素上昇とビリルビン上昇に加え、プロトロンビン時間の著明な延長を認めます。'},
+    {name:'腹部超音波検査', cost:2, key:true, type:'text', result:'肝萎縮を示唆する所見を認めます。明らかな腫瘤性病変はありません。'},
+    {name:'血液検査（腎機能）', cost:1, type:'text', result:'軽度の腎機能低下を認めます。'},
+    {name:'腹部単純X線', cost:1, type:'text', result:'明らかな消化管穿孔やイレウスを示唆する所見はありません。'},
+  ],
+  diagnosisCorrect:'劇症肝炎（急性肝不全）',
+  diagnosisOptions:['劇症肝炎（急性肝不全）','急性ウイルス性肝炎','薬剤性肝障害','自己免疫性肝炎','ウィルソン病'],
+  disposition:'refer', deptCorrect:'gi',
+  explain:'急速に進行する黄疸、意識障害（肝性脳症）、著明な凝固異常という所見から**劇症肝炎（急性肝不全）**と診断します。急速に多臓器不全に至りうる致死的な病態で、肝移植を含めた集中治療が必要となることもあり、直ちに専門科への引き継ぎが必要です。',
+},
+{
+  id:'c56', tier:4, name:'高村 真由美', age:45, gender:'女性', seed:239, urgent:true,
+  vitals:{temp:'37.2℃', bp:'98/62', pulse:'118/分', spo2:'89%'},
+  chief:'長時間のフライトの翌日から、突然の呼吸困難と胸痛が出現した。',
+  qa:[
+    {q:'症状の発症について教えてください', a:'昨日、10時間以上のフライトで海外から帰国しました。今朝、突然息苦しさと右胸の痛みが出現しました。', key:true},
+    {q:'足の症状はありますか？', a:'そういえば、左のふくらはぎが少し腫れて痛む気がします。', key:true},
+    {q:'胸の痛みの性質について教えてください', a:'深呼吸をすると右胸が刺すように痛みます。', key:true},
+    {q:'喀血はありますか？', a:'少量ですが、血の混じった痰が出ました。'},
+  ],
+  tests:[
+    {name:'経皮的酸素飽和度と呼吸音の確認', cost:1, key:true, type:'text', result:'SpO2 89%と低下しています。呼吸音に明らかな左右差はありません。'},
+    {name:'下肢の診察', cost:1, key:true, type:'text', result:'左下腿にわずかな腫脹と圧痛を認めます。'},
+    {name:'造影CT（肺動脈）', cost:3, key:true, type:'text', result:'右肺動脈内に造影欠損（血栓）を認めます。'},
+    {name:'血液検査（Dダイマー）', cost:1, key:true, type:'lab', label:'Dダイマー', value:'6.4', unit:'μg/mL', min:0, max:1.0, dispMax:10, abnormal:true},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'洞頻脈を認めますが、それ以外の異常ははっきりしません。'},
+    {name:'胸部X線', cost:1, type:'text', result:'明らかな気胸や浸潤影は指摘できません。'},
+  ],
+  diagnosisCorrect:'肺塞栓症',
+  diagnosisOptions:['肺塞栓症','気胸','急性心筋梗塞','肺炎','パニック発作'],
+  disposition:'refer', deptCorrect:'pulmo',
+  explain:'長時間の座位（フライト）という危険因子、突然発症の呼吸困難・胸膜痛、下肢の腫脹、造影CTでの肺動脈内血栓という所見から**肺塞栓症**と診断します。急変のリスクが高い致死的疾患であり、直ちに専門科への引き継ぎが必要です。',
+},
+
+/* ---- Tier4「advanced」追加（3周目プール：最難関） ---- */
+{
+  id:'c57', tier:4, name:'松岡 恵理', age:31, gender:'女性', seed:240, urgent:true, advanced:true,
+  vitals:{temp:'38.2℃', bp:'132/84', pulse:'102/分', spo2:'97%'},
+  chief:'3日前からの発熱と紫斑に続き、今日から言動がおかしくなってきた（家族より）。',
+  qa:[
+    {q:'皮膚の症状について教えてください', a:'3日前から、腕や足に紫色の斑点（あざのようなもの）が多数出るようになりました。', key:true},
+    {q:'意識や言動の変化について教えてください（家族より）', a:'今日になって、話の内容がかみ合わなくなったり、ぼんやりしたりすることが増えました。', key:true},
+    {q:'尿の変化はありますか？', a:'尿の色が濃い茶色っぽくなっています。', key:true},
+    {q:'出血しやすい他の症状はありますか？', a:'歯茎からの出血もありました。'},
+  ],
+  tests:[
+    {name:'皮膚の視診', cost:1, key:true, type:'text', result:'四肢を中心に、多発する点状出血斑と紫斑を認めます。'},
+    {name:'血液検査（血算・破砕赤血球）', cost:2, key:true, type:'text', result:'著明な血小板減少と貧血を認め、末梢血塗抹標本で破砕赤血球（分裂赤血球）を多数認めます。'},
+    {name:'神経学的診察', cost:1, key:true, type:'text', result:'軽度の見当識障害を認めますが、明らかな麻痺や感覚障害はありません。'},
+    {name:'血液検査（腎機能・溶血所見）', cost:1, key:true, type:'text', result:'軽度の腎機能低下と、LDH上昇・間接ビリルビン上昇など溶血を示唆する所見を認めます。'},
+    {name:'血液型・交差適合試験', cost:1, type:'text', result:'輸血に備えた検査で、特記すべき異常はありません。'},
+    {name:'腹部超音波検査', cost:1, type:'text', result:'肝脾腫は明らかではありません。'},
+  ],
+  diagnosisCorrect:'血栓性血小板減少性紫斑病（TTP）',
+  diagnosisOptions:['血栓性血小板減少性紫斑病（TTP）','溶血性尿毒症症候群（HUS）','播種性血管内凝固症候群（DIC）','免疫性血小板減少性紫斑病（ITP）','全身性エリテマトーデス（SLE）'],
+  disposition:'refer', deptCorrect:'hema',
+  explain:'血小板減少、溶血性貧血（破砕赤血球）、意識障害という所見から**血栓性血小板減少性紫斑病（TTP）**と診断します。緊急の血漿交換療法を要する致死的な血液疾患であり、直ちに血液内科への引き継ぎが必要です。',
+},
+{
+  id:'c58', tier:4, name:'野田 真一', age:48, gender:'男性', seed:241, advanced:true,
+  vitals:{temp:'37.5℃', bp:'138/86', pulse:'88/分', spo2:'94%'},
+  chief:'数年来の気管支喘息があるが、最近発作が悪化し、手足のしびれも出てきた。',
+  qa:[
+    {q:'喘息の経過について教えてください', a:'5年前から気管支喘息の治療を受けていますが、ここ数ヶ月で発作の頻度と重症度が急に悪化しました。', key:true},
+    {q:'手足のしびれについて教えてください', a:'2週間前から、両手足の先にピリピリしたしびれと力の入りにくさが出てきました。', key:true},
+    {q:'副鼻腔の症状はありますか？', a:'長年、慢性副鼻腔炎で耳鼻科に通院しています。', key:true},
+    {q:'皮膚の変化はありますか？', a:'すねのあたりに、赤紫色の皮下出血のような発疹が出ています。'},
+  ],
+  tests:[
+    {name:'血液検査（好酸球数）', cost:1, key:true, type:'text', result:'白血球中の好酸球比率が著明に上昇しています。'},
+    {name:'血液検査（ANCA）', cost:2, key:true, type:'text', result:'MPO-ANCA（抗ミエロペルオキシダーゼ抗体）が陽性です。'},
+    {name:'神経伝導検査', cost:2, key:true, type:'text', result:'両側の複数の神経領域で伝導速度の低下を認め、多発性単神経炎に合致する所見です。'},
+    {name:'皮膚の診察', cost:1, type:'text', result:'下腿に紫斑と皮下結節を認めます。'},
+    {name:'胸部CT', cost:2, type:'text', result:'両肺にすりガラス影と気管支壁肥厚を認めます。'},
+  ],
+  diagnosisCorrect:'好酸球性多発血管炎性肉芽腫症（EGPA）',
+  diagnosisOptions:['好酸球性多発血管炎性肉芽腫症（EGPA）','ANCA関連血管炎（多発血管炎性肉芽腫症）','結節性多発動脈炎','好酸球増多症候群','気管支喘息'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'既存の気管支喘息の急な悪化、著明な好酸球増多、多発性単神経炎、ANCA陽性という所見から**好酸球性多発血管炎性肉芽腫症（EGPA）**と診断します。全身の血管炎による多臓器障害を来しうるため、免疫抑制治療の導入に向け膠原病リウマチ内科への引き継ぎが必要です。',
+},
+{
+  id:'c59', tier:4, name:'桐山 直人', age:24, gender:'男性', seed:242, advanced:true,
+  vitals:{temp:'39.3℃', bp:'118/74', pulse:'98/分', spo2:'98%'},
+  chief:'子どもの頃から、1〜3日で自然に治まる発熱と腹痛を繰り返している。',
+  qa:[
+    {q:'発熱のパターンについて教えてください', a:'突然39度前後の高熱が出て、1〜3日で自然に解熱することを繰り返しています。年に数回このパターンがあります。', key:true},
+    {q:'腹痛について教えてください', a:'発熱と同時に、強い腹痛が出ます。まるで虫垂炎のような痛みですが、検査では何も指摘されませんでした。', key:true},
+    {q:'胸の痛みや関節の痛みはありますか？', a:'発作の時に、胸の痛みや片方の膝の痛みを伴うこともあります。', key:true},
+    {q:'家族に同じような症状の人はいますか？', a:'父方の祖父も、地中海沿岸の出身で、同じような発熱発作があったと聞いています。'},
+  ],
+  tests:[
+    {name:'発作パターンの詳細な問診', cost:1, key:true, type:'text', result:'発熱・腹痛・胸痛・関節痛が同時に出現し、数日以内に自然消退するという定型的な発作パターンを認めます。'},
+    {name:'発作時の血液検査（炎症反応）', cost:1, key:true, type:'text', result:'発作時にはCRPと血清アミロイドA蛋白の著明な上昇を認めますが、発作間欠期には正常化します。'},
+    {name:'腹部の診察（発作時）', cost:1, key:true, type:'text', result:'腹部全体に圧痛を認めますが、虫垂炎を示唆する限局した圧痛点は認めません。'},
+    {name:'遺伝子検査（MEFV遺伝子）', cost:2, key:true, type:'text', result:'MEFV遺伝子に病的変異を認めます。'},
+    {name:'腹部造影CT（発作時）', cost:3, type:'text', result:'明らかな虫垂炎や腹腔内膿瘍などの器質的異常は認めません。'},
+  ],
+  diagnosisCorrect:'家族性地中海熱',
+  diagnosisOptions:['家族性地中海熱','再発性虫垂炎','クローン病','周期性発熱症候群（PFAPA症候群）','全身性若年性特発性関節炎'],
+  disposition:'refer', deptCorrect:'rheum',
+  explain:'数日で自然消退する発熱・腹痛・胸痛・関節痛を反復するという定型的な発作パターン、家族歴、そしてMEFV遺伝子変異という所見から**家族性地中海熱**と診断します。コルヒチンによる長期管理が有効であり、専門的な診断確定と治療導入のため膠原病リウマチ内科への引き継ぎが必要です。',
+},
+{
+  id:'c60', tier:4, name:'小山 雅子', age:41, gender:'女性', seed:243, urgent:true, advanced:true,
+  vitals:{temp:'36.8℃', bp:'198/112', pulse:'128/分', spo2:'97%'},
+  chief:'数ヶ月前から、突発的な動悸・頭痛・発汗の発作を繰り返し、その時だけ血圧が著しく上昇する。',
+  qa:[
+    {q:'発作の様子について教えてください', a:'突然、心臓がドキドキして、頭がガンガン痛み、全身から冷や汗が吹き出します。発作は10〜30分ほどで治まります。', key:true},
+    {q:'発作のきっかけはありますか？', a:'特に決まったきっかけはなく、安静にしている時にも突然起こります。', key:true},
+    {q:'普段の血圧について教えてください', a:'健診では正常なことが多いのですが、発作の時だけ測ると異常に高い数値が出ます。', key:true},
+    {q:'体重の変化はありますか？', a:'ここ数ヶ月で体重が減ってきました。'},
+  ],
+  tests:[
+    {name:'発作時のバイタルサイン記録の確認', cost:1, key:true, type:'text', result:'発作時の記録では血圧198/112mmHg、脈拍128/分と、著明な高血圧と頻脈を認めます。'},
+    {name:'血液・尿検査（カテコラミン代謝産物）', cost:2, key:true, type:'text', result:'血中および尿中のカテコラミン代謝産物（メタネフリン）が著明に上昇しています。'},
+    {name:'腹部造影CT', cost:3, key:true, type:'text', result:'右副腎に約3cmの造影効果を伴う腫瘤を認めます。'},
+    {name:'心電図', cost:1, type:'ecg', pattern:'normal', result:'発作間欠期の心電図に明らかな異常は認めません。'},
+    {name:'血液検査（一般）', cost:1, type:'lab', label:'白血球数', value:'8200', unit:'/μL', min:3500, max:9000, dispMax:12000, abnormal:false},
+  ],
+  diagnosisCorrect:'褐色細胞腫',
+  diagnosisOptions:['褐色細胞腫','本態性高血圧','甲状腺クリーゼ','パニック障害','原発性アルドステロン症'],
+  disposition:'refer', deptCorrect:'endo',
+  explain:'発作性の高血圧・動悸・頭痛・発汗という古典的な四徴に、カテコラミン代謝産物の上昇、副腎腫瘤という所見が加わり、**褐色細胞腫**と診断します。周術期に高血圧クリーゼを起こす危険があるため、専門的な術前管理と手術方針の決定のため内分泌代謝内科への引き継ぎが必要です。',
+},
+];
+
+/* ============================================================
+   キャリア・評価（レピュテーション）設計
+   実際の総合診療医のキャリアパスに沿った階級設計：
+   初期研修（2年間）→ 総合診療専門研修（3年間：内科急性期・救急外来・
+   小児科・在宅医療・へき地医療をローテーション）→ 総合診療専門医 → 医長
+   ============================================================ */
+const RANKS = [
+  {level:1,  title:'初期研修医（1年目）',        emoji:'🩺', min:0,    maxTier:1, specialty:null,        desc:'医師免許取得後、基本的な診療技術を身につける初期臨床研修の1年目です。'},
+  {level:2,  title:'初期研修医（2年目）',        emoji:'📋', min:250,  maxTier:1, specialty:null,        desc:'初期臨床研修の総仕上げの時期。様々な診療科をローテーションしています。'},
+  {level:3,  title:'専攻医（内科急性期）',       emoji:'🏥', min:520,  maxTier:2, specialty:'internal',  desc:'総合診療専門研修が始まりました。内科急性期病棟をローテーション中です。'},
+  {level:4,  title:'専攻医（救急外来）',         emoji:'🚑', min:810,  maxTier:2, specialty:'emergency', desc:'救急外来をローテーション中。緊急度の高い症例への対応力が問われます。'},
+  {level:5,  title:'専攻医（小児科）',           emoji:'🧸', min:1120, maxTier:3, specialty:'pediatric', desc:'小児科をローテーション中。子どもの患者さんを中心に診療にあたっています。'},
+  {level:6,  title:'専攻医（在宅医療）',         emoji:'🏡', min:1450, maxTier:3, specialty:'homecare',  desc:'在宅医療をローテーション中。高齢の患者さんの生活に寄り添う診療を学んでいます。'},
+  {level:7,  title:'専攻医（へき地・地域医療）', emoji:'🚐', min:1800, maxTier:3, specialty:null,        desc:'へき地・地域医療をローテーション中。あらゆる年代・症状に幅広く対応します。'},
+  {level:8,  title:'総合診療専門医',             emoji:'🎖️', min:2170, maxTier:4, specialty:null,        desc:'専門研修を修了し、総合診療専門医として診療にあたっています。'},
+  {level:9,  title:'医長',                       emoji:'🏢', min:2560, maxTier:4, specialty:null,        desc:'総合診療科の医長として、診療のかたわら後進の指導にもあたっています。'},
+];
+const START_REPUTATION = 100;
+const GAMEOVER_THRESHOLD = 0;
+const GRAND_FINALE_THRESHOLD = RANKS[RANKS.length-1].min + 2500; // 「2周目」を乗り越えた証。医長到達後、さらに評価を積み重ねた先の大団円
+function rankFor(rep){
+  let r = RANKS[0];
+  for(const x of RANKS){ if(rep>=x.min) r=x; }
+  return r;
+}
+function nextRank(rep){
+  const cur = rankFor(rep);
+  return RANKS.find(r=>r.level===cur.level+1) || null;
+}
+
+/* ============================================================
+   ゲーム状態
+   ============================================================ */
+const WEEK_SIZE = 5; // 指導医による評価を受けるまでに担当する患者数
+const CRISIS_LIMIT = 2; // 緊急症例で許容される「無駄な検査」の回数（超えると急変）
+
+const Game = {
+  state:{
+    screen:'title', // title | chart | tests | crisis | diagnosis | submitted | conference | levelup | gameover
+    reputation:START_REPUTATION,
+    playedIds:[],
+    stats:{cases:0, diagCorrect:0, perfectWeeks:0, bestStreak:0, crashCount:0, clearedOnce:false, clearedTwice:false, clearedThrice:false},
+    currentStreak:0,
+    seenTerms:[],
+    week:1,
+    weekIndex:0,
+    weekQueue:[],
+    weekReport:null,
+    current:null,
+    currentChief:'',
+    currentIdentity:null,
+    doneT:[],
+    wastedCount:0,
+    lastWasCrash:false,
+    selDiag:null,
+    selDisp:null,
+  },
+  async init(){
+    let hasProgress = false;
+    try{
+      const r = await window.storage.get('career', false);
+      if(r && r.value){
+        const d = JSON.parse(r.value);
+        Object.assign(this.state, {
+          reputation: (d.reputation!==undefined? d.reputation : START_REPUTATION),
+          playedIds:d.playedIds||[], stats:Object.assign({}, this.state.stats, d.stats||{}),
+          currentStreak:d.currentStreak||0,
+          seenTerms:d.seenTerms||[], week:d.week||1, weekIndex:d.weekIndex||0, weekQueue:d.weekQueue||[]
+        });
+        if((d.stats && d.stats.cases>0) || (d.reputation!==undefined && d.reputation!==START_REPUTATION)) hasProgress = true;
+      }
+    }catch(e){}
+    this.state.screen = hasProgress ? 'continueChoice' : 'title';
+    render();
+  },
+  continueGame(){ this.state.screen='title'; render(); },
+  async save(){
+    try{
+      await window.storage.set('career', JSON.stringify({
+        reputation:this.state.reputation, playedIds:this.state.playedIds, stats:this.state.stats, seenTerms:this.state.seenTerms,
+        week:this.state.week, weekIndex:this.state.weekIndex, weekQueue:this.state.weekQueue, currentStreak:this.state.currentStreak
+      }), false);
+    }catch(e){}
+  },
+  async reset(){
+    Object.assign(this.state, {
+      reputation:START_REPUTATION, playedIds:[], stats:{cases:0,diagCorrect:0,perfectWeeks:0,bestStreak:0,crashCount:0,clearedOnce:false,clearedTwice:false,clearedThrice:false}, seenTerms:[],
+      week:1, weekIndex:0, weekQueue:[], weekReport:null, currentStreak:0,
+    });
+    await this.save();
+    this.state.screen='title';
+    render();
+  },
+  startCase(){
+    const rank = rankFor(this.state.reputation);
+    let pool = CASES.filter(c=>c.tier<=rank.maxTier);
+    let loopStage = 1;
+    // 2周目：1周目の全症例（tier1〜3）に、tier4の標準的な難症例を追加。
+    // 3周目：2周目の全症例に、advanced指定の最難関症例をさらに追加。
+    // どちらも「置き換え」ではなく「積み増し」で、プールは減らさず増やしていく。
+    if(this.state.stats.clearedTwice){
+      loopStage = 3;
+      pool = CASES; // 全症例（base + tier4標準 + tier4 advanced）
+    } else if(this.state.stats.clearedOnce){
+      loopStage = 2;
+      pool = CASES.filter(c=>c.tier<=3 || (c.tier===4 && !c.advanced));
+    } else if(rank.specialty){
+      // 現在のローテーション（専門科）に合った症例だけに絞り込む。該当症例が無ければ全体から選ぶ（安全弁）。
+      const specialtyPool = pool.filter(c=>c.specialty===rank.specialty);
+      if(specialtyPool.length>0) pool = specialtyPool;
+    }
+    const usedThisWeek = this.state.weekQueue.map(w=>w.caseId);
+    let candidates = pool.filter(c=>!usedThisWeek.includes(c.id) && !this.state.playedIds.includes(c.id));
+    if(candidates.length===0) candidates = pool.filter(c=>!usedThisWeek.includes(c.id));
+    if(candidates.length===0) candidates = pool;
+    const pick = candidates[Math.floor(Math.random()*candidates.length)];
+    this.state.current = pick;
+    this.state.currentIdentity = buildIdentity(pick, loopStage, Math.random()*1000000);
+    this.state.currentChief = pickChiefVariant(pick);
+    this.state.doneT=[];
+    this.state.wastedCount=0;
+    this.state.selDiag=null;
+    this.state.selDisp=null;
+    this.state.screen='chart';
+    render();
+  },
+  runTest(name){
+    const c = this.state.current;
+    const node = c.tests.find(t=>t.name===name);
+    if(!node) return;
+    if(this.state.doneT.includes(name)) return;
+    this.state.doneT.push(name);
+    this.learnTermsFrom(node.result||(node.label||''));
+    let crashed = false;
+    if(c.urgent && !node.key){
+      this.state.wastedCount += 1;
+      if(this.state.wastedCount >= CRISIS_LIMIT){ this.state.screen='crisis'; crashed=true; }
+    }
+    render();
+    if(crashed) Audio_.sfx('ng');
+  },
+  learnTermsFrom(text){
+    Object.keys(GLOSSARY_FULL).forEach(term=>{
+      if(text.includes(term) && !this.state.seenTerms.includes(term)) this.state.seenTerms.push(term);
+    });
+  },
+  async acknowledgeCrisis(){
+    const c = this.state.current;
+    this.state.weekQueue.push({ caseId:c.id, crashed:true, identity:this.state.currentIdentity });
+    this.state.weekIndex += 1;
+    if(!this.state.playedIds.includes(c.id)) this.state.playedIds.push(c.id);
+    this.state.stats.crashCount += 1;
+    this.state.currentStreak = 0;
+    this.state.lastWasCrash = true;
+    await this.save();
+    this.state.screen='submitted';
+    render();
+  },
+  selectDiag(d){ this.state.selDiag=d; render(); },
+  selectDisp(d){ this.state.selDisp=d; render(); },
+  async submit(){
+    if(!this.state.selDiag || !this.state.selDisp) return;
+    const c = this.state.current;
+    this.state.weekQueue.push({
+      caseId:c.id, selDiag:this.state.selDiag, selDisp:this.state.selDisp, doneT:this.state.doneT.slice(), identity:this.state.currentIdentity,
+    });
+    this.state.weekIndex += 1;
+    if(!this.state.playedIds.includes(c.id)) this.state.playedIds.push(c.id);
+    this.state.lastWasCrash = false;
+    await this.save();
+    this.state.screen='submitted';
+    render();
+  },
+  async goNextInWeek(){
+    if(this.state.weekIndex >= WEEK_SIZE){
+      await this.runWeeklyConference();
+    } else {
+      this.startCase();
+    }
+  },
+  async runWeeklyConference(){
+    const results = this.state.weekQueue.map(w=>{
+      const c = CASES.find(x=>x.id===w.caseId);
+      this.state.stats.cases += 1;
+      if(w.crashed){
+        this.learnTermsFrom(c.explain);
+        this.state.currentStreak = 0;
+        return {c, w, diagOK:false, dispOK:false, crashed:true, pts:-40, breakdown:[['患者急変によりICU搬送（重大インシデント）',-40]]};
+      }
+      const diagOK = w.selDiag === c.diagnosisCorrect;
+      const dispOK = w.selDisp === c.disposition;
+      const wastedTests = (w.doneT||[]).map(name=>c.tests.find(t=>t.name===name)).filter(t=>t && !t.key);
+      let wastedCost = 0;
+      wastedTests.forEach(t=>{ wastedCost += t.cost*3; });
+
+      let pts = 0; const breakdown=[];
+      if(!dispOK){
+        // 治療方針の誤りは、診断名の正誤にかかわらず重大な管理エラーとして扱う。
+        // 「本来は専門科へ引き継ぐべきなのに治療して終診した」場合は、専門的な治療機会を逃す危険な誤りとして特に重く減点する。
+        const dangerous = c.disposition==='refer' && w.selDisp==='treat';
+        const penalty = dangerous ? -40 : -20;
+        breakdown.push([dangerous? '治療方針 誤り（専門科への引き継ぎが必要な患者を治療して終診）' : '治療方針 誤り（治療で対応可能な患者を専門科へ引き継ぎ）', penalty]);
+        pts += penalty;
+        this.state.currentStreak = 0;
+      } else {
+        pts += 10; breakdown.push(['治療方針（治療 or 引き継ぎ） 適切',10]);
+        if(diagOK){ pts+=25; breakdown.push(['診断名 正解',25]); this.state.currentStreak+=1; }
+        else { pts-=12; breakdown.push(['診断名 不正解',-12]); this.state.currentStreak=0; }
+      }
+      if(this.state.currentStreak > this.state.stats.bestStreak) this.state.stats.bestStreak = this.state.currentStreak;
+
+      if(wastedTests.length>0){ pts -= wastedCost; breakdown.push([`不要な検査 ${wastedTests.length}件（費用の浪費）`, -wastedCost]); }
+      else if(dispOK){ pts += 10; breakdown.push(['不要な検査なし（効率的な検査選択）',10]); }
+
+      this.learnTermsFrom(c.explain);
+      if(diagOK) this.state.stats.diagCorrect += 1;
+      return {c, w, diagOK, dispOK, crashed:false, pts, breakdown, wastedTests};
+    });
+    const total = results.reduce((s,r)=>s+r.pts,0);
+    const perfectWeek = results.length>0 && results.every(r=>r.diagOK && r.dispOK && !r.crashed);
+    if(perfectWeek) this.state.stats.perfectWeeks += 1;
+    const before = rankFor(this.state.reputation);
+    this.state.reputation += total;
+    const after = rankFor(this.state.reputation);
+    const gameOver = this.state.reputation <= GAMEOVER_THRESHOLD;
+    const leveledUp = after.level>before.level && !gameOver;
+    const SPECIALIST_LEVEL = RANKS.find(r=>r.title==='総合診療専門医').level; // 1周目クリア：総合診療医になる
+    const CHIEF_LEVEL = RANKS[RANKS.length-1].level;                          // 2周目クリア：医長になる
+    const gameClear   = leveledUp && after.level===SPECIALIST_LEVEL && !this.state.stats.clearedOnce;
+    const chiefPromo  = leveledUp && after.level===CHIEF_LEVEL && this.state.stats.clearedOnce && !this.state.stats.clearedTwice;
+    const grandFinale = !gameOver && this.state.stats.clearedTwice && !this.state.stats.clearedThrice && this.state.reputation >= GRAND_FINALE_THRESHOLD;
+    if(gameClear) this.state.stats.clearedOnce = true;
+    if(chiefPromo) this.state.stats.clearedTwice = true;
+    if(grandFinale) this.state.stats.clearedThrice = true;
+    this.state.weekReport = {week:this.state.week, results, total, perfectWeek, leveledUp, demoted: after.level<before.level && !gameOver, newRank:after, gameOver, gameClear, chiefPromo, grandFinale};
+    this.state.weekQueue = [];
+    this.state.weekIndex = 0;
+    this.state.week += 1;
+    await this.save();
+    this.state.screen='conference';
+    render();
+  },
+  async afterConference(){
+    if(this.state.weekReport && this.state.weekReport.gameOver){
+      this.state.screen='gameover';
+      render();
+    } else if(this.state.weekReport && this.state.weekReport.grandFinale){
+      this.state.screen='grandfinale';
+      render();
+    } else if(this.state.weekReport && this.state.weekReport.chiefPromo){
+      this.state.screen='chiefpromo';
+      render();
+    } else if(this.state.weekReport && this.state.weekReport.gameClear){
+      this.state.screen='gameclear';
+      render();
+    } else {
+      this.state.screen='evaluation'; // 総合評価モーダルは毎週表示（昇進・降格・現状維持のいずれでも）
+      render();
+    }
+  },
+  closeEvaluation(){ this.state.weekReport=null; this.state.screen='title'; render(); },
+};
+
+/* ============================================================
+   オーディオ（効果音のみ）
+   ============================================================ */
+const Audio_ = {
+  ctx:null, gainNode:null,
+  ensure(){ if(!this.ctx){ this.ctx = new (window.AudioContext||window.webkitAudioContext)(); this.gainNode=this.ctx.createGain(); this.gainNode.gain.value=0.09; this.gainNode.connect(this.ctx.destination); } },
+  sfx(kind){
+    this.ensure();
+    if(this.ctx.state==='suspended') this.ctx.resume();
+    const now=this.ctx.currentTime;
+    const play=(f,t0,dur,type='sine',vol=0.15)=>{
+      const o=this.ctx.createOscillator(); const g=this.ctx.createGain();
+      o.type=type; o.frequency.value=f;
+      g.gain.value=0; g.gain.linearRampToValueAtTime(vol,now+t0+0.02);
+      g.gain.linearRampToValueAtTime(0,now+t0+dur);
+      o.connect(g); g.connect(this.gainNode);
+      o.start(now+t0); o.stop(now+t0+dur+0.05);
+    };
+    if(kind==='ok'){ play(523,0,.18); play(659,.12,.2); play(784,.24,.3); }
+    else if(kind==='ng'){ play(200,0,.25,'sawtooth',.1); play(160,.15,.3,'sawtooth',.1); }
+    else if(kind==='click'){ play(700,0,.06,'square',.06); }
+    else if(kind==='fanfare'){ [523,659,784,1046].forEach((f,i)=>play(f,i*0.16,.35,'triangle',.16)); }
+    else if(kind==='sad'){ [400,340,280,220].forEach((f,i)=>play(f,i*0.22,.4,'sine',.1)); }
+  }
+};
+
+/* ============================================================
+   レンダリング
+   ============================================================ */
+function ecgHeaderSvg(){
+  return `<svg viewBox="0 0 600 46" preserveAspectRatio="none">
+    <path d="M0,25 L60,25 L72,8 L84,42 L96,25 L200,25 L212,12 L224,25 L280,25 L292,8 L304,42 L316,25 L420,25 L432,12 L444,25 L500,25 L512,8 L524,42 L536,25 L600,25"/>
+  </svg>`;
+}
+function heroHospitalSvg(){
+  let windows='';
+  for(let row=0; row<4; row++){
+    for(let col=0; col<6; col++){
+      const lit = (row*6+col)%3===0;
+      windows += `<rect x="${38+col*22}" y="${58+row*20}" width="12" height="12" rx="1.5" fill="${lit?'#4FE0A6':'#2C3D45'}" opacity="${lit?0.85:0.6}"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 220 170" xmlns="http://www.w3.org/2000/svg">
+    <rect x="24" y="50" width="172" height="112" fill="#16242E" stroke="#2C3D45" stroke-width="2"/>
+    <rect x="70" y="14" width="80" height="40" fill="#101C24" stroke="#2C3D45" stroke-width="2"/>
+    <rect x="100" y="0" width="20" height="18" fill="#101C24" stroke="#2C3D45" stroke-width="2"/>
+    <rect x="107" y="4" width="6" height="10" fill="#4FE0A6"/>
+    <rect x="104" y="7" width="12" height="4" fill="#4FE0A6"/>
+    ${windows}
+    <rect x="92" y="130" width="36" height="32" fill="#0B1319" stroke="#2C3D45" stroke-width="1.5"/>
+    <rect x="0" y="160" width="220" height="6" fill="#0B1319"/>
+  </svg>`;
+}
+
+function renderShell(inner){
+  const s = Game.state;
+  const rank = rankFor(s.reputation);
+  const nr = nextRank(s.reputation);
+  const pct = nr ? Math.max(0,Math.min(100, Math.round(((s.reputation-rank.min)/(nr.min-rank.min))*100))) : 100;
+  const dangerZone = s.reputation < 60;
+  document.getElementById('root').innerHTML = `
+    <div class="ecg-header">${ecgHeaderSvg()}</div>
+    <div class="topbar">
+      <div class="brand">桜坂大学医学部附属病院<small>DEPT. OF GENERAL MEDICINE ― DIAGNOSTIC REASONING GAME</small></div>
+      <div class="hud">
+        <div class="badge">${rank.emoji} <b>${rank.title}</b></div>
+        <div class="badge ${dangerZone?'rep-down':''}">🏥 評価 <b>${s.reputation}</b> pt</div>
+        <div class="badge">📋 ${s.weekIndex}/${WEEK_SIZE}人</div>
+        <button class="iconbtn" id="btn-glossary">📖 医学用語辞典</button>
+      </div>
+    </div>
+    <div class="progresswrap">
+      <div class="progress-label"><span>${rank.title}</span><span>${nr? (nr.min - s.reputation>0? (nr.min-s.reputation)+'pt で '+nr.title+'へ' : ''): '最高位に到達しています'}</span></div>
+      <div class="progressbar ${dangerZone?'danger':''}"><div style="width:${pct}%"></div></div>
+      ${dangerZone?'<div class="muted" style="color:#E0957A;margin-top:4px;">⚠️ 評価が低下しています。評価が0になると大学病院を追われます。</div>':''}
+    </div>
+    <main id="main">${inner}</main>
+    <footer class="gamefooter">総合診療科 初診担当実績　症例数: ${s.stats.cases}　診断正答率: ${s.stats.cases? Math.round(100*s.stats.diagCorrect/s.stats.cases):0}%</footer>
+    <div id="modal-root"></div>
+  `;
+  document.getElementById('btn-glossary').onclick=()=>openGlossary();
+}
+
+function achievementBadgesHtml(s){
+  const badges = [
+    {on: s.stats.cases>=5, emoji:'🩺', name:'初めての5人診療'},
+    {on: s.stats.perfectWeeks>=1, emoji:'🌟', name:`全問正解評価×${s.stats.perfectWeeks}`},
+    {on: s.stats.bestStreak>=3, emoji:'🔥', name:`最高連続正解 ${s.stats.bestStreak}`},
+    {on: s.stats.crashCount===0 && s.stats.cases>=5, emoji:'🛡️', name:'緊急症例 急変ゼロ記録中'},
+  ];
+  return `<div class="badgerow">${badges.map(b=>`<div class="badge-item ${b.on?'on':'off'}" title="${esc(b.name)}"><span>${b.emoji}</span></div>`).join('')}</div>`;
+}
+
+function renderTitle(){
+  const s = Game.state;
+  const rank = rankFor(s.reputation);
+  const midBatch = s.weekIndex>0 && s.weekIndex<WEEK_SIZE;
+  const clearedOnce = s.stats.clearedOnce;   // 総合診療専門医を取得済み
+  const clearedTwice = s.stats.clearedTwice; // 医長に就任済み
+  const clearedThrice = s.stats.clearedThrice; // 院長として招聘済み（エピローグ後）
+  const mentorSpeech = clearedThrice
+    ? `「院長になったあなたが、こうしてまだ現場で患者さんを診てくれているなんてね。トップに立っても診療の手を抜かないところ、あなたらしいわ。これからも見守っているから、頑張ってね。」`
+    : clearedTwice
+    ? `「医長になってからも、変わらず症例を診てくれてありがとう。ここからさらに評価を積み重ねたら、あなたを待っている場所があるかもしれないわね……楽しみにしていて。」`
+    : clearedOnce
+    ? `「総合診療医になってからも、変わらず症例を診てくれてありがとう。ここからは、これまで以上に難しい患者さんを担当してもらうことになるわ。専門医だからといって手加減はしないから、気を引き締めてね。」`
+    : `「ここは桜坂大学医学部附属病院・総合診療科よ。あなたには外来患者さんのカルテを読んで、精密検査を選んで、診断と治療方針――<b style="color:var(--ecg);">治療して終診するか、専門科へ引き継ぐか</b>――を決めてもらうわ。<b style="color:var(--ecg);">5人の患者さんを担当するごと</b>に、私から評価をするから、その結果次第でもっと難しい症例も任せていくつもりよ。診断が合っているかどうかだけじゃなく、無駄な検査をしていないかもちゃんと見ているから気をつけてね。評価が0になったら、残念だけどこの病院を去ってもらうことになるわよ。」`;
+  const heading = clearedThrice ? '国立中央総合診療研究病院　院長室'
+    : clearedTwice ? '総合診療科 医長　診療室'
+    : clearedOnce ? '総合診療科 総合診療医　初診外来'
+    : (s.stats.cases===0? '初期研修医、初めての初診外来へ' : '総合診療科 初診外来');
+  renderShell(`
+    <div class="title-screen">
+      <div class="hero-hospital">${heroHospitalSvg()}</div>
+      <h1>${heading}</h1>
+      <div class="sub">FROM INTERN TO DEPARTMENT CHIEF</div>
+      <div class="mentor-bubble-wrap">
+        <div class="mentor-avatar">👩‍⚕️</div>
+        <div class="mentor-bubble">
+          <div class="mentor-name">指導医</div>
+          ${mentorSpeech}
+        </div>
+      </div>
+      <p class="muted">現在：<b style="color:var(--ecg);">${rank.title}</b>　${esc(rank.desc)}${clearedOnce?'（現在、最難関の症例のみを担当しています）':''}</p>
+      <div class="disclaimer-box">⚠️ 本アプリはフィクションの教育用ゲームです。実在の医療機関・医師とは関係なく、実際の診断・治療の判断材料にはなりません。ご自身やご家族の体調に不安がある場合は、必ず医療機関を受診してください。</div>
+      ${s.stats.cases>0?achievementBadgesHtml(s):''}
+      <div class="weekdots">
+        ${Array.from({length:WEEK_SIZE}).map((_,i)=>`<div class="weekdot ${i<s.weekIndex?'filled':''}">${i<s.weekIndex?'✓':i+1}</div>`).join('')}
+      </div>
+      <p class="muted">${s.weekIndex}/${WEEK_SIZE}人 担当済み（あと${WEEK_SIZE-s.weekIndex}人で指導医の評価）${s.currentStreak>=2?`　🔥現在${s.currentStreak}連続正解中`:''}</p>
+      <button class="btn" id="btn-start">${midBatch? '次の患者を診る' : (s.stats.cases===0? '外来を開始する' : '外来を続ける')}</button>
+      ${s.stats.cases>0?'<div style="margin-top:14px;"><button class="iconbtn" id="btn-reset">キャリアをリセット</button></div>':''}
+    </div>
+  `);
+  document.getElementById('btn-start').onclick=()=>{ Audio_.sfx('click'); Game.startCase(); };
+  const rb = document.getElementById('btn-reset');
+  if(rb) rb.onclick=()=>{ if(confirm('これまでの評価と記録をすべて削除します。よろしいですか？')) Game.reset(); };
+}
+
+function arrivalBannerHtml(c){
+  if(c.arrival==='ambulance') return `<div class="arrival-banner ambulance">🚑 救急搬送 ― 救急隊からの申し送り</div>`;
+  if(c.arrival==='inhospital') return `<div class="arrival-banner inhospital">🏥 院内急変コール ― 病棟からの緊急連絡</div>`;
+  return '';
+}
+
+function urgencyMeterHtml(c, s){
+  if(!c.urgent) return '';
+  const pct = Math.min(100, Math.round((s.wastedCount/CRISIS_LIMIT)*100));
+  const level = s.wastedCount>=1 ? 'crit' : 'ok';
+  const msg = level==='crit' ? '⚠️ 病状が悪化しています。次に無駄な検査を行うと急変します！'
+            : '🚨 緊急症例：無駄な検査を避け、迅速かつ的確な対応が求められます。';
+  return `<div class="urgencymeter ${level}">
+    <div class="um-row"><span>🚨 緊急度</span><span class="um-msg">${msg}</span></div>
+    <div class="um-track"><div class="um-fill" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+function mentorAdviceHtml(c){
+  const items = c.diagnosisOptions.map(name=>{
+    const info = DISEASE_INFO[name] || '（説明準備中の病名です）';
+    return `<div class="advice-item"><b>${esc(name)}</b><p>${esc(info)}</p></div>`;
+  }).join('');
+  const clearedOnce = Game.state.stats.clearedOnce;
+  const clearedTwice = Game.state.stats.clearedTwice;
+  const label = clearedOnce
+    ? '今回のカルテからは、以下のような病名が考えられるな…'
+    : '今回のカルテからは、以下のような病名が考えられるわね';
+  const panelLabel = clearedTwice ? '医長としての所見' : (clearedOnce ? '総合診療医としての所見' : '指導医のアドバイス');
+  return `<div class="diffboard">
+    <div class="diffboard-label"><span class="mentor-icon">👩‍⚕️</span><span>${panelLabel}：「${label}」</span></div>
+    <div class="advice-list">${items}</div>
+  </div>`;
+}
+
+function testResultHtml(t){
+  if(t.type==='lab') return labBar(t.label,t.value,t.unit,t.min,t.max,undefined,t.dispMax,t.abnormal);
+  if(t.type==='ecg') return ecgSvg(t.pattern) + `<div style="margin-top:6px;">${withGlossary(t.result)}</div>`;
+  return withGlossary(t.result);
+}
+
+function renderChart(){
+  const s = Game.state; const c = s.current;
+  const form = buildIntakeForm(c);
+
+  const cats = {};
+  c.tests.forEach(t=>{ (cats[testCategory(t.name)] = cats[testCategory(t.name)]||[]).push(t); });
+  const testHtml = Object.keys(cats).map(cat=>{
+    const items = cats[cat].map(t=>{
+      const done = s.doneT.includes(t.name);
+      return `<div class="optcard ${done?'done':''}" data-test="${esc(t.name)}">
+        <div class="otitle"><span>${testIcon(t.name)} ${autoGlossary(t.name)}</span><span class="cost">${done?'実施済み':costTag(t.cost)}</span></div>
+        ${done?`<div class="result-inline">${testResultHtml(t)}</div>`:''}
+      </div>`;
+    }).join('');
+    return `<div class="testcatlabel">${cat}</div><div class="grid">${items}</div>`;
+  }).join('');
+
+  const diagHtml = c.diagnosisOptions.map(d=>`<div class="diagcard ${s.selDiag===d?'sel':''}" data-diag="${esc(d)}">${esc(d)}</div>`).join('');
+  const id_ = s.currentIdentity || {name:c.name, age:c.age, gender:c.gender, seed:c.seed};
+
+  renderShell(`
+    <div class="card">
+      <h2>カルテ　（${s.weekIndex+1}人目 / ${WEEK_SIZE}人）</h2>
+      ${arrivalBannerHtml(c)}
+      <div class="chart-head">
+        <div class="avatar-box">${patientAvatar(id_.seed, id_.gender)}</div>
+        <div class="chart-idbox">
+          <div class="pname">${esc(id_.name)}　様${c.urgent?'<span class="urgent-tag">🚨緊急</span>':''}</div>
+          <div class="pmeta">${id_.age}歳・${id_.gender}　｜　難易度 ${'★'.repeat(c.tier)}${'☆'.repeat(4-c.tier)}</div>
+          <div class="vitals">
+            ${vitalHtml('体温','temp',c.vitals.temp)}
+            ${vitalHtml('血圧','bp',c.vitals.bp)}
+            ${vitalHtml('脈拍','pulse',c.vitals.pulse)}
+            ${vitalHtml('SpO2','spo2',c.vitals.spo2)}
+          </div>
+        </div>
+      </div>
+
+      ${urgencyMeterHtml(c, s)}
+
+      <div class="intakeform">
+        <div class="iform-title"><span>問診票</span><span>総合診療科　標準問診書式</span></div>
+        <div class="iform-sec chief"><span class="seclabel">主訴</span>${withGlossary(s.currentChief || c.chief)}</div>
+        <div class="iform-sec hpi"><span class="seclabel">現病歴</span>${withGlossary(form.hpi)}</div>
+        <div class="iform-sec pmh"><span class="seclabel">既往歴・内服薬</span>${withGlossary(form.pmh)}</div>
+        <div class="iform-sec social"><span class="seclabel">生活歴</span>${withGlossary(form.social)}</div>
+        <div class="iform-sec family"><span class="seclabel">家族歴</span>${withGlossary(form.family)}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧪 精密検査</h2>
+      <p class="muted">診断に必要な検査を選びましょう。費用（¥の数）が高い検査ほど、不要だった場合に評価への影響が大きくなります。</p>
+      ${testHtml}
+    </div>
+
+    <div class="card">
+      <h2>診断名を決定</h2>
+      <p class="muted">問診票と検査結果から、最も考えられる診断名を1つ選んでください。</p>
+      ${mentorAdviceHtml(c)}
+      <div class="diaggrid">${diagHtml}</div>
+    </div>
+
+    <div class="card">
+      <h2>治療方針を決定</h2>
+      <p class="muted">この患者は、あなた（総合診療科）が治療して終診とするべきですか？　それとも専門科へ引き継ぐべきですか？</p>
+      <div class="dispgrid">
+        <div class="dispcard ${s.selDisp==='treat'?'sel':''}" data-disp="treat">
+          <div class="dtitle">🩹 治療して終診</div>
+          <div class="ddesc">総合診療科で治療（簡単な創傷処置・処方など）を行い、外来で完結させます。専門科への引き継ぎは行いません。</div>
+        </div>
+        <div class="dispcard ${s.selDisp==='refer'?'sel':''}" data-disp="refer">
+          <div class="dtitle">🏥 専門科へ引き継ぐ</div>
+          <div class="ddesc">院内の専門診療科へコンサルトし、以後の精査・治療を引き継ぎます。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button class="btn" id="btn-submit" ${(!s.selDiag||!s.selDisp)?'disabled':''}>この内容で確定する</button>
+    </div>
+  `);
+  document.querySelectorAll('[data-test]').forEach(el=>el.onclick=()=>{ Audio_.sfx('click'); Game.runTest(el.dataset.test); });
+  document.querySelectorAll('[data-diag]').forEach(el=>el.onclick=()=>{ Audio_.sfx('click'); Game.selectDiag(el.dataset.diag); });
+  document.querySelectorAll('[data-disp]').forEach(el=>el.onclick=()=>{ Audio_.sfx('click'); Game.selectDisp(el.dataset.disp); });
+  const submitBtn = document.getElementById('btn-submit');
+  if(submitBtn) submitBtn.onclick=()=>{ Audio_.sfx('click'); Game.submit(); };
+}
+
+function renderCrisis(){
+  const s = Game.state; const c = s.current;
+  const id_ = s.currentIdentity || {name:c.name};
+  Audio_.sfx('ng');
+  renderShell(`
+    <div class="card crisis-card">
+      <div class="crisis-flash">🚨</div>
+      <h2 class="crisis-title">患者急変</h2>
+      <p class="crisis-body">${esc(id_.name)}様の状態が急激に悪化しました。緊急性の高い症例にもかかわらず、不要な検査に時間と費用を費やしている間に対応が後手に回ったようです。<br>院内救急コールが発動され、患者は<b>ICU（集中治療室）</b>へ緊急搬送されました。</p>
+      <p class="muted">この症例は重大インシデントとして指導医の評価に報告され、評価が大きく下がります。緊急症例では、無駄な検査を避け、必要な検査に絞ることが重要です。</p>
+      <div class="btnrow" style="justify-content:center;">
+        <button class="btn" id="btn-crisis-ok">指導医に報告する</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-crisis-ok').onclick=()=>{ Game.acknowledgeCrisis(); };
+}
+
+function renderSubmitted(){
+  const s = Game.state;
+  const isLastOfWeek = s.weekIndex >= WEEK_SIZE;
+  const crash = s.lastWasCrash;
+  renderShell(`
+    <div class="card handover-screen">
+      <div class="letter">${crash?'🚨':'📩'}</div>
+      <div class="stamp" style="${crash?'color:var(--alert);border-color:var(--alert);background:#FDECEA;':''}">${crash?'ICU搬送・記録完了':'カルテ記録完了'}</div>
+      <h2>${crash?'急変記録をカルテに登録しました':'診療録を確定し登録しました'}</h2>
+      <p class="muted">${crash? '対応が遅れ、患者はICUへ緊急搬送されました。この症例は「重大インシデント」として指導医の評価に報告されます。' : 'あなたの診断・治療方針が正しかったかどうかは、'}<br>5人を担当し終えたあとの<b style="color:var(--gold);">指導医による評価</b>でまとめて発表されます。</p>
+      <div class="weekdots">
+        ${Array.from({length:WEEK_SIZE}).map((_,i)=>`<div class="weekdot ${i<s.weekIndex?'filled':''}">${i<s.weekIndex?'✓':i+1}</div>`).join('')}
+      </div>
+      <div class="btnrow" style="justify-content:center;">
+        <button class="btn" id="btn-goon">${isLastOfWeek? '指導医の評価を受ける' : '次の患者を診る'}</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-goon').onclick=()=>{ Audio_.sfx('click'); Game.goNextInWeek(); };
+}
+
+function renderConference(){
+  const s = Game.state; const rep = s.weekReport;
+  const anyCorrect = rep.results.some(r=>r.diagOK);
+  Audio_.sfx(rep.total>=0 && anyCorrect ? 'ok' : 'ng');
+  const deptName = k=>DEPARTMENTS[k]? `${DEPARTMENTS[k].emoji} ${DEPARTMENTS[k].name}` : k;
+  const cards = rep.results.map((r,i)=>{
+    const id_ = r.w.identity || {name:r.c.name, age:r.c.age, gender:r.c.gender};
+    if(r.crashed){
+      return `<details class="weekcard crashcard" ${i===0?'open':''}>
+        <summary>
+          <span class="wname">🚨 ${esc(id_.name)}様（${id_.age}歳・${id_.gender}）</span>
+          <span class="wverdicts"><span class="verdict ng">ICU搬送</span><span class="verdict ng">${r.pts}pt</span></span>
+        </summary>
+        <div class="wbody">
+          <p class="muted">この患者は精密検査の対応中に病状が急変し、ICU（集中治療室）へ緊急搬送されました。本来の正しい診断は<b>${esc(r.c.diagnosisCorrect)}</b>で、緊急性の高い症例でした。不要な検査を重ねず、迅速に核心へ迫る対応が求められていました。</p>
+          <div class="explain">${withGlossary(r.c.explain)}</div>
+        </div>
+      </details>`;
+    }
+    const wastedNames = (r.wastedTests||[]).map(t=>`${esc(t.name)}（${costTag(t.cost)}）`).join('、');
+    return `<details class="weekcard" ${i===0?'open':''}>
+      <summary>
+        <span class="wname">${esc(id_.name)}様（${id_.age}歳・${id_.gender}）</span>
+        <span class="wverdicts">
+          <span class="verdict ${r.diagOK?'ok':'ng'}">診断${r.diagOK?'○':'×'}</span>
+          <span class="verdict ${r.dispOK?'ok':'ng'}">方針${r.dispOK?'○':'×'}</span>
+          <span class="verdict ${r.pts>=0?'ok':'ng'}">${r.pts>=0?'+':''}${r.pts}pt</span>
+        </span>
+      </summary>
+      <div class="wbody">
+        <div class="resultrow">
+          <div class="resultbox">
+            <h4>診断名</h4>
+            <div class="yourans">あなたの回答：${esc(r.w.selDiag)} <span class="verdict ${r.diagOK?'ok':'ng'}">${r.diagOK?'正解':'不正解'}</span></div>
+            ${!r.diagOK?`<div class="correctans">正解：${esc(r.c.diagnosisCorrect)}</div>`:''}
+          </div>
+          <div class="resultbox">
+            <h4>治療方針</h4>
+            <div class="yourans">あなたの回答：${r.w.selDisp==='treat'?'🩹 治療して終診':'🏥 専門科へ引き継ぎ'} <span class="verdict ${r.dispOK?'ok':'ng'}">${r.dispOK?'適切':'不適切'}</span></div>
+            ${r.c.disposition==='refer'?`<div class="muted">正しい引き継ぎ先：${deptName(r.c.deptCorrect)}</div>`:`<div class="muted">${r.c.treatmentNote?esc(r.c.treatmentNote):''}</div>`}
+          </div>
+        </div>
+        ${wastedNames? `<p class="muted">⚠️ 不要な検査：${wastedNames}</p>` : ''}
+        <div class="explain">${withGlossary(r.c.explain)}</div>
+        <div class="scorebreak">${r.breakdown.map(b=>`<div class="scorepill ${b[1]>=0?'pos':'neg'}">${b[0]}: <b>${b[1]>=0?'+':''}${b[1]}</b></div>`).join('')}</div>
+      </div>
+    </details>`;
+  }).join('');
+  renderShell(`
+    <div class="card">
+      <div class="confroom-badge">👨‍⚕️</div>
+      <div class="conf-heading">
+        <div class="day">SUPERVISING PHYSICIAN EVALUATION</div>
+        <h2>第${rep.week}回　指導医による評価</h2>
+      </div>
+      <p class="muted" style="text-align:center;">担当した${rep.results.length}人の患者について、指導医からまとめて講評があります。</p>
+      <div class="weeksummarybar">
+        <div>今回の評価変動${rep.perfectWeek?' 🌟全例パーフェクト！':''}</div>
+        <div class="wtotal ${rep.total>=0?'pos':'neg'}">${rep.total>=0?'+':''}${rep.total} pt</div>
+      </div>
+      ${cards}
+      <div class="btnrow" style="justify-content:center;margin-top:16px;">
+        <button class="btn" id="btn-next">${rep.gameOver? '結果を見る' : '総合評価'}</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-next').onclick=()=>{ Game.afterConference(); };
+}
+
+function renderEvaluation(){
+  const s = Game.state; const r = s.weekReport;
+  const rank = rankFor(s.reputation);
+  let headline, detail, sfx;
+  if(r.leveledUp){ headline='昇進しました！'; detail=`あなたは <b style="color:var(--ecg);">${esc(rank.title)}</b> になりました。${esc(rank.desc)}`; sfx='fanfare'; }
+  else if(r.demoted){ headline='降格となりました'; detail=`評価の低下により、あなたは <b style="color:var(--alert);">${esc(rank.title)}</b> に降格しました。担当できる症例の難易度も下がります。挽回しましょう。`; sfx='ng'; }
+  else { headline='総合評価'; detail=`現在の階級は <b style="color:var(--ecg);">${esc(rank.title)}</b> です。${esc(rank.desc)}`; sfx='ok'; }
+  Audio_.sfx(sfx);
+  document.getElementById('modal-root').innerHTML = `
+    <div class="modal-bg">
+      <div class="modal">
+        <div class="rank-emoji">${rank.emoji}</div>
+        <h2>${headline}</h2>
+        <p>${detail}</p>
+        <div class="eval-stats">
+          <div class="eval-stat"><span>今回の評価変動</span><b class="${r.total>=0?'pos':'neg'}">${r.total>=0?'+':''}${r.total}pt</b></div>
+          <div class="eval-stat"><span>現在の評価スコア</span><b>${s.reputation}pt</b></div>
+          <div class="eval-stat"><span>通算診断正答率</span><b>${s.stats.cases? Math.round(100*s.stats.diagCorrect/s.stats.cases):0}%</b></div>
+        </div>
+        <div class="btnrow" style="justify-content:center;"><button class="btn" id="btn-closeeval">診療を続ける</button></div>
+      </div>
+    </div>`;
+  document.getElementById('btn-closeeval').onclick=()=>{ document.getElementById('modal-root').innerHTML=''; Game.closeEvaluation(); };
+}
+
+function renderGameOver(){
+  const s = Game.state;
+  Audio_.sfx('sad');
+  renderShell(`
+    <div class="card gameover-screen">
+      <div class="gameover-icon">🗄️</div>
+      <div class="gameover-title">解 雇</div>
+      <p class="gameover-body">度重なる誤診と評価の低下により、あなたは桜坂大学医学部附属病院を去ることになりました。<br>ロッカーの私物を段ボール箱にまとめ、静まり返った医局を後にします。<br>白衣を返却し、正面玄関を出ると、見慣れた病院の灯りが少しずつ遠ざかっていきました。</p>
+      <div class="gameover-stats">通算症例数：${s.stats.cases}　診断正答率：${s.stats.cases? Math.round(100*s.stats.diagCorrect/s.stats.cases):0}%　最高連続正解：${s.stats.bestStreak}</div>
+      <div class="btnrow" style="justify-content:center;">
+        <button class="btn" id="btn-restart">研修医としてもう一度挑戦する</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-restart').onclick=()=>{ Audio_.sfx('click'); Game.reset(); };
+}
+
+function renderGameClear(){
+  const s = Game.state;
+  Audio_.sfx('fanfare');
+  renderShell(`
+    <div class="card" style="text-align:center;padding:40px 20px;">
+      <div style="font-size:60px;">🎖️</div>
+      <h2 style="border:none;padding:0;justify-content:center;font-family:'Hiragino Mincho ProN','Shippori Mincho',serif;font-size:24px;color:var(--gold);margin:14px 0 8px;">総合診療専門医、取得おめでとうございます！</h2>
+      <p class="muted" style="max-width:480px;margin:0 auto 14px;line-height:2;">初期研修医として桜坂大学医学部附属病院に着任してから、初期研修・専門研修のあらゆるローテーションを乗り越え、ついに<b style="color:var(--ecg);">総合診療専門医</b>の資格を取得しました。</p>
+      <div class="mentor-bubble-wrap" style="max-width:480px;margin:0 auto 16px;text-align:left;">
+        <div class="mentor-avatar">👩‍⚕️</div>
+        <div class="mentor-bubble">
+          <div class="mentor-name">指導医</div>
+          「本当に、よくここまで来たわね。最初は問診票を読むのも一苦労だったのに、数えきれないほどの患者さんと向き合って、迷って、時には悔しい思いもして……それでも一つひとつの診断に真剣に向き合い続けたあなたを、わたしはずっと見てきたわ。<br><br>これで、あなたも一人前の総合診療医よ。本当におめでとう。でも、ここからが本番。総合診療医としてこれまで以上に難しい患者さんを任せていくから、気を引き締めてね。」
+        </div>
+      </div>
+      <div class="gameover-stats" style="margin-bottom:18px;">通算症例数：${s.stats.cases}件　診断正答率：${s.stats.cases? Math.round(100*s.stats.diagCorrect/s.stats.cases):0}%　最高連続正解：${s.stats.bestStreak}</div>
+      <p class="muted">総合診療医として、これからも診療を続けることができます。ここから先は、これまで以上に難しい症例が待っています。</p>
+      <div class="btnrow" style="justify-content:center;">
+        <button class="btn" id="btn-clear-continue">総合診療医として診療を続ける</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-clear-continue').onclick=()=>{ Audio_.sfx('click'); Game.closeEvaluation(); };
+}
+
+function renderChiefPromo(){
+  const s = Game.state;
+  Audio_.sfx('fanfare');
+  renderShell(`
+    <div class="card" style="text-align:center;padding:40px 20px;">
+      <div style="font-size:60px;">🏆</div>
+      <h2 style="border:none;padding:0;justify-content:center;font-family:'Hiragino Mincho ProN','Shippori Mincho',serif;font-size:24px;color:var(--gold);margin:14px 0 8px;">医長就任、おめでとうございます！</h2>
+      <p class="muted" style="max-width:480px;margin:0 auto 14px;line-height:2;">総合診療専門医として数々の難症例に向き合い続け、ついに<b style="color:var(--ecg);">総合診療科の医長</b>という大きな節目に到達しました。</p>
+      <div class="mentor-bubble-wrap" style="max-width:480px;margin:0 auto 16px;text-align:left;">
+        <div class="mentor-avatar">👩‍⚕️</div>
+        <div class="mentor-bubble">
+          <div class="mentor-name">指導医</div>
+          「専門医になってからも、あなたは一度も歩みを止めなかったわね。難しい症例が続いても、投げ出さずに一つひとつ丁寧に向き合っていた姿を、わたしはちゃんと見ていたわ。<br><br>医長になったからといって、気を抜いていいわけじゃない。でも、今日この瞬間だけは誇っていいと思う。本当におめでとう。これからも、あなたらしい診療を続けていってね。」
+        </div>
+      </div>
+      <div class="gameover-stats" style="margin-bottom:18px;">通算症例数：${s.stats.cases}件　診断正答率：${s.stats.cases? Math.round(100*s.stats.diagCorrect/s.stats.cases):0}%　最高連続正解：${s.stats.bestStreak}</div>
+      <p class="muted">医長として、これからも診療を続けることができます。さらに評価を積み重ねた先に、何が待っているでしょうか。</p>
+      <div class="btnrow" style="justify-content:center;">
+        <button class="btn" id="btn-chief-continue">医長として診療を続ける</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-chief-continue').onclick=()=>{ Audio_.sfx('click'); Game.closeEvaluation(); };
+}
+
+function renderGrandFinale(){
+  const s = Game.state;
+  Audio_.sfx('fanfare');
+  renderShell(`
+    <div class="card" style="text-align:center;padding:40px 20px;background:linear-gradient(180deg,#FFFDF5,#FFFFFF);border-color:var(--gold);">
+      <div style="font-size:64px;">🎖️</div>
+      <h2 style="border:none;padding:0;justify-content:center;font-family:'Hiragino Mincho ProN','Shippori Mincho',serif;font-size:26px;color:var(--gold);margin:14px 0 8px;">招聘状</h2>
+      <div class="intakeform" style="max-width:520px;margin:0 auto 18px;text-align:left;">
+        <div class="iform-title"><span>厚生労働省　新設医療機関設立準備室</span><span></span></div>
+        <p style="font-size:14px;line-height:2;color:var(--ink);margin:8px 0 0;">
+        拝啓　貴殿におかれましては、桜坂大学医学部附属病院総合診療科医長として、数多の難症例に対し卓越した臨床推理と誠実な診療を積み重ねてこられたこと、ここに深く敬意を表します。<br><br>
+        この度、国が新たに設立する高度総合診療センター「<b style="color:var(--gold);">国立中央総合診療研究病院</b>」の開院にあたり、同院の<b style="color:var(--gold);">初代院長</b>として、貴殿を招聘いたしたく存じます。<br><br>
+        貴殿のこれまでの歩みは、まさにこの国の総合診療を支えるにふさわしいものです。ご快諾いただけますよう、心よりお願い申し上げます。<br><br>
+        敬具
+        </p>
+      </div>
+      <div class="mentor-bubble-wrap" style="max-width:480px;margin:0 auto 16px;text-align:left;">
+        <div class="mentor-avatar">👩‍⚕️</div>
+        <div class="mentor-bubble">
+          <div class="mentor-name">指導医</div>
+          「……まさか、国の新しい病院の院長にお声がかかるなんてね。最初にこの科の扉を叩いた頃のあなたを思うと、感慨深いものがあるわ。胸を張って、行ってらっしゃい。あなたなら、きっと素晴らしい病院を作れる。今までお疲れ様、そして――本当におめでとう。」
+        </div>
+      </div>
+      <div class="gameover-stats" style="margin-bottom:18px;">通算症例数：${s.stats.cases}件　診断正答率：${s.stats.cases? Math.round(100*s.stats.diagCorrect/s.stats.cases):0}%　最高連続正解：${s.stats.bestStreak}　最終評価スコア：${s.reputation}pt</div>
+      <p class="muted">桜坂大学病院を巣立ち、国立中央総合診療研究病院の院長として、新たな一歩を踏み出しました。――物語は、ここでひとまずの完結を迎えます。</p>
+      <div class="btnrow" style="justify-content:center;">
+        <button class="btn" id="btn-finale-continue">この後も診療を続ける</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-finale-continue').onclick=()=>{ Audio_.sfx('click'); Game.closeEvaluation(); };
+}
+
+function renderContinueChoice(){
+  const s = Game.state;
+  const rank = rankFor(s.reputation);
+  renderShell(`
+    <div class="card" style="text-align:center;padding:34px 20px;">
+      <div style="font-size:44px;">📋</div>
+      <h2 style="border:none;padding:0;justify-content:center;font-family:'Hiragino Mincho ProN','Shippori Mincho',serif;font-size:20px;margin:10px 0 8px;">前回の記録が見つかりました</h2>
+      <p class="muted">現在の階級：<b style="color:var(--ecg);">${esc(rank.title)}</b>　評価スコア：${s.reputation}pt　通算症例数：${s.stats.cases}件</p>
+      <div class="btnrow" style="justify-content:center;">
+        <button class="btn" id="btn-continue">続きから始める</button>
+        <button class="btn secondary" id="btn-restart-choice">最初からやり直す</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('btn-continue').onclick=()=>{ Audio_.sfx('click'); Game.continueGame(); };
+  document.getElementById('btn-restart-choice').onclick=()=>{ if(confirm('これまでの評価と記録をすべて削除して、最初からやり直します。よろしいですか？')) Game.reset(); };
+}
+
+function openGlossary(){
+  const s = Game.state;
+  const terms = s.seenTerms.length? s.seenTerms.slice().sort() : [];
+  const list = terms.length===0
+    ? `<p class="muted">まだ用語が登録されていません。カルテを読んだり検査を行うと、出てきた医学用語がここに解説付きで記録されます。</p>`
+    : `<div class="glossary-list">${terms.map(t=>`<div class="gitem"><b>${esc(t)}</b><p>${esc(GLOSSARY_FULL[t])}</p></div>`).join('')}</div>`;
+  document.getElementById('modal-root').innerHTML = `
+    <div class="modal-bg" id="glossary-bg">
+      <div class="modal" style="max-width:520px;text-align:left;">
+        <h2 style="text-align:center;">📖 医学用語辞典</h2>
+        <p class="muted" style="text-align:center;">プレイ中に登場した用語（${terms.length}語）</p>
+        ${list}
+        <div class="btnrow" style="justify-content:center;margin-top:14px;"><button class="btn secondary" id="btn-closeglos">閉じる</button></div>
+      </div>
+    </div>`;
+  document.getElementById('btn-closeglos').onclick=()=>{ document.getElementById('modal-root').innerHTML=''; };
+  document.getElementById('glossary-bg').onclick=(e)=>{ if(e.target.id==='glossary-bg') document.getElementById('modal-root').innerHTML=''; };
+}
+
+function render(){
+  const s = Game.state;
+  if(s.screen==='continueChoice') renderContinueChoice();
+  else if(s.screen==='title') renderTitle();
+  else if(s.screen==='chart') renderChart();
+  else if(s.screen==='crisis') renderCrisis();
+  else if(s.screen==='submitted') renderSubmitted();
+  else if(s.screen==='conference') renderConference();
+  else if(s.screen==='evaluation'){ renderConference(); renderEvaluation(); }
+  else if(s.screen==='gameover') renderGameOver();
+  else if(s.screen==='gameclear') renderGameClear();
+  else if(s.screen==='chiefpromo') renderChiefPromo();
+  else if(s.screen==='grandfinale') renderGrandFinale();
+}
+
+Game.init();
+</script>
+</body>
+</html>
