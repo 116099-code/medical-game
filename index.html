@@ -49,6 +49,8 @@ body{
 .hud .badge.rep-up b{color:var(--ecg);}
 .hud .badge.rep-down b{color:var(--alert);}
 .iconbtn{background:#fff;border:1px solid var(--line);color:var(--text-mid);border-radius:20px;padding:7px 13px;font-size:13px;cursor:pointer;transition:.15s;}
+.iconbtn.pause-btn{border-color:var(--gold);color:#8a6b1f;background:#FBF1DC;}
+.iconbtn.pause-btn:hover{background:#F5E4BC;}
 .iconbtn:hover{border-color:var(--ecg);color:var(--ecg);}
 
 /* ---------- reputation bar ---------- */
@@ -800,6 +802,20 @@ function questionCategory(q){
   if(/喫煙|飲酒|生活習慣|職業|食事|塩分|水分摂取|生活/.test(q)) return 'social';
   return 'hpi'; // 現病歴（症状の性質・経過・随伴症状・悪化寛解因子など）
 }
+/* ============================================================
+   【症例データ執筆時の重要ルール】qa の各 a（回答）は、同じカテゴリの
+   他の回答と自動的にスペース区切りで連結され、1つの問診票の文章として
+   表示される（下記 buildIntakeForm を参照）。そのため：
+
+   ✗ NG:「ありません。」「いいえ、ありません。」「特にありません。」だけの回答
+      → 前の文とつながった時に「〜。ありません。」のような、何を否定しているのか
+        わからない文になってしまう（実際に発生した不具合）。
+
+   ✓ OK: 必ず主語（何についての回答か）を文中に再掲すること。
+      例：「糖尿病などの持病はありません。」「以前に似たような症状はなく、今回が初めてです。」
+
+   新しい症例を追加する際は、この点を必ず確認すること。
+   ============================================================ */
 function buildIntakeForm(c){
   const groups = {hpi:[], pmh:[], social:[], family:[]};
   c.qa.forEach(q=>{ groups[questionCategory(q.q)].push(q.a); });
@@ -837,8 +853,11 @@ function bodySilhouetteSvg(markKeys){
 /* ============================================================
    症例データ
    qa: 問診票（自動でカテゴリ分類され、統一書式の問診票に整形される）
+       ★注意★ 同カテゴリ内の回答は自動でスペース連結される。
+       「ありません。」のような主語なしの回答は禁止（buildIntakeForm 付近の
+       ルール説明を参照）。必ず主語を再掲した自己完結文にすること。
    tests: 精密検査（すべて最初から選択可。key:true は診断に必要な検査、
-          そうでないものは「無駄な検査」＝コストが評価にマイナスとなる）
+          そうでないものは「不要な検査」＝コストが評価にマイナスとなる）
    disposition: 'refer'（専門科へ引き継ぎ） or 'treat'（治療して終診）
    ============================================================ */
 const CASES = [
@@ -877,7 +896,7 @@ const CASES = [
     {q:'痛みの場所は最初からそこでしたか？', a:'いいえ、最初はみぞおちから臍のあたりが痛くて、半日ほどで右下腹部に痛みが移動しました。', key:true},
     {q:'咳をしたりお腹に力を入れると痛みますか？', a:'はい、咳やくしゃみをすると右下腹部に響くように痛みます。吐き気もあり、朝から食欲もありません。', key:true},
     {q:'排尿や排便に異常はありますか？', a:'特に変わりはありません。下痢もしていません。'},
-    {q:'以前に似たような症状はありましたか？', a:'いいえ、初めてです。'},
+    {q:'以前に似たような症状はありましたか？', a:'以前に似たような症状はなく、今回が初めてです。'},
   ],
   tests:[
     {name:'血液検査（炎症反応）', cost:1, key:true, type:'lab', label:'CRP', value:'6.8', unit:'mg/dL', min:0, max:0.3, dispMax:10, abnormal:true},
@@ -949,7 +968,7 @@ const CASES = [
     {q:'受傷の状況を詳しく教えてください', a:'自転車で転倒し、割れたガラス片で右前腕を切りました。出血は圧迫でおさまっています。', key:true},
     {q:'手指のしびれや動かしにくさはありますか？', a:'いいえ、手指の感覚も動きも普段どおりです。', key:true},
     {q:'既往歴や内服中の薬はありますか？', a:'特記すべき既往はありません。血液をサラサラにする薬も飲んでいません。破傷風トキソイドの接種歴ははっきりしません。'},
-    {q:'糖尿病などの持病はありますか？', a:'ありません。健康です。'},
+    {q:'糖尿病などの持病はありますか？', a:'糖尿病などの持病はありません。健康です。'},
   ],
   tests:[
     {name:'創部の視診', cost:1, key:true, type:'text', result:'右前腕に約4cmの切創があります。創縁は整で、皮下組織までの深さです。活動性出血や明らかな異物混入は認めません。'},
@@ -1090,7 +1109,7 @@ const CASES = [
   qa:[
     {q:'発作はどれくらい続き、きっかけはありますか？', a:'10〜20分ほどでピークに達します。満員電車や人混みで起こりやすい気がしますが、何もしていない時にも起こります。', key:true},
     {q:'最近、大きな出来事や生活の変化はありましたか？', a:'半年前に近しい人を亡くし、それ以降から症状が始まりました。仕事のストレスも強いです。発作が怖くて電車を避けています。', key:true},
-    {q:'体重減少や暑がりはありますか？', a:'特にありません。体重も変わっていません。', key:true},
+    {q:'体重減少や暑がりはありますか？', a:'暑がりは特にありません。体重も変わっていません。', key:true},
     {q:'発作の間、めまいや手足のしびれはありますか？', a:'手足がしびれるような感覚と、めまいがあります。過呼吸気味になります。'},
   ],
   tests:[
@@ -1230,7 +1249,7 @@ const CASES = [
   qa:[
     {q:'首や脇の下にしこりはありますか？', a:'首の左側に、痛みのないしこりを触れます。だんだん大きくなっている気がします。', key:true},
     {q:'寝汗や体重の変化について教えてください', a:'寝間着を着替えるほどの大量の寝汗をかきます。この2ヶ月で5kg減りました。', key:true},
-    {q:'結核患者との接触歴はありますか？', a:'特に思い当たりません。'},
+    {q:'結核患者との接触歴はありますか？', a:'結核患者との接触歴は特に思い当たりません。'},
     {q:'かゆみや熱の出方の特徴はありますか？', a:'原因不明の全身のかゆみがあります。夕方から夜にかけて熱が上がる傾向があります。'},
   ],
   tests:[
@@ -1378,7 +1397,7 @@ const CASES = [
     {q:'物忘れの様子について教えてください（娘より）', a:'同じことを何度も聞いたり、直前に聞いた話を忘れたりすることが増えました。財布や鍵をしまった場所を忘れて探し回ることもあります。', key:true},
     {q:'日常生活への影響はありますか？', a:'料理の手順を間違えたり、公共料金の支払いを忘れて滞納したりするようになりました。以前は几帳面な性格だったので驚いています。', key:true},
     {q:'症状の始まり方や経過について教えてください', a:'はっきりした発症時期は分からず、半年ほどかけて少しずつ進行してきた印象です。', key:true},
-    {q:'脳卒中などの既往はありますか？', a:'特にありません。高血圧で内服治療中です。'},
+    {q:'脳卒中などの既往はありますか？', a:'脳卒中などの既往は特にありません。高血圧で内服治療中です。'},
   ],
   tests:[
     {name:'認知機能検査（HDS-R／MMSE）', cost:1, key:true, type:'text', result:'**認知機能検査**の結果は18点（30点満点）と低下しています。特に遅延再生（少し前に覚えたことを思い出す力）の障害が目立ちます。'},
@@ -1559,7 +1578,7 @@ const CASES = [
     {q:'咳や痰について詳しく教えてください', a:'乾いた咳で始まりましたが、今日から黄色っぽい痰が絡むようになりました。', key:true},
     {q:'呼吸苦しさや胸の痛みはありますか？', a:'深呼吸をすると右の胸が少し痛みます。階段を上ると息が切れます。', key:true},
     {q:'既往歴や基礎疾患はありますか？', a:'特に持病はなく、普段は健康です。'},
-    {q:'周囲で同じような症状の人はいますか？', a:'特に思い当たりません。'},
+    {q:'周囲で同じような症状の人はいますか？', a:'周囲で同じような症状の人には特に思い当たりません。'},
   ],
   tests:[
     {name:'胸部聴診', cost:1, key:true, type:'text', result:'右下肺野で断続性の副雑音（水泡音）を聴取します。'},
@@ -1605,7 +1624,7 @@ const CASES = [
     {q:'頭痛の性質について教えてください', a:'右側のこめかみを中心に、脈打つようなズキズキした痛みです。動くと痛みが強くなります。', key:true},
     {q:'頭痛に伴う症状はありますか？', a:'頭痛の時は光や音がつらく感じ、吐き気を伴うこともあります。暗い部屋で休むと楽になります。', key:true},
     {q:'頭痛の前に前兆のような症状はありますか？', a:'時々、頭痛が始まる前にキラキラした光が見えることがあります。', key:true},
-    {q:'手足のしびれや麻痺、ろれつが回らないといった症状はありますか？', a:'いいえ、そのような症状はありません。'},
+    {q:'手足のしびれや麻痺、ろれつが回らないといった症状はありますか？', a:'手足のしびれや麻痺、ろれつが回らないといった症状はありません。'},
   ],
   tests:[
     {name:'神経学的診察', cost:1, key:true, type:'text', result:'四肢の麻痺・感覚障害、構音障害など、局所神経症状は認めません。'},
@@ -1696,7 +1715,7 @@ const CASES = [
     {q:'けいれんの様子を教えてください（母親より）', a:'突然、手足を突っ張らせてガクガクと震え、白目をむいていました。呼びかけへの反応もありませんでした。1分ほどで治まりました。', key:true},
     {q:'発熱について教えてください', a:'けいれんの数時間前から38度台の発熱がありました。', key:true},
     {q:'けいれんの後の様子はどうですか？', a:'けいれんが治まった後は少しぼんやりしていましたが、今はいつも通り元気に遊んでいます。', key:true},
-    {q:'今までにもけいれんを起こしたことはありますか？', a:'いいえ、今回が初めてです。家族にも、発熱時にけいれんを起こしたことがある人がいます。'},
+    {q:'今までにもけいれんを起こしたことはありますか？', a:'けいれんを起こしたのは今回が初めてです。家族にも、発熱時にけいれんを起こしたことがある人がいます。'},
   ],
   tests:[
     {name:'神経学的診察', cost:1, key:true, type:'text', result:'意識は清明で、四肢の麻痺や左右差は認めません。項部硬直などの髄膜刺激症状も認めません。'},
@@ -1904,7 +1923,7 @@ const CASES = [
     {q:'症状について詳しく教えてください', a:'食後や横になったときに、みぞおちから胸にかけて焼けるような感じがあり、酸っぱい液体が喉まで上がってくることがあります。', key:true},
     {q:'体重や生活習慣について教えてください', a:'ここ数年で体重が増え、脂っこい食事や飲酒の機会が多いです。', key:true},
     {q:'嚥下困難や体重減少はありますか？', a:'いいえ、食べ物を飲み込みにくいことや、意図しない体重減少はありません。', key:true},
-    {q:'黒色便や吐血はありますか？', a:'いいえ、ありません。'},
+    {q:'黒色便や吐血はありますか？', a:'黒色便や吐血はありません。'},
   ],
   tests:[
     {name:'症状の性状評価', cost:1, key:true, type:'text', result:'食後・臥位で増悪する胸やけと呑酸を認め、警告症状（嚥下困難・体重減少・出血）は伴っていません。'},
@@ -2492,7 +2511,7 @@ const Game = {
       render();
     }
   },
-  closeEvaluation(){ this.state.weekReport=null; this.state.screen='title'; render(); },
+  closeEvaluation(){ this.state.weekReport=null; this.startCase(); },
 };
 
 /* ============================================================
@@ -2555,6 +2574,7 @@ function renderShell(inner){
   const nr = nextRank(s.reputation);
   const pct = nr ? Math.max(0,Math.min(100, Math.round(((s.reputation-rank.min)/(nr.min-rank.min))*100))) : 100;
   const dangerZone = s.reputation < 60;
+  const showPause = !['title','continueChoice','gameover'].includes(s.screen);
   document.getElementById('root').innerHTML = `
     <div class="topbar">
       <div class="brand-row">
@@ -2566,6 +2586,7 @@ function renderShell(inner){
         <div class="badge ${dangerZone?'rep-down':''}">🏥 評価 <b>${s.reputation}</b> pt</div>
         <div class="badge">📋 ${s.weekIndex}/${WEEK_SIZE}人</div>
         <button class="iconbtn" id="btn-glossary">📖 医学用語辞典</button>
+        ${showPause?'<button class="iconbtn pause-btn" id="btn-pause">⏸ 中断する</button>':''}
       </div>
     </div>
     <div class="progresswrap">
@@ -2578,6 +2599,32 @@ function renderShell(inner){
     <div id="modal-root"></div>
   `;
   document.getElementById('btn-glossary').onclick=()=>openGlossary();
+  const pauseBtn = document.getElementById('btn-pause');
+  if(pauseBtn) pauseBtn.onclick=()=>openPauseModal();
+}
+
+function openPauseModal(){
+  document.getElementById('modal-root').innerHTML = `
+    <div class="modal-bg" id="pause-bg">
+      <div class="modal">
+        <div class="rank-emoji">⏸️</div>
+        <h2>ここで中断できます</h2>
+        <p>ここまでの記録は自動的に保存されています。このまま画面を閉じても、次回このゲームを開いたときに「続きから始める」を選べば、この続きから再開できます。</p>
+        <div class="btnrow" style="justify-content:center;flex-direction:column;align-items:stretch;">
+          <button class="btn" id="btn-pause-totitle">中断してタイトルへ戻る</button>
+          <button class="btn secondary" id="btn-pause-cancel">診療を続ける</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('btn-pause-totitle').onclick=async ()=>{
+    Audio_.sfx('click');
+    await Game.save();
+    document.getElementById('modal-root').innerHTML='';
+    Game.state.screen='title';
+    render();
+  };
+  document.getElementById('btn-pause-cancel').onclick=()=>{ document.getElementById('modal-root').innerHTML=''; };
+  document.getElementById('pause-bg').onclick=(e)=>{ if(e.target.id==='pause-bg') document.getElementById('modal-root').innerHTML=''; };
 }
 
 function achievementBadgesHtml(s){
